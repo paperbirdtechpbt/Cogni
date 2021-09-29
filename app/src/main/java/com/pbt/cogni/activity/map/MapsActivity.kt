@@ -34,10 +34,8 @@ import com.pbt.cogni.Parse.DirectionsJSONParser
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
-import com.pbt.cogni.activity.Fragements.ViewRoute.MyRoutesDataClass
 import com.pbt.cogni.activity.MapsActivity.Companion.mMap
 import com.pbt.cogni.activity.MapsActivity.Companion.mPolyline
-import com.pbt.cogni.util.AppConstant.VEW_ROUT
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
