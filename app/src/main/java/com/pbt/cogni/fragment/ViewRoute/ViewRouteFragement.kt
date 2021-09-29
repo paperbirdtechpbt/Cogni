@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import com.pbt.cogni.R
-import com.pbt.cogni.activity.Fragements.ViewRoute.MyRoutesDataClass
-import com.pbt.cogni.activity.Fragements.ViewRoute.MyRoutesListAdapter
+import com.pbt.cogni.activity.viewRoute.MyRoutesDataClass
+import com.pbt.cogni.activity.viewRoute.MyRoutesListAdapter
 
 import com.pbt.cogni.activity.home.MainActivity
 
