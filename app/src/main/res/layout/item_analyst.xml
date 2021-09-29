@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="1dp"
+    app:cardElevation="1dp"
+app:cardMaxElevation="2dp"
+    app:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <RelativeLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/rlVideoCall"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/circle_red"
+            android:backgroundTint="@color/fontColor">
+
+            <TextView
+                android:id="@+id/button_call_disconnect"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/ic_camera_record"
+                android:backgroundTint="#fff"
+                android:drawableTint="#fff" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlVoiceCall"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="20dp"
+            android:layout_toStartOf="@+id/rlVideoCall"
+            android:background="@drawable/circle_red"
+            android:backgroundTint="@color/green">
+
+            <TextView
+                android:id="@+id/button_call_disconnect1"
+                android:layout_width="14dp"
+                android:layout_height="11dp"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="13dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="13dp"
+                android:layout_marginBottom="13dp"
+                android:background="@drawable/ic_call"
+                android:backgroundTint="#fff"
+                android:drawableTint="#fff" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txtAnalyst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="0dp"
+            android:layout_toStartOf="@+id/rlVoiceCall"
+            android:fontFamily="@font/droidsans"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

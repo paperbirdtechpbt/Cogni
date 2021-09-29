@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="ChatViewModel"
+            type="com.pbt.cogni.viewModel.ChatViewModel" />
+    </data>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/chatbg"
+        tools:context=".activity.chat.ChatActivity">
+
+        <ListView
+            android:id="@+id/listview_chat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/rlmessage"
+            android:layout_below="@+id/tol"
+            android:clipToPadding="false"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent"
+            android:scrollbars="none"
+            android:stackFromBottom="true"
+            android:layout_marginBottom="@dimen/_3sdp"
+            android:transcriptMode="alwaysScroll" />
+
+        <RelativeLayout
+            android:id="@+id/rlmessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <EditText
+                android:id="@+id/ed_MessageBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_50sdp"
+                android:background="@drawable/round"
+                android:hint="Type a message"
+                android:padding="@dimen/_8sdp"
+                android:singleLine="true"
+                android:text="@={ChatViewModel.message}"
+                android:onTextChanged="@{ChatViewModel.onMesageTextChanged}"
+                android:textColor="@color/white"
+                android:textColorHint="#c9c7c7" />
+
+            <ImageView
+                android:id="@+id/btnSendMessage"
+                android:layout_width="@dimen/_38sdp"
+                android:layout_height="@dimen/_38sdp"
+                android:onClick="@{(v)->ChatViewModel.sendMessage(v)}"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/_8sdp"
+                android:background="@drawable/ic_send" />
+
+        </RelativeLayout>
+
+        <!--    <ListView-->
+        <!--        android:layout_width="wrap_content"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        android:layout_below="@+id/tol"-->
+        <!--        android:id="@+id/listview_chat"-->
+        <!--        android:stackFromBottom="true"-->
+        <!--        android:listSelector="@android:color/transparent"-->
+        <!--        android:transcriptMode="alwaysScroll"-->
+        <!--        android:divider="@null"-->
+        <!--        android:layout_marginBottom="@dimen/_45sdp"-->
+
+        <!--        >-->
+        <!--    </ListView>
+        -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/tol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/purple_700">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/back_arrow"
+                    android:layout_width="30dp"
+                    android:layout_height="53dp"
+                    android:layout_gravity="center" />
+
+                <ImageView
+                    android:id="@+id/imgTeacherImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_profile" />
+
+                <TextView
+                    android:id="@+id/txtTeacherName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center"
+                    android:text="Rahul Kalyani"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/_12sdp" />
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+    </RelativeLayout>
+</layout>

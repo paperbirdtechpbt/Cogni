@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="shapeableimage" parent="">
+        <item name="cornerSize">50%</item>
+
+    </style>
+
+
+
+    <style name="style_eText">
+        <item name="android:textSize">17sp</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/droidsans</item>
+    </style>
+</resources>

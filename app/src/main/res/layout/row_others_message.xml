@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+
+
+    android:layout_height="wrap_content">
+    <ImageView
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/backgroundicon"
+        android:layout_margin="10dp"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+android:background="#B5CF9D"  />
+        <TextView
+            app:layout_constraintTop_toTopOf="@id/backgroundicon"
+            app:layout_constraintBottom_toBottomOf="@id/backgroundicon"
+          app:layout_constraintLeft_toLeftOf="@id/backgroundicon"
+            app:layout_constraintRight_toRightOf="@id/backgroundicon"
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+          android:layout_marginBottom="10dp"
+            android:text="Sender Message"
+
+            android:textColor="@android:color/white"
+            android:textSize="12sp"/>
+
+        <TextView
+            app:layout_constraintBottom_toBottomOf="@id/backgroundicon"
+            app:layout_constraintLeft_toLeftOf="@id/backgroundicon"
+            app:layout_constraintRight_toRightOf="@id/backgroundicon"
+            android:id="@+id/tvTimeDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="20-04-2016 9:55 PM"
+
+            android:textSize="8sp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
