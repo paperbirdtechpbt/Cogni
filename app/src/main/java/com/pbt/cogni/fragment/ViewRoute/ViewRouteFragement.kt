@@ -51,6 +51,7 @@ class ViewRouteFragement : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val view: View = inflater.inflate(R.layout.fragment_view_route_fragement, container, false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
 
@@ -66,15 +67,10 @@ class ViewRouteFragement : Fragment() {
             when (view.id) {
                 R.id.btnVIewRoute -> {
                     Log.e("##Intent", " Pass Data : " + Gson().toJson(mylist.get(i)))
-
-
                 }
-
             }
         }
         recyclerView?.setAdapter(listAdapter)
-
-
 
         return view
     }

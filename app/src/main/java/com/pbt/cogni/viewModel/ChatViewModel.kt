@@ -52,12 +52,14 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
 
                 try {
                     val chat = dataSnapshot.getValue(Chat::class.java)
-
                     if (chat.sender != null && chat.read != null) {
+
                         if (!chat.sender.equals("20") && (chat.read == 0 || chat.read == 1)) {
                             chat.read = 2
                             dataSnapshot.ref.setValue(chat)
                         }
+                    }else{
+
                     }
                     AppUtils.logDebug("ChatViewMode", "Data : " + Gson().toJson(data.value))
                     mAdapter?.add(chat)
