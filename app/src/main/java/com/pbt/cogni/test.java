@@ -1,6 +1,7 @@
 package com.pbt.cogni;
 
 public class test {
+//    ddfhuaeurhiunvkjsdhonvlkdasjnvdkldjn zclidjvlkajj
     //        var myResult = Gson().fromJson(json, Data::class.java)
 //        var uri = "waypoints="
 //
