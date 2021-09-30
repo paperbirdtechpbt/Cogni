@@ -1,21 +1,29 @@
 package com.pbt.cogni.activity.chat
 
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import com.firebase.client.ChildEventListener
+import com.firebase.client.DataSnapshot
 import com.firebase.client.Firebase
+import com.firebase.client.FirebaseError
+import com.google.gson.Gson
 
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
 import com.pbt.cogni.databinding.ActivityChat2Binding
+import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.Config
 import com.pbt.cogni.viewModel.ChatViewModel
 
 class ChatActivity : AppCompatActivity() {
 
     var binding : ActivityChat2Binding? = null;
     var chatViewModel  : ChatViewModel? =  null
-
+    var reference1: Firebase? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,5 +40,52 @@ class ChatActivity : AppCompatActivity() {
         binding?.listviewChat?.setAdapter(binding?.chatViewModel?.mAdapter)
 
 
+
+
+//        Firebase.setAndroidContext(this)
+//        reference1 = Firebase(Config.BASE_FIREBASE_URLC.toString() + id)
+//        reference1!!.addChildEventListener(object : ChildEventListener {
+//            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+//
+//
+//                val chat = dataSnapshot.getValue(Chat::class.java)
+//
+//                AppUtils.logDebug("ChatViewModel", "onChildAdded : " + Gson().toJson(chat))
+//
+////                    if (!chat.sender.equals("20") && (chat.read == 0 || chat.read == 1)) {
+////                        chat.read = 2
+////                        dataSnapshot.ref.setValue(chat)
+////                    }
+////                    mAdapter?.add(chat)
+////                    mAdapter?.notifyDataSetChanged()
+////
+////                    val mManager: NotificationManager =
+////                        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+////                    mManager.cancelAll();
+//
+//
+//            }
+//
+//            override fun onChildChanged(p0: DataSnapshot?, p1: String?) {
+//
+//            }
+//
+//            override fun onChildRemoved(p0: DataSnapshot?) {
+//
+//            }
+//
+//            override fun onChildMoved(p0: DataSnapshot?, p1: String?) {
+//
+//            }
+//
+//            override fun onCancelled(p0: FirebaseError?) {
+//
+//            }
+//
+//
+//        })
+
     }
+
+
 }

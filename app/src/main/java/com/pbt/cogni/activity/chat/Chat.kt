@@ -9,7 +9,8 @@ data class Chat(
     var timestamp: Long? = Date().time,
     var type: String? = "",
     var text: String? = "",
-    var read: Int? = 0
+    var read: Int? = 0,
+    var key: String? = ""
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -17,7 +18,8 @@ data class Chat(
         parcel.readValue(Long::class.java.classLoader) as? Long,
         parcel.readString(),
         parcel.readString(),
-        parcel.readValue(Int::class.java.classLoader) as? Int
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString(),
     ) {
     }
 
@@ -31,6 +33,7 @@ data class Chat(
         parcel.writeString(type)
         parcel.writeString(text)
         parcel.writeValue(read)
+        parcel.writeValue(key)
     }
 
     companion object CREATOR : Parcelable.Creator<Chat> {
