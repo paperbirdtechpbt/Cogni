@@ -1,5 +1,6 @@
 package com.pbt.cogni.viewModel
 
+import android.R
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
@@ -29,7 +30,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
     var reference1: Firebase? = null
     var message: ObservableField<String>? = null
     var userId: ObservableField<String>? = null
-    var mAdapter: ChatAdapter ? = null
+    var mAdapter: ChatAdapter? = null
 
     init {
         message = ObservableField("")
@@ -39,7 +40,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
 
 
     fun onMesageTextChanged(s: CharSequence, start: Int, befor: Int, count: Int) {
-        AppUtils.logDebug("ChatView","Message Change Call")
+        AppUtils.logDebug("ChatView", "Message Change Call")
     }
 
 
@@ -50,28 +51,50 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
         reff!!.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
+
+
                 try {
                     val chat = dataSnapshot.getValue(Chat::class.java)
 
-                    if (chat.sender != null && chat.read != null) {
-                        if (!chat.sender.equals("20") && (chat.read == 0 || chat.read == 1)) {
-                            chat.read = 2
-                            dataSnapshot.ref.setValue(chat)
-                        }
+//                    AppUtils.logDebug("ChatViewModel","onChildAdded : "+Gson().toJson(chat))
+
+                    if (!chat.sender.equals("20") && (chat.read == 0 || chat.read == 1)) {
+                        chat.read = 2
+                        dataSnapshot.ref.setValue(chat)
                     }
-                    AppUtils.logDebug("ChatViewMode", "Data : " + Gson().toJson(data.value))
+
+                    chat.key = dataSnapshot.key
                     mAdapter?.add(chat)
 
+                    mAdapter?.notifyDataSetChanged()
+
+                    data.value?.add(chat)
                     val mManager: NotificationManager =
                         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     mManager.cancelAll();
 
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     e.localizedMessage
                 }
             }
 
-            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String) {}
+            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String) {
+
+//                val newChat = dataSnapshot.getValue(Chat::class.java)
+
+                AppUtils.logDebug(TAG,"Data Cahnge : "+Gson().toJson(dataSnapshot.getValue()))
+
+                data.value!!.forEachIndexed { index, chat ->
+
+                    if(chat.sender.equals("20")  && dataSnapshot.key.equals(chat.key)){
+                        mAdapter?.getItem(index)?.read = 2
+                        AppUtils.logDebug(TAG,"index ==>> "+mAdapter?.getItem(index)!!.text)
+                    }
+                }
+
+                mAdapter?.notifyDataSetChanged()
+
+            }
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
             override fun onChildMoved(dataSnapshot: DataSnapshot, s: String) {}
             override fun onCancelled(firebaseError: FirebaseError) {}
@@ -79,7 +102,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
 
     }
 
-    fun initChat(context: Context,id : String) {
+    fun initChat(context: Context, id: String) {
         Firebase.setAndroidContext(context)
         reference1 = Firebase(BASE_FIREBASE_URLC.toString() + id)
 
@@ -95,7 +118,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
                 .show()
         } else {
 
-            if (userId != null) {
+            if (!message?.equals("")!!) {
 
                 var chat: Chat = Chat.createFromParcel(Parcel.obtain())
                 chat.sender = "20"
@@ -108,5 +131,8 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
 
             }
         }
+    }
+    companion object{
+        private const val TAG : String = "ChatViewModel"
     }
 }

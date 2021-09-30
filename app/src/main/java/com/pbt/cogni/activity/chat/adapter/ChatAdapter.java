@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ChatAdapter extends ArrayAdapter<Chat> {
+public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
     private static final int MY_MESSAGE = 0, OTHER_MESSAGE = 1;
     private Activity context;
@@ -38,7 +39,6 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
     @Override
     public int getItemViewType(int position) {
         Chat item = getItem(position);
-
         assert item != null;
         if (item.getSender().equals("20")) return MY_MESSAGE;
         else return OTHER_MESSAGE;
@@ -57,6 +57,17 @@ public class ChatAdapter extends ArrayAdapter<Chat> {
                 TextView textView = convertView.findViewById(R.id.text);
                 textView.setText(getItem(position).getText());
                 TextView timestamp = convertView.findViewById(R.id.timestamp);
+                TextView txtMsgStatus = convertView.findViewById(R.id.txtMsgStatus);
+                int icon = 0;
+                if(chat.getRead() == 0)
+                    icon = R.drawable.ic_not_deliverd;
+                else   if(chat.getRead() == 1)
+                    icon = R.drawable.ic_double_check;
+                else
+                    icon = R.drawable.ic_deliverd;
+
+                txtMsgStatus.setBackground(getContext().getDrawable(icon));
+
                 timestamp.setText(String.valueOf(getDisplayableTime(chat.getTimestamp())));
             }
 //            else if (chat.getType().equals("image")) {

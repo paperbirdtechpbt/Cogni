@@ -42,7 +42,7 @@ class AppUtils {
         }
 
 
-        private fun isAppIsInBackground(context: Context): Boolean {
+        public fun isAppIsInBackground(context: Context): Boolean {
             var isInBackground = true
             val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {

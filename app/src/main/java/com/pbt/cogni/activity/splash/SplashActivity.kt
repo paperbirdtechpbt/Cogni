@@ -26,8 +26,9 @@ class SplashActivity : AppCompatActivity() {
             val intent : Intent;
             if (MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("") || MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("false"))
                 intent = Intent(this, LoginActivity::class.java)
-            else
+            else {
                 intent = Intent(this, MainActivity::class.java)
+            }
 
             startActivity(intent)
             finish()

@@ -7,14 +7,20 @@ import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.Parcel
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.firebase.client.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.Gson
 import com.pbt.cogni.R
+import com.pbt.cogni.activity.chat.Chat
 import com.pbt.cogni.activity.chat.ChatActivity
+import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.Config
 import org.json.JSONObject
+import java.util.*
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -25,15 +31,30 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+//            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+
+            try {
+
+                var obj: JSONObject = JSONObject(remoteMessage.data.toString())
+                if (obj.getJSONObject("data").has("payload")) {
+                    var payload: JSONObject = obj.getJSONObject("data").getJSONObject("payload")
+
+                    if (payload.has("title") && payload.getString("title").equals("ChatMessage") && AppUtils.isAppIsInBackground(this)) {
+                         sendMessageToServer(payload)
+                    }
+                }
+
+                Log.d(
+                    TAG,
+                    "Message  payload: " + obj.getJSONObject("data").getJSONObject("payload")
+                )
 
 
-              var obj : JSONObject = JSONObject(remoteMessage.data.toString())
-
-
-//            Log.d(TAG, "Message  payload: "+ Gson().toJson(obj))
-            Log.d(TAG, "Message  obj: "+ obj.getString("payload"))
-
+            } catch (e: Exception) {
+                if (AppUtils.DEBUG)
+                    AppUtils.logError(TAG, "Exception : " + e.message)
+            }
+//            Log.d(TAG, "Message  obj: "+)
 
 
 //            if (/* Check if data needs to be processed by long running job */ true) {
@@ -43,6 +64,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 //                // Handle message within 10 seconds
 //                handleNow()
 //            }
+
         }
 
         // Check if message contains a notification payload.
@@ -67,10 +89,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun sendNotification(messageBody: String) {
         val intent = Intent(this, ChatActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
-        )
+        val pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT)
 
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -94,11 +113,23 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             )
             notificationManager.createNotificationChannel(channel)
         }
-
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+    }
+
+
+    fun sendMessageToServer(payload: JSONObject) {
+
+        if (!AppUtils.isNetworkConnected(this)) {
+            Toast.makeText(this, "Please Connect To Internet !", Toast.LENGTH_SHORT).show()
+        } else {
+            Firebase.setAndroidContext(this)
+            val reference1: Firebase? = Firebase(Config.BASE_FIREBASE_URLC.toString() + payload.getString("chatID"))
+            reference1!!.child(payload.getString("messageID")).child("read").setValue(1)
+        }
     }
 
     companion object {
         private const val TAG = "MyFirebaseMsgService"
     }
+
 }

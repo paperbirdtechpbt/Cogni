@@ -36,13 +36,19 @@
                 android:gravity="right"
                 android:paddingStart="@dimen/_5sdp"
                 android:textColor="#605F5F"
-                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_marginTop="@dimen/_1sdp"
                 android:textSize="8sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:background="@drawable/ic_not_deliverd"
+                android:id="@+id/txtMsgStatus"/>
+
 
         </LinearLayout>
 
     </me.himanshusoni.chatmessageview.ChatMessageView>
-
-
 
 </LinearLayout>
