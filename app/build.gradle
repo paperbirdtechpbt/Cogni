@@ -100,6 +100,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
     implementation 'com.google.firebase:firebase-firestore-ktx:23.0.3'
     implementation 'com.google.firebase:firebase-database-ktx:20.0.2'
+    implementation 'com.google.firebase:firebase-messaging:22.0.0'
 
     //sdp
     implementation 'com.intuit.sdp:sdp-android:1.0.6'

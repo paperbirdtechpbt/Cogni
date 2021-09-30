@@ -238,6 +238,7 @@
     <string name="analyst">Analyst</string>
     <string name="type_a_message">Type A message</string>
     <string name="send">Send</string>
+    <string name="default_notification_channel_id">102020</string>
 
 
 </resources>
