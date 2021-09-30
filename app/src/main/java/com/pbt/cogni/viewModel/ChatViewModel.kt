@@ -97,7 +97,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
                 .show()
         } else {
 
-            if (userId != null) {
+            if (message?.get() != null) {
 
                 var chat: Chat = Chat.createFromParcel(Parcel.obtain())
                 chat.sender = "20"
