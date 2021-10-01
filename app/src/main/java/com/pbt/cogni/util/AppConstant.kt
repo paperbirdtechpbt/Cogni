@@ -9,6 +9,8 @@ object AppConstant {
     //Preference
     var PREF_USER = "user"
     var PREF_IS_LOGIN = "isLogin"
+    var PREF_FIREBASE_TOKEN = "token"
+
 
 
 
