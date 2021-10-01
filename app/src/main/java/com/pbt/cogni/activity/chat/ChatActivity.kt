@@ -17,9 +17,15 @@ import com.pbt.cogni.activity.chat.adapter.ChatAdapter
 import com.pbt.cogni.databinding.ActivityChat2Binding
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.Config
+import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.viewModel.ChatViewModel
 
 class ChatActivity : AppCompatActivity() {
+
+    companion object{
+        private const val TAG : String = "ChatActivity"
+        public  var isChatVisible : Boolean = false;
+    }
 
     var binding : ActivityChat2Binding? = null;
     var chatViewModel  : ChatViewModel? =  null
@@ -32,12 +38,16 @@ class ChatActivity : AppCompatActivity() {
         binding?.chatViewModel = chatViewModel
         binding?.executePendingBindings()
 
-         var id : String = "10"
+         var reciverID : String = "10"
+         var userID : String = MyPreferencesHelper.getUser(this@ChatActivity)!!.id
 
-        binding?.chatViewModel?.initChat(this@ChatActivity,id)
+        binding?.chatViewModel?.initChat(this@ChatActivity,reciverID,userID)
 
         binding?.chatViewModel?.mAdapter = ChatAdapter(this@ChatActivity,ArrayList<Chat>())
         binding?.listviewChat?.setAdapter(binding?.chatViewModel?.mAdapter)
+
+
+        isChatVisible = true;
 
 
 
@@ -86,6 +96,19 @@ class ChatActivity : AppCompatActivity() {
 //        })
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        isChatVisible =  true;
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+
+        isChatVisible =  false;
+    }
+
 
 
 }

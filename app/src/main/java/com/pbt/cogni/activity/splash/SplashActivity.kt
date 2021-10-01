@@ -8,6 +8,7 @@ import com.pbt.cogni.R
 import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.activity.login.LoginActivity
 import com.pbt.cogni.util.AppConstant.PREF_IS_LOGIN
+import com.pbt.cogni.util.AppConstant.PREF_TOKEN
 import com.pbt.cogni.util.AppConstant.PREF_USER
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
@@ -17,11 +18,11 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-//                || MyPreferencesHelper.getStringValue(this, AppConstant.PREF_IS_LOGIN)).equals( "")){
 
         Handler().postDelayed({
 
             AppUtils.logDebug("SplashACtivity","Check login Preff ==>> "+MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_USER, ""))
+            AppUtils.logDebug("SplashACtivity","Check login tokem ==>> "+MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_TOKEN, ""))
 
             val intent : Intent;
             if (MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("") || MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("false"))

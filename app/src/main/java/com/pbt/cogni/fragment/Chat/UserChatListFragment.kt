@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.Api
 import com.pbt.cogni.activity.chat.ChatActivity
+import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.model.AnalystModel
 import com.pbt.cogni.repository.AnalystRepository
 import com.pbt.cogni.util.AppUtils
@@ -57,7 +58,8 @@ class UserChatListFragment : Fragment(),RecyclerviewClickLisetner {
     override fun onRecyclerViewItemClick(view: View, analystModel: AnalystModel) {
         when(view.id){
             R.id.item_row -> {
-                AppUtils.logDebug("UserChatFragment","Item Click "+analystModel.companyName)
+                val intent = Intent(activity, ChatActivity::class.java)
+                startActivity(intent)
             }
         }
     }

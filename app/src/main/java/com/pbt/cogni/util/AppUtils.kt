@@ -7,6 +7,8 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.util.Log
 import com.pbt.cogni.BuildConfig
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
 
 
@@ -66,6 +68,33 @@ class AppUtils {
             return isInBackground
         }
 
+        fun getDisplayableTime(value: Long): String? {
+            val difference: Long
+            val mDate = System.currentTimeMillis()
+            if (mDate > value) {
+                difference = mDate - value
+                val seconds = difference / 1000
+                val minutes = seconds / 60
+                val hours = minutes / 60
+                val days = hours / 24
+                val months = days / 31
+                val years = days / 365
+                return if (seconds < 86400) {
+                    val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+                    formatter.format(Date(value))
+                    //return "not yet";
+                } else if (seconds < 172800) // 48 * 60 * 60
+                    "yesterday" else if (seconds < 2592000) // 30 * 24 * 60 * 60
+                    "$days days ago" else if (seconds < 31104000) // 12 * 30 * 24 * 60 * 60
+                    if (months <= 1) "one month ago" else "$days months ago" else if (years <= 1) "one year ago" else "$years years ago"
+            }
+            return SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date().getTime())
+        }
+
+
+
     }
+
+
 
 }
