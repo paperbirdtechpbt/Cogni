@@ -7,5 +7,5 @@ import java.util.*
 data class ResponseDataClass(
     @SerializedName("error")  val code: Boolean,
     @SerializedName("msg")  val message: String,
-    @SerializedName("data") val data: JsonObject
+    @SerializedName("data") val data: Data
 )
