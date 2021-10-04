@@ -1,7 +1,6 @@
 package com.pbt.cogni.WebService
 
-import com.pbt.cogni.activity.map.ResponseDataClass
-import com.pbt.cogni.activity.splash.TokenGenerateClass
+import com.pbt.cogni.model.HttpResponse
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Field
@@ -15,16 +14,21 @@ interface ApiInterface {
     fun sentOriginDest(
         @Field("startCityName") startcity: String,
         @Field("endCityName") endcity: String
-    ): retrofit2.Call<ResponseDataClass>
+    ): retrofit2.Call<HttpResponse>
+
+    @FormUrlEncoded
+    @POST("api/updateToken")
+     fun updateToken(@Field("id") userid: String, @Field("firebase_token") token: String) : Call<HttpResponse>
+
 
 
     @FormUrlEncoded
     @POST("api/login")
-    fun login(@Field("email") email: String, @Field("password") password: String): Call<ResponseDataClass>
+    fun login(@Field("email") email: String, @Field("password") password: String): Call<HttpResponse>
 
-    @FormUrlEncoded
-    @POST("api/sendtoken")
-    fun generateToken(@Field("userid") userid: String, @Field("token") token: String): Call<TokenGenerateClass>
+//    @FormUrlEncoded
+//    @POST("api/sendtoken")
+//    fun generateToken(@Field("userid") userid: String, @Field("token") token: String): Call<TokenGenerateClass>
 
     @FormUrlEncoded
     @POST("api/Analyst")
@@ -32,5 +36,5 @@ interface ApiInterface {
         @Field("companyId")companyid:String,
         @Field("RoleId")RoleId:String,
         @Field("UserName")UserName:String,
-    ):retrofit2.Call<ResponseDataClass>
+    ):retrofit2.Call<HttpResponse>
 }

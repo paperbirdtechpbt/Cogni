@@ -1,7 +1,6 @@
 package com.pbt.cogni.fragment.audioVideoCall
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,20 +9,15 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
-import com.pbt.cogni.activity.call.CallActivity
-import com.pbt.cogni.activity.map.ResponseDataClass
+import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.repository.AnalystRepo
-import com.pbt.cogni.repository.AnalystRepository
-import com.pbt.cogni.util.AppConstant
-import com.pbt.cogni.util.AppConstant.KEY_CALL
-import com.pbt.cogni.util.AppConstant.ROOM_ID
 
 class AudioVideCallAdapter (var context: Context?,
-                            private var countrylist: ResponseDataClass? = null
+                            private var countrylist: HttpResponse? = null
     ) :
     RecyclerView.Adapter<AudioVideCallAdapter.ViewHolder>() {
 
-    fun setCountryList(countrylist:ResponseDataClass) {
+    fun setCountryList(countrylist: HttpResponse) {
         this.countrylist = countrylist
     }
 
@@ -38,10 +32,10 @@ class AudioVideCallAdapter (var context: Context?,
     }
 
     override fun onBindViewHolder(holder: AudioVideCallAdapter.ViewHolder, position: Int) {
-        holder.txtAnalyst.text =countrylist?.data?.mydata?.get(position)?.companyName
+//        holder.txtAnalyst.text =countrylist?.data?.mydata?.get(position)?.companyName
 
 //        holder.bind(list.get(position)!!)
-
+//
 //        holder.rlVideoCall.setOnClickListener {
 //            val intent = Intent(context, CallActivity::class.java)
 //            intent.putExtra(AppConstant.KEY_CALL, true);
@@ -67,7 +61,8 @@ class AudioVideCallAdapter (var context: Context?,
             Log.e("##countrylist", "countrylist is empty")
         } else {
             Log.e("##countrylist", "countrylist----$countrylist")
-            return countrylist?.data?.mydata?.size!!
+//            return countrylist?.data?.mydata?.size!!
+            return 0
         }
     }
 
@@ -79,7 +74,6 @@ class AudioVideCallAdapter (var context: Context?,
         fun bind(blog: AnalystRepo) {
             txtAnalyst.text = blog.analysisName
         }
-
     }
 
 }

@@ -1,4 +1,4 @@
-package com.pbt.cogni.fragment.audioVideoCall
+package com.pbt.cogni.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

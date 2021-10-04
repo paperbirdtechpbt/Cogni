@@ -1,30 +1,20 @@
 package com.pbt.cogni.fragment.audioVideoCall
 
 import android.app.Application
-import android.content.Context
-import android.util.Log
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.annotation.StringRes
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.common.AccountPicker
 import com.google.gson.Gson
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
-import com.pbt.cogni.activity.MapsActivity
 import com.pbt.cogni.activity.map.Data
-import com.pbt.cogni.activity.map.ResponseDataClass
+import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.activity.map.Resultt
-import com.pbt.cogni.repository.AnalystRepo
 import retrofit2.Call
 import retrofit2.Response
-import javax.security.auth.callback.Callback
 
 class AudioVideoViewModel : ViewModel() {
-    lateinit var liveDataList: MutableLiveData<ResponseDataClass>
+    lateinit var liveDataList: MutableLiveData<HttpResponse>
 
 
     companion object {
@@ -37,7 +27,7 @@ class AudioVideoViewModel : ViewModel() {
 
     }
 
-    fun getLiveDataObserver(): MutableLiveData<ResponseDataClass> {
+    fun getLiveDataObserver(): MutableLiveData<HttpResponse> {
         return liveDataList
     }
 
@@ -46,10 +36,10 @@ class AudioVideoViewModel : ViewModel() {
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
         val call = apiInterface?.getAnalystList("58", "5", "analystanalyst@gmail.com")
-        call?.enqueue(object : retrofit2.Callback<ResponseDataClass> {
+        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
             override fun onResponse(
-                call: Call<ResponseDataClass>,
-                response: Response<ResponseDataClass>
+                call: Call<HttpResponse>,
+                response: Response<HttpResponse>
             ) {
                 liveDataList.postValue(response.body())
 
@@ -63,7 +53,7 @@ class AudioVideoViewModel : ViewModel() {
 
             }
 
-            override fun onFailure(call: Call<ResponseDataClass>, t: Throwable) {
+            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
 
             }
 

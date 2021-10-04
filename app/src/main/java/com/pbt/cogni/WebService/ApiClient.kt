@@ -58,13 +58,13 @@ object  ApiClient {
             .build()
         return retrofit
     }
-    fun generateTokenCLient(): Retrofit? {
+    fun clientUpdateToken(): Retrofit? {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
         retrofit = Retrofit.Builder()
-            .baseUrl("http://cogni.paperbirdtech.com/index.php/")
+            .baseUrl("http://cogni.paperbirdtech.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

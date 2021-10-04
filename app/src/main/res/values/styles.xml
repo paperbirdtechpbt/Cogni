@@ -9,9 +9,16 @@
 
 
     <style name="style_eText">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:layout_marginTop">12dp</item>
-        <item name="android:textStyle">bold</item>
         <item name="fontFamily">@font/droidsans</item>
+    </style>
+
+    <style name="style_profile_label">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#94949E</item>
+
+
     </style>
 </resources>

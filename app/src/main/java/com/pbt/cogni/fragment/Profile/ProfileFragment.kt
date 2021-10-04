@@ -1,15 +1,17 @@
 package com.pbt.cogni.fragment.Profile
 
-import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
 import com.pbt.cogni.R
-
+import com.pbt.cogni.activity.login.UserDetailsData
+import com.pbt.cogni.util.MyPreferencesHelper
+import kotlinx.android.synthetic.main.fragment_profile.*
+import org.w3c.dom.Text
 
 
 private const val ARG_PARAM1 = "param1"
@@ -19,7 +21,6 @@ class ProfileFragment : Fragment() {
 
     private var param1: String? = null
     private var param2: String? = null
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,12 +36,36 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val view:View= inflater.inflate(R.layout.fragment_profile, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_profile, container, false)
+
+        setProfileData(view)
+
+
+
 
 
 //        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
 
         return view
+    }
+
+    private fun setProfileData(view: View) {
+        val userdataDetails: UserDetailsData? =MyPreferencesHelper.getUser(requireContext())
+
+        val companyname:TextView=view.findViewById(R.id.eCompanyName)
+        val username:TextView=view.findViewById(R.id.txtUserName)
+        val email:TextView=view.findViewById(R.id.eEmaile)
+        val mobile:TextView=view.findViewById(R.id.eMobile)
+        val landline:TextView=view.findViewById(R.id.ELandLine)
+        val role:TextView=view.findViewById(R.id.eRole)
+
+        username.setText(userdataDetails?.FirstName + "   " + userdataDetails?.LastName)
+        companyname.setText(userdataDetails?.companyname)
+
+        email.text=userdataDetails?.UserName
+        role.text=userdataDetails?.Rolename
+        mobile.text=userdataDetails?.Mobile
+        landline.text=userdataDetails?.LastName
     }
 
     companion object {
