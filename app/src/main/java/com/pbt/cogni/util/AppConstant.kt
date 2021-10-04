@@ -4,6 +4,8 @@ object AppConstant {
     var KEY_CALL : String = "Call"
     var VEW_ROUT : String = "VEW_ROUT"
     var ROOM_ID : String = "ROOM_ID"
+    var TYPING = "typing"
+
 
     const val SHARED_PREF_NAME = "friendlymony"
     //Preference

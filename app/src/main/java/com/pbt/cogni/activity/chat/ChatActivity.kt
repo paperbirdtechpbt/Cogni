@@ -39,18 +39,15 @@ class ChatActivity : AppCompatActivity() {
         binding?.executePendingBindings()
 
          var reciverID : String = "10"
+         var chatID : String = "10"
          var userID : String = MyPreferencesHelper.getUser(this@ChatActivity)!!.id
 
-        binding?.chatViewModel?.initChat(this@ChatActivity,reciverID,userID)
+        binding?.chatViewModel?.initChat(this@ChatActivity,reciverID,userID,chatID)
 
         binding?.chatViewModel?.mAdapter = ChatAdapter(this@ChatActivity,ArrayList<Chat>())
         binding?.listviewChat?.setAdapter(binding?.chatViewModel?.mAdapter)
 
-
         isChatVisible = true;
-
-
-
 
 //        Firebase.setAndroidContext(this)
 //        reference1 = Firebase(Config.BASE_FIREBASE_URLC.toString() + id)
@@ -102,13 +99,9 @@ class ChatActivity : AppCompatActivity() {
         isChatVisible =  true;
     }
 
-
     override fun onPause() {
         super.onPause()
-
         isChatVisible =  false;
     }
-
-
 
 }
