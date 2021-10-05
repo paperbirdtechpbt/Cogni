@@ -42,7 +42,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
     public int getItemViewType(int position) {
         Chat item = getItem(position);
         assert item != null;
-        if (item.getSender().equals(MyPreferencesHelper.Companion.getUser(context.getApplication()).getId())) return MY_MESSAGE;
+        if (item.getSender() == Integer.valueOf(MyPreferencesHelper.Companion.getUser(context.getApplication()).getId())) return MY_MESSAGE;
         else return OTHER_MESSAGE;
     }
 

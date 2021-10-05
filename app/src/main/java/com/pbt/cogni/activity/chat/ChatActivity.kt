@@ -38,9 +38,9 @@ class ChatActivity : AppCompatActivity() {
         binding?.chatViewModel = chatViewModel
         binding?.executePendingBindings()
 
-         var reciverID : String = "10"
-         var chatID : String = "10"
-         var userID : String = MyPreferencesHelper.getUser(this@ChatActivity)!!.id
+         var reciverID : Int = 10
+         var chatID : Int = 10
+         var userID : Int = MyPreferencesHelper.getUser(this@ChatActivity)!!.id.toInt()
 
         binding?.chatViewModel?.initChat(this@ChatActivity,reciverID,userID,chatID)
 
@@ -48,49 +48,6 @@ class ChatActivity : AppCompatActivity() {
         binding?.listviewChat?.setAdapter(binding?.chatViewModel?.mAdapter)
 
         isChatVisible = true;
-
-//        Firebase.setAndroidContext(this)
-//        reference1 = Firebase(Config.BASE_FIREBASE_URLC.toString() + id)
-//        reference1!!.addChildEventListener(object : ChildEventListener {
-//            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-//
-//
-//                val chat = dataSnapshot.getValue(Chat::class.java)
-//
-//                AppUtils.logDebug("ChatViewModel", "onChildAdded : " + Gson().toJson(chat))
-//
-////                    if (!chat.sender.equals("20") && (chat.read == 0 || chat.read == 1)) {
-////                        chat.read = 2
-////                        dataSnapshot.ref.setValue(chat)
-////                    }
-////                    mAdapter?.add(chat)
-////                    mAdapter?.notifyDataSetChanged()
-////
-////                    val mManager: NotificationManager =
-////                        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-////                    mManager.cancelAll();
-//
-//
-//            }
-//
-//            override fun onChildChanged(p0: DataSnapshot?, p1: String?) {
-//
-//            }
-//
-//            override fun onChildRemoved(p0: DataSnapshot?) {
-//
-//            }
-//
-//            override fun onChildMoved(p0: DataSnapshot?, p1: String?) {
-//
-//            }
-//
-//            override fun onCancelled(p0: FirebaseError?) {
-//
-//            }
-//
-//
-//        })
 
     }
 
