@@ -65,6 +65,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation "com.android.support:multidex:2.0.1"
+    implementation 'com.google.firebase:firebase-messaging-ktx:22.0.0'
 
 
     testImplementation 'junit:junit:4.13.2'

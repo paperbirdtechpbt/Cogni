@@ -11,6 +11,7 @@ import android.net.Uri
 import android.opengl.Visibility
 import android.os.Build
 import android.os.Handler
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
@@ -45,6 +46,10 @@ import org.webrtc.VideoSink
 import java.lang.StringBuilder
 import java.security.SecureRandom
 import java.util.ArrayList
+import android.view.WindowManager
+
+
+
 
 
 class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents {
@@ -85,12 +90,18 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call_activity)
+
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                    or WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+
         supportActionBar?.hide()
 
         Log.d("##CHan", "oncreate")
 
-        videoCallEnable = intent.extras!!.getBoolean("Call")
-
+//        videoCallEnable = intent.extras!!.getBoolean("Call")
+        videoCallEnable=intent.extras!!.getBoolean("notfication")
         roomId = intent.extras?.getString(ROOM_ID)
         name = intent.extras?.getString("name")
         Log.d("##CHeckName", "----" + name + "---" + videoCallEnable.toString())
