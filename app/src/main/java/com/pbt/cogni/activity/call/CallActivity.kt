@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.pbt.cogni.R
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.NotificationManager
 import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.media.AudioManager
@@ -47,8 +48,11 @@ import java.lang.StringBuilder
 import java.security.SecureRandom
 import java.util.ArrayList
 import android.view.WindowManager
-
-
+import com.pbt.cogni.fcm.MyFirebaseMessagingService
+import com.pbt.cogni.util.AppConstant
+import com.pbt.cogni.util.AppConstant.CALL
+import com.pbt.cogni.util.AppConstant.NUMBER
+import kotlinx.android.synthetic.main.activity_call.*
 
 
 
@@ -84,26 +88,42 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var isSpeker = true
 
     var roomId: String? = ""
+    var textView:TextView?=null
+
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     public override fun onCreate(savedInstanceState: Bundle?) {
+        cancleNotification()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call_activity)
+
+
+//        MyFirebaseMessagingService().stopSound() //stop ringtone when opening this class
+
+        textView=findViewById(R.id.txtUsernameVoiceCall)
+
 
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                     or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                     or WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
+
         supportActionBar?.hide()
 
         Log.d("##CHan", "oncreate")
 
+
+
 //        videoCallEnable = intent.extras!!.getBoolean("Call")
-        videoCallEnable=intent.extras!!.getBoolean("notfication")
+        videoCallEnable=intent.extras!!.getBoolean(CALL)
         roomId = intent.extras?.getString(ROOM_ID)
-        name = intent.extras?.getString("name")
+        name = intent.extras?.getString(NUMBER)
+
+
+
+
         Log.d("##CHeckName", "----" + name + "---" + videoCallEnable.toString())
 
         if (videoCallEnable != true) {
@@ -200,6 +220,13 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 
         // Connect video call to the 12random room
         roomId?.let { connectVideoCall(it) }
+    }
+
+     fun cancleNotification() {
+//         txtTimerVoiceCall.setText(" ")
+        val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
+        MyFirebaseMessagingService().stopSound()
     }
 
 
@@ -373,19 +400,26 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         if (!activityRunning) {
             Log.e(TAG, "Critical error: $errorMessage")
             disconnect()
-        } else {
-            AlertDialog.Builder(this)
-                .setTitle(getText(R.string.channel_error_title))
-                .setMessage(errorMessage)
-                .setCancelable(false)
-                .setNeutralButton(
-                    R.string.ok
-                ) { dialog, id ->
-                    dialog.cancel()
-                    disconnect()
-                }
-                .create()
-                .show()
+        }
+        //when was full else was user
+        else {
+            txtTimerVoiceCall.setText("Call Ended")
+            Handler().postDelayed({
+                finish()
+            }, 1500)
+
+//            AlertDialog.Builder(this)
+//                .setTitle(getText(R.string.channel_error_title))
+//                .setMessage(errorMessage)
+//                .setCancelable(false)
+//                .setNeutralButton(
+//                    R.string.ok
+//                ) { dialog, id ->
+//                    dialog.cancel()
+//                    disconnect()
+//                }
+//                .create()
+//                .show()
         }
     }
 

@@ -16,8 +16,7 @@ import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
 import com.pbt.cogni.activity.SplashActivity
 import com.pbt.cogni.activity.home.MainActivity
-import com.pbt.cogni.activity.map.Data
-import com.pbt.cogni.activity.map.Resultt
+
 import com.pbt.cogni.databinding.ActivityLoginBinding
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppConstant

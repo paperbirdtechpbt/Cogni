@@ -32,71 +32,47 @@ import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.Config
 import com.pbt.cogni.util.MyPreferencesHelper
 import org.json.JSONObject
-import android.graphics.BitmapFactory
+
 import android.app.*
+import android.content.ContentResolver
+
+import android.app.PendingIntent
+import android.app.NotificationManager
+import android.media.Ringtone
+import com.pbt.cogni.util.AppConstant.CALL
+import com.pbt.cogni.util.AppConstant.ChatMessage
+import com.pbt.cogni.util.AppConstant.IncommingCall
+import com.pbt.cogni.util.AppConstant.NUMBER
+import com.pbt.cogni.util.AppConstant.ROOM_ID
+import com.pbt.cogni.util.AppConstant.data
+import com.pbt.cogni.util.AppConstant.message
+import com.pbt.cogni.util.AppConstant.payload
+import com.pbt.cogni.util.AppConstant.roomId
+import com.pbt.cogni.util.AppConstant.title
 
 
 private const val CHANNEL_ID = "my_channel"
 
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
-    var isInBackground: Boolean? = null
+    private var isInBackground: Boolean? = null
+    var NOTIFICATION_ID = 1
+    var NOTifiicatioid = 2
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("RemoteViewLayout")
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-
 
 
         Log.d(TAG, "From: ${remoteMessage.from}")
 
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
-//            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
 //
             try {
 
-                val myProcess = RunningAppProcessInfo()
-                ActivityManager.getMyMemoryState(myProcess)
-
-                isInBackground = myProcess.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
-
-
-                if (isInBackground == true) {
-                    val kgMgr = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
-                    val showing = kgMgr.inKeyguardRestrictedInputMode()
-                    if (showing) {
-                        //app inbackground but  locked
-                        openIntent(remoteMessage)
-
-                    } else {
-
-
-                        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-                            .setSmallIcon(android.R.drawable.arrow_up_float)
-                            .setContentTitle("title")
-                            .setContentText("description")
-                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                            .setFullScreenIntent(getFullScreenIntent(), true)
-
-
-                        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-                        with(notificationManager) {
-                            buildChannel()
-
-                            val notification = builder.build()
-
-                            notify(0, notification)
-                        }
-                        //app inbackground but not locked
-
-                    }
-                } else {
-                    //app in foreground
-                    openIntent(remoteMessage)
-
-                }
 
 //                val fullScreenIntent = Intent(this, CallActivity::class.java)
 //                val fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
@@ -127,23 +103,40 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
 //_____________-------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-//                var obj: JSONObject = JSONObject(remoteMessage.data.toString())
-//                if (obj.getJSONObject("data").has("payload")) {
-//                    var payload: JSONObject = obj.getJSONObject("data").getJSONObject("payload")
-//
-//                    if (payload.has("title") && payload.getString("title").equals("ChatMessage")) {
-//
-//                        if (AppUtils.isAppIsInBackground(this) && !ChatActivity.isChatVisible)
-//                            sendMessageToServer(payload)
-//
-//                        if (!ChatActivity.isChatVisible) {
-//                            sendNotification(
-//                                MyPreferencesHelper.getUser(this)!!.FirstName,
-//                                payload.getString("message")
-//                            )
-//                        }
-//                    }
-//                }
+                var obj: JSONObject = JSONObject(remoteMessage.data.toString())
+
+
+                if (obj.getJSONObject(data).has(payload)) {
+                    var payload: JSONObject = obj.getJSONObject(data).getJSONObject(payload)
+
+                    mobilenumber = payload.getString(message)
+                    Log.d("##Mynumber", mobilenumber.toString())
+                    val intent = Intent(this, CallActivity::class.java)
+                    intent.putExtra("mobilenumber", mobilenumber)
+
+                    if (payload.has(title) && payload.getString(title).equals(ChatMessage)) {
+
+                        if (AppUtils.isAppIsInBackground(this) && !ChatActivity.isChatVisible)
+                            sendMessageToServer(payload)
+
+                        if (!ChatActivity.isChatVisible) {
+                            sendNotification(
+                                MyPreferencesHelper.getUser(this)!!.FirstName,
+                                payload.getString(message)
+                            )
+                        }
+                    } else if (payload.has(title) && payload.getString(title)
+                            .equals(IncommingCall)
+                    ) {
+                        var boolean: Boolean = payload.getString("call").toBoolean()
+                        checkPhoneStatus(
+                            mobilenumber!!,
+                            payload.getString(roomId),
+                            boolean,
+                            remoteMessage
+                        )
+                    }
+                }
                 //---------------------------i-m-p-o-r-t-a-n-t------------------------------------//
 
             } catch (e: Exception) {
@@ -180,21 +173,119 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     }
 
+    private fun checkPhoneStatus(
+        number: String, roomId: String, call: Boolean, remoteMessage: RemoteMessage
+    ) {
+
+        val myProcess = RunningAppProcessInfo()
+        ActivityManager.getMyMemoryState(myProcess)
+
+        isInBackground =
+            myProcess.importance != RunningAppProcessInfo.IMPORTANCE_FOREGROUND //true
+
+
+        if (isInBackground == true) {
+            val kgMgr = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
+            val showing = kgMgr.inKeyguardRestrictedInputMode()
+            if (showing) {
+                //app inbackground but  locked
+                Log.d("##checkstatus", "app inbackground  locked")
+                openIntent(number, roomId, call, remoteMessage)
+
+
+            } else {
+                //app inbackground but not locked
+                Log.d("##checkstatus", "app inbackground but not locked")
+                popUpNotificaiton(number, roomId, call, remoteMessage)
+            }
+        } else {
+            //app in foreground
+            Log.d("##checkstatus", "app in Foreground")
+            openIntent(number, roomId, call, remoteMessage)
+        }
+    }
+
+
+    private fun popUpNotificaiton(
+        number: String, roomId: String, call: Boolean, remoteMessage: RemoteMessage
+    ) {
+        Log.d("##number", "-----number-----" + number)
+        val buttonIntent = Intent(this, ButtonReceiver::class.java)
+        buttonIntent.putExtra("notificationId", NOTIFICATION_ID)
+
+
+        val resultIntent =
+            Intent(this, CallActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        passdata(resultIntent, number, roomId, call, remoteMessage)
+
+
+        val resultPendingIntent =
+            PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+//Create the PendingIntent
+        val btPendingIntent = PendingIntent.getBroadcast(this, 0, buttonIntent, 0)
+
+        val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_call)
+        notificationLayout.setTextViewText(R.id.txtCallerName, number)
+        notificationLayout.setOnClickPendingIntent(R.id.txtanswer, resultPendingIntent)
+
+
+        notificationLayout.setOnClickPendingIntent(R.id.txtreject, btPendingIntent)
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_menu_call)
+//            .setSound(soundUri)
+            .setVibrate(longArrayOf(1000, 1000, 1000, 1000, 1000, 1000, 1000))
+            .setContentText("From" + " ${remoteMessage.from}")
+            .setCustomContentView(notificationLayout)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setFullScreenIntent(resultPendingIntent, true)
+
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        with(notificationManager) {
+            buildChannel()
+
+            val notification = builder.build()
+            notification.flags = Notification.FLAG_AUTO_CANCEL
+
+            notify(1, notification)
+        }
+
+    }
+
+    private fun passdata(
+        resultIntent: Intent,
+        number: String,
+        roomId: String,
+        call: Boolean,
+        remoteMessage: RemoteMessage
+    ) {
+        resultIntent.putExtra(NUMBER, number)
+        resultIntent.putExtra(CALL, call)
+        resultIntent.putExtra(ROOM_ID, roomId)
+        resultIntent.putExtra(NUMBER, number)
+
+    }
+
+
     private fun NotificationManager.buildChannel() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the NotificationChannel
-            val name ="channelId" //getString(R.string.notification_channel_name)
-            val descriptionText ="Incoming Call" //getString(R.string.notification_channel_description)
+
+            val name = "channelId"
+            val descriptionText = "Incoming Voice Call"
             val importance = NotificationManager.IMPORTANCE_HIGH
-            val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
+            val mChannel = NotificationChannel("CHANNEL_ID", name, importance)
             mChannel.description = descriptionText
+            mChannel.enableVibration(true)
+
+            playsound()
 
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(mChannel)
         }
-
-
 
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -209,24 +300,56 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 //        }
     }
 
+    private fun playsound() {
+        val soundUri =
+            Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + applicationContext.packageName + "/" + R.raw.callringotn)
 
-    private fun getFullScreenIntent(): PendingIntent? {
+        ringtone = RingtoneManager.getRingtone(applicationContext, soundUri)
+        ringtone?.play()
+    }
 
-        val destination =
-            CallActivity::class.java
-        val intent = Intent(this, destination)
+    fun stopSound() {
+        ringtone?.stop()
+
+    }
+
+    private fun getFullScreenIntent(
+        number: String,
+        roomId: String,
+        call: Boolean,
+        remoteMessage: RemoteMessage
+    ): PendingIntent? {
+        Log.d("##number", "-----number-----" + number)
+
+
+//        val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+//        notificationManager.cancelAll()
+
+        ringtone?.stop()
+        Log.d("##number", number)
+
+        val intent = Intent(this, CallActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        passdata(intent, number, roomId, call, remoteMessage)
+
 
         // flags and request code are 0 for the purpose of demonstration
         return PendingIntent.getActivity(this, 0, intent, 0)
     }
 
 
-    private fun openIntent(remoteMessage: RemoteMessage) {
+    private fun openIntent(
+        number: String,
+        roomId: String,
+        call: Boolean,
+        remoteMessage: RemoteMessage
+    ) {
         AppUtils.logDebug(TAG, "====>> " + Gson().toJson(remoteMessage.data))
 
         val intent = Intent(this, CallActivity::class.java)
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        intent.putExtra("notfication", false)
+
+        passdata(intent, number, roomId, call, remoteMessage)
         startActivity(intent)
 
         Log.d("Tutorialspoint.com", "Your application is in ForeGround state")
@@ -272,19 +395,19 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     //show notification
     private fun sendNotification(title: String, message: String) {
         val sound: Uri =
-            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.notification);
+            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.callringotn);
 //        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val r = RingtoneManager.getRingtone(applicationContext, sound)
         r.play()
 
-        val intent = Intent(this, ChatActivity::class.java)
+        val intent = Intent(this, CallActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
 //        val sound: Uri =  Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.notification);
-        val notificationLayout = RemoteViews(packageName, com.pbt.cogni.R.layout.custom_push)
+        val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_call)
 //        contentView.setImageViewResource(R.id.image, R.mipmap.ic_launcher);
-        notificationLayout.setTextViewText(R.id.title, title);
-        notificationLayout.setTextViewText(R.id.text, message);
+//        notificationLayout.setTextViewText(R.id.title, title);
+//        notificationLayout.setTextViewText(R.id.text, message);
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
@@ -329,6 +452,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "MyFirebaseMsgService"
+        public var ringtone: Ringtone? = null
+        var mobilenumber: String? = null
+
     }
 
 }

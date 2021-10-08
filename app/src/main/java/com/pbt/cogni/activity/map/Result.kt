@@ -10,6 +10,11 @@ data class Resultt(
     @SerializedName("Name")val name:String,
     @SerializedName("StartLocation")val startlocation:String,
     @SerializedName("EndLocation")val endlocation:String,
-    @SerializedName("companyName")val companyName:String
+    @SerializedName("companyName")val companyName:String,
+    @SerializedName("Email")val Email:String,
+    @SerializedName("FirstName")val Firstname:String,
+    @SerializedName("LastName")val LastName:String,
+    @SerializedName("Mobile")val Mobile:String,
+
 
 )

@@ -1,5 +1,6 @@
 package com.pbt.cogni.WebService
 
+import com.pbt.cogni.activity.map.Resultt
 import com.pbt.cogni.model.HttpResponse
 import retrofit2.Call
 import retrofit2.Response
@@ -36,5 +37,15 @@ interface ApiInterface {
         @Field("companyId")companyid:String,
         @Field("RoleId")RoleId:String,
         @Field("UserName")UserName:String,
+    ):retrofit2.Call<HttpResponse>
+
+    @FormUrlEncoded
+    @POST("api/sendCall")
+    fun makeCall(
+        @Field("roomID")roomID:String,
+        @Field("mobileNo")mobileNo:String,
+        @Field("call")call:String,
+        @Field("senderID")senderID:String,
+        @Field("senderName")senderName:String
     ):retrofit2.Call<HttpResponse>
 }

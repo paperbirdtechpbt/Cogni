@@ -120,5 +120,6 @@ dependencies {
 
     //circleimage view
     implementation 'de.hdodenhof:circleimageview:3.0.0'
+    implementation 'androidx.core:core-ktx:'
 }
 apply plugin: 'com.google.gms.google-services'

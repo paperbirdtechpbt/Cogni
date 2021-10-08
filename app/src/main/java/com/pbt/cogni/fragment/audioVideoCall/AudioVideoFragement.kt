@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import es.dmoral.toasty.Toasty
+import org.apache.http.HttpResponse
 
 
 private const val ARG_PARAM1 = "param1"
@@ -32,10 +34,10 @@ private const val ARG_PARAM2 = "param2"
 
 class AudioVideoFragement() : Fragment() {
     var viewModel: AudioVideoViewModel? = null
-    val context = Application()
+    val context  = activity
 
 
-    val listAnalyst = ArrayList<AnalystRepo>()
+    val listAnalyst = ArrayList<HttpResponse>()
     var audioVideCallAdapter: AudioVideCallAdapter? = null
     var recyclerViewAnalyst: RecyclerView? = null
 
@@ -50,11 +52,6 @@ class AudioVideoFragement() : Fragment() {
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         recyclerViewAnalyst = view.findViewById(R.id.recyclerAnalyst)
 
-//        viewModel = ViewModelProvider(
-//            this,
-//            ViewModelProvider.AndroidViewModelFactory.getInstance(context)
-//        ).get(AudioVideoViewModel::class.java)
-//        addData()
         initViewModel()
         initRecyclerView()
 
@@ -65,14 +62,24 @@ class AudioVideoFragement() : Fragment() {
     }
 
     private fun initRecyclerView() {
-        recyclerViewAnalyst?.layoutManager = LinearLayoutManager(context)
-        audioVideCallAdapter = AudioVideCallAdapter(context)
+        recyclerViewAnalyst?.layoutManager = LinearLayoutManager(requireContext())
+        audioVideCallAdapter = AudioVideCallAdapter(requireContext()) { i, view ,result,sendername->
+            when (view.id) {
+                R.id.rlVideoCall -> {
+                   AudioVideoViewModel().sendCall(true,result.id.toString(),sendername,requireContext())
+                }
+                R.id.rlVoiceCall -> {
+                    AudioVideoViewModel().sendCall(false,result.id.toString(),sendername,requireContext())
+                }
+            }
+        }
+
         recyclerViewAnalyst?.adapter = audioVideCallAdapter
     }
     private fun initViewModel() {
         val viewmodel: AudioVideoViewModel =
             ViewModelProvider(this).get(AudioVideoViewModel::class.java)
-        viewmodel.  getLiveDataObserver()?.observe(viewLifecycleOwner, Observer {
+        viewmodel.getLiveDataObserver()?.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 audioVideCallAdapter?.setCountryList(it)
                 audioVideCallAdapter?.notifyDataSetChanged()
@@ -80,85 +87,9 @@ class AudioVideoFragement() : Fragment() {
         })
         viewmodel.oncall()
     }
-//        viewModel?.audiovideousers?.observe(viewLifecycleOwner, Observer { response ->
-//            if (response?.code == false) {
-//                Toasty.success(this.requireActivity(),"${response?.message}", Toasty.LENGTH_SHORT).show()
-//            } else
-//                Toasty.warning(this.requireActivity(), "${response?.message}", Toasty.LENGTH_SHORT).show()
-//        })
+
     }
 
 
-//    private fun addData() {
-//
-//
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "Criss",
-//                "10225",
-//            )
-//        )
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "HemsWorth",
-//                "10220",
-//            )
-//        )
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "Tom Cruise",
-//                "10231",
-//
-//                )
-//        )
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "Jack",
-//                "10232"
-//            )
-//        )
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "Luca",
-//                "10233"
-//            )
-//        )
-//
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "Dywan Tonny",
-//                "10234"
-//            )
-//        )
-//
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "Huge Cristien",
-//                "10235"
-//            )
-//        )
-//
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "Lucy Daywn",
-//                "10238"
-//            )
-//        )
-//
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "James Luce",
-//                "10236"
-//            )
-//        )
-//
-//        listAnalyst.add(
-//            AnalystRepo(
-//                "Nick Furry",
-//                "10230"
-//            )
-//        )
-//
-//
-//    }
+
 
