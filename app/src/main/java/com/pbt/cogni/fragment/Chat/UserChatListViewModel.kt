@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.pbt.cogni.WebService.Coroutines
+import com.pbt.cogni.activity.login.Users
 import com.pbt.cogni.activity.map.ResponseDataClass
 import com.pbt.cogni.model.AnalystModel
 import com.pbt.cogni.model.BaseAnalystModel
@@ -18,12 +19,12 @@ class UserChatListViewModel(private val analystRepository: AnalystRepository) : 
 
     private lateinit var job : Job
 
-    private  val _AnalystList  = MutableLiveData<List<AnalystModel>>()
+    private  val _AnalystList  = MutableLiveData<List<Users>>()
     private  val _userList  = MutableLiveData<ResponseDataClass>()
     val data : LiveData<ResponseDataClass>
     get() = _userList
 
-    val listAnalystList : LiveData<List<AnalystModel>>
+    val listAnalystList : LiveData<List<Users>>
         get() = _AnalystList
 
      fun getAnalyst(companyId : String,roleId : String,userName : String){
@@ -31,10 +32,13 @@ class UserChatListViewModel(private val analystRepository: AnalystRepository) : 
         job = Coroutines.ioThenMain({
              analystRepository.getAnylyst(companyId,roleId,userName) },
             {
+                if(it!!.code == false){
+
             _userList.value = it
-                _AnalystList.value =  Gson().fromJson(Gson().toJson(it?.data),BaseAnalystModel::class.java).result
+            _AnalystList.value =  Gson().fromJson(Gson().toJson(it?.data),BaseAnalystModel::class.java).result
 //                _AnalystList.value =_userList.
             AppUtils.logDebug("UserChatListViewModel","Resposne Result : "+Gson().toJson(it?.data))
+                }
             })
 
 

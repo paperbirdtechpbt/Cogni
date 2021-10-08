@@ -16,15 +16,16 @@ import com.firebase.client.DataSnapshot
 import com.firebase.client.Firebase
 import com.firebase.client.FirebaseError
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import com.pbt.cogni.activity.chat.Chat
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
-import com.pbt.cogni.util.AppConstant
+import com.pbt.cogni.util.AppConstant.Companion.MESSAGES
+import com.pbt.cogni.util.AppConstant.Companion.TYPING
 import com.pbt.cogni.util.AppUtils
-import com.pbt.cogni.util.Config.BASE_FIREBASE_URLC
+import com.pbt.cogni.util.Config.BASE_FIREBASE_URL
 import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
@@ -35,24 +36,34 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
     val context = app
 
     var data = MutableLiveData<ArrayList<Chat>>(ArrayList<Chat>())
-    var reference1: Firebase? = null
+    var reffChatRoomID: DatabaseReference? = null
     var typingReference: Firebase? = null
+    var listener: ValueEventListener? = null
+    var chatReff: Firebase? = null
     var message: ObservableField<String>? = null
+    var chatRoomID: ObservableField<String>? = null
+    var room: ObservableField<String>? = null
+    var room1: ObservableField<String>? = null
     var userId: ObservableField<Int>? = null
     var chatID: ObservableField<Int>? = null
     var reciverId: ObservableField<Int>? = null
     var currentUser: ObservableField<String>? = null
     var mAdapter: ChatAdapter? = null
     var isTyping: ObservableField<String>? = null
+    var reciverName: ObservableField<String>? = null
 
 
     init {
+        reciverName = ObservableField("")
         message = ObservableField("")
         currentUser = ObservableField("")
         chatID = ObservableField(0)
         userId = ObservableField(0)
         reciverId = ObservableField(0)
         isTyping = ObservableField("")
+        chatRoomID = ObservableField("")
+        room = ObservableField("")
+        room1 = ObservableField("")
         data = MutableLiveData<ArrayList<Chat>>(ArrayList<Chat>())
     }
 
@@ -65,42 +76,74 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
                 var isTyping = s.toString()
             }
 
-            FirebaseDatabase.getInstance().getReference("messages").child(chatID!!.get().toString())
-                .child(AppConstant.TYPING).child(currentUser!!.get().toString()).setValue(type)
+            FirebaseDatabase.getInstance().getReference(MESSAGES)
+                .child(chatRoomID!!.get().toString())
+                .child(TYPING).child(currentUser!!.get().toString()).setValue(type)
         }
     }
 
 
-    fun initChat(context: Context, reciverID: Int, userID: Int, chatID: Int) {
+    fun initChat(context: Context, reciverID: Int, userID: Int,userName : String) {
 
         userId!!.set(userID)
-        this.chatID!!.set(chatID)
+        reciverName!!.set(userName)
         reciverId!!.set(reciverID)
         Firebase.setAndroidContext(context)
 
-        reference1 = Firebase(BASE_FIREBASE_URLC.toString() + chatID)
-        typingReference =
-            Firebase(BASE_FIREBASE_URLC.toString() + chatID + "/" + AppConstant.TYPING)
+        room!!.set(userId!!.get().toString() + "_" + reciverId!!.get().toString())
+        room1!!.set(reciverId!!.get().toString() + "_" + userId!!.get().toString())
 
-        val checkTypeReff =
-            FirebaseDatabase.getInstance().getReference("messages").child("${chatID}");
-        val query: Query = checkTypeReff.child("typing")
-        setData(context, reference1!!, typingReference!!, query, chatID)
+        reffChatRoomID = FirebaseDatabase.getInstance().getReference();
+
+        setData(context)
     }
 
-    fun setData(
-        context: Context,
-        reff: Firebase,
-        typingReference: Firebase,
-        query: Query,
-        chatID: Int
-    ) {
 
-        query.addValueEventListener(object : ValueEventListener {
+    fun setData(context: Context) {
 
+
+        listener =
+            reffChatRoomID?.child(MESSAGES)?.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+
+                    AppUtils.logDebug(TAG, "ChatRoom ID Chage : " + snapshot.getValue())
+
+                    val map = snapshot!!.value as Map<*, *>
+                    if (map.containsKey(room!!.get().toString())) {
+                        chatRoomID!!.set(room!!.get())
+                    } else if (map.containsKey(room1!!.get().toString())) {
+                        chatRoomID!!.set(room1!!.get())
+                    } else {
+                        chatRoomID!!.set("")
+                    }
+
+                    if (chatRoomID!!.get().toString().isEmpty()) {
+                        chatRoomID!!.set(room!!.get())
+                    }
+
+                    AppUtils.logDebug(TAG," Current Room : "+chatRoomID!!.get())
+
+                    initChat(context, chatRoomID!!.get().toString())
+
+                    reffChatRoomID?.child(MESSAGES)?.removeEventListener(listener!!)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+
+
+    }
+
+    fun initChat(context: Context, chatRoomID: String) {
+
+        var checkTypeReff =
+            FirebaseDatabase.getInstance().getReference(MESSAGES).child(chatRoomID).child(TYPING);
+
+        chatReff = Firebase(BASE_FIREBASE_URL + chatRoomID)
+
+        checkTypeReff.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
-
-                AppUtils.logWarning(TAG," 103 onChildAdded "+snapshot!!.getValue())
 
                 if (snapshot.getValue() == null) {
 
@@ -114,12 +157,12 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
                             var isTyping = ""
                         }
                     }
-                    FirebaseDatabase.getInstance().getReference("messages").child("${chatID}")
-                        .child(AppConstant.TYPING).setValue(typing)
+                    FirebaseDatabase.getInstance().getReference(MESSAGES).child("${chatRoomID}")
+                        .child(TYPING).setValue(typing)
                     currentUser!!.set("user1")
                 } else {
 
-                    val map = snapshot!!.value as Map<*, *>
+                    val map = snapshot.value as Map<*, *>
                     var obj = map.get("user1") as Map<*, *>
                     if (obj.get("id") == userId!!.get()!!.toInt()) {
                         AppUtils.logDebug(TAG, "query Change Call ===>> " + obj.get("id"))
@@ -136,13 +179,13 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
 
         })
 
-        reff.addChildEventListener(object : ChildEventListener {
+        chatReff!!.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String??) {
 
-                AppUtils.logWarning(TAG," 140 onChildAdded "+dataSnapshot!!.getValue())
+                AppUtils.logWarning(TAG, " 140 onChildAdded " + dataSnapshot!!.getValue())
                 try {
 
-                    if (!dataSnapshot.key.equals("typing")) {
+                    if (!dataSnapshot.key.equals(TYPING)) {
 
                         val chat = dataSnapshot.getValue(Chat::class.java)
 
@@ -186,17 +229,16 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String??) {
-                AppUtils.logWarning(TAG," 186 onChildChanged "+dataSnapshot!!.getValue())
+                AppUtils.logWarning(TAG, " 186 onChildChanged " + dataSnapshot!!.getValue())
                 val map = dataSnapshot.getValue().toString()
                 if (!map.contains("user1") && !map.contains("user2")) {
-                data.value!!.forEachIndexed { index, chat ->
-
-                    if (chat.sender == userId!!.get() && dataSnapshot.key.equals(chat.key)) {
-                        mAdapter?.getItem(index)?.read = 2
-                        AppUtils.logDebug(TAG, "index ==>> " + mAdapter?.getItem(index)!!.text)
+                    data.value!!.forEachIndexed { index, chat ->
+                        if (chat.sender == userId!!.get() && dataSnapshot.key.equals(chat.key)) {
+                            mAdapter?.getItem(index)?.read = 2
+                            AppUtils.logDebug(TAG, "index ==>> " + mAdapter?.getItem(index)!!.text)
+                        }
                     }
-                }
-                mAdapter?.notifyDataSetChanged()
+                    mAdapter?.notifyDataSetChanged()
                 }
             }
 
@@ -206,13 +248,14 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
             }
         })
 
-        typingReference.addChildEventListener(object : ChildEventListener {
+
+        Firebase(BASE_FIREBASE_URL + chatRoomID )!!.child(TYPING).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot?, p1: String??) {
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot?, p1: String??) {
 
-                AppUtils.logWarning(TAG," 213  "+dataSnapshot!!.getValue())
+                AppUtils.logWarning(TAG, " 213  " + dataSnapshot!!.getValue())
                 val map = dataSnapshot!!.value as Map<*, *>
                 if (!map.get("id").toString().equals(userId!!.get())) {
                     isTyping!!.set("Typing...")
@@ -226,7 +269,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
             override fun onChildMoved(p0: DataSnapshot?, p1: String?) {}
             override fun onCancelled(p0: FirebaseError?) {}
         });
-
     }
 
     fun sendMessage(view: View) {
@@ -235,15 +277,15 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
             Toast.makeText(context, "Please Connect To Internet !", Toast.LENGTH_SHORT).show()
         } else {
 
-            if (!message?.equals("")!!) {
-
+            if (!message!!.get().toString().isEmpty()) {
                 var chat: Chat = Chat.createFromParcel(Parcel.obtain())
                 chat.sender = userId!!.get()
                 chat.timestamp = Date().time
                 chat.type = "text"
                 chat.text = message?.get()
                 chat.read = 0
-                reference1!!.push().setValue(chat)
+                Firebase(BASE_FIREBASE_URL).child(chatRoomID!!.get().toString()).push()
+                    .setValue(chat)
                 message?.set("")
 
             }

@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
 import com.pbt.cogni.databinding.ActivityChat2Binding
+import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.Config
 import com.pbt.cogni.util.MyPreferencesHelper
@@ -38,16 +39,21 @@ class ChatActivity : AppCompatActivity() {
         binding?.chatViewModel = chatViewModel
         binding?.executePendingBindings()
 
-         var reciverID : Int = 10
-         var chatID : Int = 10
+         var reciverID : Int = intent.getIntExtra(AppConstant.RECEIVER_ID,0)
+         var reciverName : String = intent.getStringExtra(AppConstant.RECEIVER_NAME)
          var userID : Int = MyPreferencesHelper.getUser(this@ChatActivity)!!.id.toInt()
 
-        binding?.chatViewModel?.initChat(this@ChatActivity,reciverID,userID,chatID)
+        binding?.chatViewModel?.initChat(this@ChatActivity,reciverID,userID,reciverName)
 
         binding?.chatViewModel?.mAdapter = ChatAdapter(this@ChatActivity,ArrayList<Chat>())
         binding?.listviewChat?.setAdapter(binding?.chatViewModel?.mAdapter)
 
         isChatVisible = true;
+
+        binding!!.backArrow.setOnClickListener({
+            finish()
+        })
+
 
     }
 

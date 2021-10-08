@@ -7,8 +7,8 @@
 
     <data>
         <variable
-            name="AnalystViewmodel"
-            type="com.pbt.cogni.model.AnalystModel" />
+            name="Users"
+            type="com.pbt.cogni.activity.login.Users" />
     </data>
 
 
@@ -26,8 +26,8 @@
         android:layout_height="60dp"
         android:src="@drawable/ic_profile"
         app:civ_border_color="@android:color/darker_gray"
-        app:civ_border_width="2dp"
-        android:layout_marginStart="@dimen/_20sdp"
+        app:civ_border_width="1dp"
+        android:layout_marginStart="@dimen/_10sdp"
         />
 
     <RelativeLayout
@@ -35,6 +35,7 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:paddingBottom="@dimen/_3sdp"
         android:background="@drawable/bg_line"
         >
 
@@ -50,30 +51,36 @@
 
                 <TextView
                     android:id="@+id/txtUserName"
-                    android:layout_width="@dimen/_100sdp"
-                    android:layout_height="wrap_content"
-                    android:text="@{AnalystViewmodel.companyName}"
-                    android:layout_marginStart="24dp"/>
-
-                <TextView
-                    android:id="@+id/txtTimeStamp"
-                    android:text="@{AnalystViewmodel.createdOn}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="@dimen/_10sdp" />
+                    android:paddingStart="@dimen/_10sdp"
+                    android:text="@{Users.firstName +' '+ Users.lastName}"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txtLastMessage"
+                    android:text="@{Users.mobile}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtUserName"
+                    android:layout_marginTop="@dimen/_3sdp"
+                    android:textColor="@color/black"
+                    android:paddingStart="@dimen/_10sdp" />
 
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/txtLastMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                />
+
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="24dp"
+            android:drawableLeft="@drawable/ic_right_arrow"
+            android:layout_marginEnd="20dp" />
     </RelativeLayout>
 
 </LinearLayout>

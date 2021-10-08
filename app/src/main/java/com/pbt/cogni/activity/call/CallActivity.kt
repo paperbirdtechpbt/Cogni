@@ -22,7 +22,7 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
-import com.pbt.cogni.util.AppConstant.ROOM_ID
+import com.pbt.cogni.util.AppConstant.Companion.ROOM_ID
 import org.appspot.apprtc.AppRTCClient
 import org.appspot.apprtc.AppRTCClient.*
 import org.appspot.apprtc.PeerConnectionClient

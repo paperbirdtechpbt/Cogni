@@ -114,9 +114,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
+                    android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/imgTeacherImage"
                     android:gravity="center"
-                    android:text="Rahul Kalyani"
+                    android:text="@={ChatViewModel.reciverName}"
                     android:textColor="#ffffff"
                     android:textSize="@dimen/_12sdp" />
                 <TextView

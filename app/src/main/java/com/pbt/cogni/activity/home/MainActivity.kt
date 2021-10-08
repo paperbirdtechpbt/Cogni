@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.chat -> {
 
-                    getSupportActionBar()?.setTitle("Chat  List ")
+                    getSupportActionBar()?.setTitle("Chats")
 
                     supportActionBar?.show()
 

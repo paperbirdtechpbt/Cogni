@@ -151,7 +151,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Toast.makeText(this, "Please Connect To Internet !", Toast.LENGTH_SHORT).show()
         } else {
             Firebase.setAndroidContext(this)
-            val reference1: Firebase? = Firebase(Config.BASE_FIREBASE_URLC.toString() + payload.getString("chatID"))
+            val reference1: Firebase? = Firebase(Config.BASE_FIREBASE_URL + payload.getString("chatID"))
             reference1!!.child(payload.getString("messageID")).child("read").setValue(1)
         }
     }

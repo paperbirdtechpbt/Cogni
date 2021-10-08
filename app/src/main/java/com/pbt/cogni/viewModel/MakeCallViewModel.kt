@@ -6,7 +6,7 @@ import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import com.pbt.cogni.activity.call.CallActivity
 import com.pbt.cogni.activity.login.LoginActivity
-import com.pbt.cogni.util.AppConstant.KEY_CALL
+import com.pbt.cogni.util.AppConstant.Companion.KEY_CALL
 
 class MakeCallViewModel(application: Application): AndroidViewModel(application) {
 
