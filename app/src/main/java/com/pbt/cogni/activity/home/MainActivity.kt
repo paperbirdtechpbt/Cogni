@@ -20,8 +20,7 @@ import com.pbt.cogni.fragment.ViewRoute.ViewRouteFragement
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoFragement
 import com.pbt.cogni.repository.AnalystRepository
 import com.pbt.cogni.util.AppConstant
-import com.pbt.cogni.util.AppConstant.OVERYLAY_PERMISSION
-import com.pbt.cogni.util.AppConstant.PREF_IS_LOGIN
+import com.pbt.cogni.util.AppConstant.Companion.PREFF_OVERYLAY_PERMISSION
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import kotlinx.coroutines.Dispatchers
@@ -45,12 +44,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-       val overlaypermission= MyPreferencesHelper.getStringValue(this,OVERYLAY_PERMISSION,null)
+       val overlaypermission= MyPreferencesHelper.getStringValue(this,PREFF_OVERYLAY_PERMISSION,null)
 
         if (overlaypermission==null){
 
             startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION));
-            MyPreferencesHelper.setStringValue(this, OVERYLAY_PERMISSION,"true")
+            MyPreferencesHelper.setStringValue(this, PREFF_OVERYLAY_PERMISSION,"true")
 
         }
 

@@ -3,8 +3,7 @@ package com.pbt.cogni.util
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.pbt.cogni.activity.login.User
-import com.pbt.cogni.activity.login.UserDetailsData
+import com.pbt.cogni.model.UserDetailsData
 import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
 
 class MyPreferencesHelper {
@@ -62,7 +61,8 @@ class MyPreferencesHelper {
 
         fun getUser(context: Context): UserDetailsData? {
             MyPreferencesHelper.openPref(context)
-            val user: UserDetailsData? = Gson().fromJson(MyPreferencesHelper.preferences?.getString(PREF_USER, ""),UserDetailsData::class.java)
+            val user: UserDetailsData? = Gson().fromJson(MyPreferencesHelper.preferences?.getString(PREF_USER, ""),
+                UserDetailsData::class.java)
             MyPreferencesHelper.preferences = null
             return user
         }

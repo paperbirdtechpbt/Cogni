@@ -1,17 +1,14 @@
 package com.pbt.cogni.fragment.Profile
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.pbt.cogni.R
-import com.pbt.cogni.activity.login.UserDetailsData
+import com.pbt.cogni.model.UserDetailsData
 import com.pbt.cogni.util.MyPreferencesHelper
-import kotlinx.android.synthetic.main.fragment_profile.*
-import org.w3c.dom.Text
 
 
 private const val ARG_PARAM1 = "param1"

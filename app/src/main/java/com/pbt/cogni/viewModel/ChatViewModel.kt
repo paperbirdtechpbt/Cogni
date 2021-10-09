@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
-import com.pbt.cogni.activity.chat.Chat
+import com.pbt.cogni.model.Chat
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
 import com.pbt.cogni.util.AppConstant.Companion.MESSAGES
 import com.pbt.cogni.util.AppConstant.Companion.TYPING

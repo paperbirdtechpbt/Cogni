@@ -50,8 +50,8 @@ import java.util.ArrayList
 import android.view.WindowManager
 import com.pbt.cogni.fcm.MyFirebaseMessagingService
 import com.pbt.cogni.util.AppConstant
-import com.pbt.cogni.util.AppConstant.CALL
-import com.pbt.cogni.util.AppConstant.NUMBER
+import com.pbt.cogni.util.AppConstant.Companion.CALL
+import com.pbt.cogni.util.AppConstant.Companion.CONST_NUMBER
 import kotlinx.android.synthetic.main.activity_call.*
 
 
@@ -119,7 +119,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 //        videoCallEnable = intent.extras!!.getBoolean("Call")
         videoCallEnable=intent.extras!!.getBoolean(CALL)
         roomId = intent.extras?.getString(ROOM_ID)
-        name = intent.extras?.getString(NUMBER)
+        name = intent.extras?.getString(CONST_NUMBER)
 
 
 

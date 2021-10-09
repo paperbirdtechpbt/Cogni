@@ -1,7 +1,7 @@
-package com.pbt.cogni.activity.login
+package com.pbt.cogni.model
 
-import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import com.pbt.cogni.model.UserDetailsData
 
 class UserLoginClass (
     @SerializedName("error")  val code: Boolean,

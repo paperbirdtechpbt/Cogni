@@ -1,23 +1,16 @@
 package com.pbt.cogni.activity.chat
 
-import android.app.NotificationManager
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import com.firebase.client.ChildEventListener
-import com.firebase.client.DataSnapshot
 import com.firebase.client.Firebase
-import com.firebase.client.FirebaseError
-import com.google.gson.Gson
 
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
 import com.pbt.cogni.databinding.ActivityChat2Binding
+import com.pbt.cogni.model.Chat
 import com.pbt.cogni.util.AppConstant
-import com.pbt.cogni.util.AppUtils
-import com.pbt.cogni.util.Config
 import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.viewModel.ChatViewModel
 

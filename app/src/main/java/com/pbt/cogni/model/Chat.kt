@@ -1,4 +1,4 @@
-package com.pbt.cogni.activity.chat
+package com.pbt.cogni.model
 
 import android.os.Parcel
 import android.os.Parcelable

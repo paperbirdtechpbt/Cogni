@@ -8,7 +8,7 @@
     <data>
         <variable
             name="Users"
-            type="com.pbt.cogni.activity.login.Users" />
+            type="com.pbt.cogni.model.Users" />
     </data>
 
 

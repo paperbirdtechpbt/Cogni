@@ -10,7 +10,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.pbt.cogni.activity.login.LoginViewModel" />
+            type="com.pbt.cogni.viewModel.LoginViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

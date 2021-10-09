@@ -1,4 +1,4 @@
-package com.pbt.cogni.activity.login
+package com.pbt.cogni.model
 
 import com.google.gson.annotations.SerializedName
 

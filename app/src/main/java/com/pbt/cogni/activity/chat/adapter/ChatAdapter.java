@@ -7,21 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 
 import com.pbt.cogni.R;
-import com.pbt.cogni.activity.chat.Chat;
+import com.pbt.cogni.model.Chat;
 import com.pbt.cogni.util.AppUtils;
 import com.pbt.cogni.util.MyPreferencesHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 

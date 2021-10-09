@@ -1,36 +1,25 @@
 package com.pbt.cogni.fragment.Chat
 
 import android.content.Intent
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.Api
 import com.pbt.cogni.activity.chat.ChatActivity
-import com.pbt.cogni.activity.home.MainActivity
-import com.pbt.cogni.activity.login.Users
-import com.pbt.cogni.model.AnalystModel
+import com.pbt.cogni.model.Users
 import com.pbt.cogni.repository.AnalystRepository
-import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppConstant.Companion.RECEIVER_ID
 import com.pbt.cogni.util.AppConstant.Companion.RECEIVER_NAME
-import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.util.RecyclerviewClickLisetner
 import com.pbt.cogni.viewModel.AnalystViewModelFactory
 import kotlinx.android.synthetic.main.user_chat_list_fragment.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class UserChatListFragment : Fragment(),RecyclerviewClickLisetner {
 

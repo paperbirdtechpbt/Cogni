@@ -1,4 +1,4 @@
-package com.pbt.cogni.activity.login
+package com.pbt.cogni.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -16,5 +16,6 @@ class UserDetailsData (
     @SerializedName("msg") val msg:String,
     @SerializedName("Type") val Type:String,
     @SerializedName("companyname") val companyname:String,
+    @SerializedName("FirebaseToken") val FirebaseToken:String,
 
         )

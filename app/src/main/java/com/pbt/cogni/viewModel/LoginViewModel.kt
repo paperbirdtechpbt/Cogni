@@ -1,4 +1,4 @@
-package com.pbt.cogni.activity.login
+package com.pbt.cogni.viewModel
 
 import android.app.Application
 import android.content.Context
@@ -16,7 +16,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
-import com.pbt.cogni.activity.SplashActivity
+import com.pbt.cogni.callback.LoginListener
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppUtils
 import retrofit2.Call
@@ -26,6 +26,10 @@ import retrofit2.Response
 
 public class LoginViewModel(val activity: Application) : AndroidViewModel(activity),
     Callback<HttpResponse> {
+
+    companion object{
+        const val TAG : String = "LoginViewModel"
+    }
 
     val context = activity
 
@@ -63,9 +67,7 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
         progressbar()
         userLogin?.value = response?.body()
 
-
-
-        Log.e("##Respose", " Response : " + Gson().toJson(response?.body()))
+       AppUtils.logDebug(TAG, " Response : " + Gson().toJson(response?.body()))
     }
 
     fun progressbar() {
@@ -113,9 +115,7 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
         ApiClient.client.create(ApiInterface::class.java).login(
             email = email?.get()!!, password = password?.get()!!
         ).enqueue(this)
-
     }
-
 
     fun showHidePassword(view: View) {
         if (isPasswordShow?.get() == false) isPasswordShow?.set(true) else isPasswordShow?.set(false)
@@ -124,7 +124,7 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
     }
 
     override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-        Log.e("##Respose", " Response : " + t?.message)
+        AppUtils.logError(TAG,  " Response : " + t?.message)
     }
 
 

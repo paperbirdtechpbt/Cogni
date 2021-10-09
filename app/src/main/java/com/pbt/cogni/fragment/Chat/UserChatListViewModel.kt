@@ -5,10 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.pbt.cogni.WebService.Coroutines
-import com.pbt.cogni.activity.login.Users
-import com.pbt.cogni.activity.map.ResponseDataClass
-import com.pbt.cogni.model.AnalystModel
+import com.pbt.cogni.model.Users
 import com.pbt.cogni.model.BaseAnalystModel
+import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.repository.AnalystRepository
 import com.pbt.cogni.util.AppUtils
 import kotlinx.coroutines.Job
@@ -17,12 +16,10 @@ class UserChatListViewModel(private val analystRepository: AnalystRepository) : 
 
     private lateinit var job : Job
 
-    private  val _AnalystList  = MutableLiveData<List<AnalystModel>>()
-    private  val _userList  = MutableLiveData<HttpResponse>()
-    val data : LiveData<HttpResponse>
     private  val _AnalystList  = MutableLiveData<List<Users>>()
-    private  val _userList  = MutableLiveData<ResponseDataClass>()
-    val data : LiveData<ResponseDataClass>
+    private  val _userList  = MutableLiveData<HttpResponse>()
+
+    val data : LiveData<HttpResponse>
     get() = _userList
 
     val listAnalystList : LiveData<List<Users>>

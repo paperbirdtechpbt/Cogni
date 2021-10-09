@@ -5,9 +5,8 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
-import com.pbt.cogni.activity.login.Users
+import com.pbt.cogni.model.Users
 import com.pbt.cogni.databinding.ItemChatUserBinding
-import com.pbt.cogni.model.AnalystModel
 import com.pbt.cogni.util.RecyclerviewClickLisetner
 
 class AdapterChatUserList(private val listAnalystList: List<Users>, private  val listener : RecyclerviewClickLisetner) :

@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.Gson
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
 import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.activity.login.LoginActivity
+import com.pbt.cogni.model.HttpResponse
+import com.pbt.cogni.model.UserDetailsData
 import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
 import com.pbt.cogni.util.AppConstant.Companion.PREF_TOKEN
 import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
@@ -30,7 +31,8 @@ class SplashActivity : AppCompatActivity() {
 
         Handler().postDelayed({
 
-            AppUtils.logDebug("SplashACtivity",
+            AppUtils.logDebug(
+                "SplashACtivity",
                 "Check login Preff ==>> " + MyPreferencesHelper.getStringValue(
                     this@SplashActivity,
                     PREF_USER,
@@ -50,23 +52,14 @@ class SplashActivity : AppCompatActivity() {
 
 
             val intent: Intent
-            if (MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "")
-                    .equals("") || MyPreferencesHelper.getStringValue(
-                    this@SplashActivity,
-                    PREF_IS_LOGIN,
-                    ""
-                ).equals("false")
-            )
+            if (MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("") || MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("false")) {
                 intent = Intent(this, LoginActivity::class.java)
-            else {
-                if (token != "") {
+                startActivity(intent)
+                finish()
+            } else {
+                if (token != "")
                     callAPi()
-                }
-                intent = Intent(this, MainActivity::class.java)
             }
-
-            startActivity(intent)
-            finish()
         }, 500)
     }
 
@@ -88,8 +81,6 @@ class SplashActivity : AppCompatActivity() {
                 Log.e("##apiSuccess", response.body()?.code.toString())
                 startActivity(Intent(this@SplashActivity, MainActivity::class.java))
                 finish()
-
-
             }
 
             override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
