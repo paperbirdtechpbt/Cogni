@@ -29,7 +29,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.pbt.cogni.activity.map.PlaceAutoSuggestAdapter
 import com.pbt.cogni.activity.map.Data
-import com.pbt.cogni.activity.map.ResponseDataClass
+import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.Parse.DirectionsJSONParser
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
@@ -90,7 +90,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         startlocation = findViewById(R.id.startLocation)
         endlocation = findViewById(R.id.endLocation)
         seachbutton = findViewById(R.id.btn_searLocation)
-        bottomNavigation = findViewById(R.id.bottom_navigation)
+        bottomNavigation = findViewById(R.id.bottom_navigationnn)
 
         bottomNavigation!!.setOnNavigationItemReselectedListener {
             when (it.itemId) {
@@ -199,12 +199,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
     private fun callApi() {
         apiInterface = ApiClient.client.create(ApiInterface::class.java)
 
-        val call: Call<ResponseDataClass> = apiInterface!!.sentOriginDest(startcity!!, endcity!!)
+        val call: Call<HttpResponse> = apiInterface!!.sentOriginDest(startcity!!, endcity!!)
 
-        call.enqueue(object : Callback<ResponseDataClass> {
+        call.enqueue(object : Callback<HttpResponse> {
             override fun onResponse(
-                call: Call<ResponseDataClass>,
-                response: Response<ResponseDataClass>
+                call: Call<HttpResponse>,
+                response: Response<HttpResponse>
             ) {
 
                 if (response.body()?.data == null) {
@@ -217,7 +217,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                     mMap?.clear()
 
 
-                    val responseDataClass: ResponseDataClass? = response.body()
+                    val responseDataClass: HttpResponse? = response.body()
                     val myResult: Data? =
                         Gson().fromJson(Gson().toJson(responseDataClass!!.data), Data::class.java)
 
@@ -229,7 +229,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                 }
             }
 
-            override fun onFailure(call: Call<ResponseDataClass>, t: Throwable?) {
+            override fun onFailure(call: Call<HttpResponse>, t: Throwable?) {
                 Toast.makeText(
                     applicationContext,
                     "getString(R.string.msg_Sorry_No_Routes_Found)",

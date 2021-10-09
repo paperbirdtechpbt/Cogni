@@ -10,7 +10,7 @@ class AppConstant {
         var RECEIVER_NAME: String = "RECEIVER_NAME"
         var TYPING = "typing"
         var MESSAGES = "messages"
-
+        var NUMBER="number"
 
         const val SHARED_PREF_NAME = "friendlymony"
 

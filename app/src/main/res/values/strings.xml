@@ -239,6 +239,9 @@
     <string name="type_a_message">Type A message</string>
     <string name="send">Send</string>
     <string name="default_notification_channel_id">102020</string>
+    <string name="show_full_screen_intent_button">Show Full Screen Intent</string>
+    <string name="show_scheduled_full_screen_intent">Scheduled full screen intent</string>
+    <string name="show_scheduled_full_screen_intent_lock_screen">Scheduled full screen intent for lock screen</string>
 
 
 </resources>

@@ -45,4 +45,29 @@ object  ApiClient {
             return retrofit!!
 
         }
+    @JvmName("getClient1")
+    fun getClient(): Retrofit? {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+        retrofit = Retrofit.Builder()
+            .baseUrl("http://cogni.paperbirdtech.com/index.php/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+        return retrofit
+    }
+    fun clientUpdateToken(): Retrofit? {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+        retrofit = Retrofit.Builder()
+            .baseUrl("http://cogni.paperbirdtech.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+        return retrofit
+    }
 }

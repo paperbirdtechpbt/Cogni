@@ -15,4 +15,6 @@ class UserDetailsData (
     @SerializedName("Rolename") val Rolename:String,
     @SerializedName("msg") val msg:String,
     @SerializedName("Type") val Type:String,
+    @SerializedName("companyname") val companyname:String,
+
         )

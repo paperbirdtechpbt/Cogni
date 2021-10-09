@@ -1,6 +1,6 @@
 package com.pbt.cogni.WebService
 
-import com.pbt.cogni.activity.map.ResponseDataClass
+import com.pbt.cogni.model.HttpResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,7 +13,7 @@ interface Api {
 
     @FormUrlEncoded
     @POST("api/Analyst")
-    suspend fun getAnylyst(@Field("companyId") companyId: String, @Field("RoleId") RoleId: String, @Field("UserName") UserName: String) : Response<ResponseDataClass>
+    suspend fun getAnylyst(@Field("companyId") companyId: String, @Field("RoleId") RoleId: String, @Field("UserName") UserName: String) : Response<HttpResponse>
 
 
     companion object{

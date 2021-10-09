@@ -1,9 +1,11 @@
 package com.pbt.cogni.activity.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
@@ -17,7 +19,11 @@ import com.pbt.cogni.fragment.Profile.ProfileFragment
 import com.pbt.cogni.fragment.ViewRoute.ViewRouteFragement
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoFragement
 import com.pbt.cogni.repository.AnalystRepository
+import com.pbt.cogni.util.AppConstant
+import com.pbt.cogni.util.AppConstant.OVERYLAY_PERMISSION
+import com.pbt.cogni.util.AppConstant.PREF_IS_LOGIN
 import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.MyPreferencesHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -25,7 +31,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private var bottomNavigation: BottomNavigationView? = null
+     var bottomNavigation: BottomNavigationView?=null
     lateinit var chatsFragement: UserChatListFragment
     lateinit var audioVideoFragement: AudioVideoFragement
     lateinit var viewRouteFragement: ViewRouteFragement
@@ -37,6 +43,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+       val overlaypermission= MyPreferencesHelper.getStringValue(this,OVERYLAY_PERMISSION,null)
+
+        if (overlaypermission==null){
+
+            startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION));
+            MyPreferencesHelper.setStringValue(this, OVERYLAY_PERMISSION,"true")
+
+        }
+
+
+
 
 
         val repository = AnalystRepository(Api())
@@ -61,10 +80,10 @@ class MainActivity : AppCompatActivity() {
 
 
             bottomNavigation = findViewById(R.id.bottom_navigation)
-            bottomNavigation!!.getMenu().get(0).setChecked(true)
+            bottomNavigation?.getMenu()?.get(0)?.setChecked(true)
         }
 
-        bottomNavigation!!.setOnNavigationItemSelectedListener {
+        bottomNavigation?.setOnNavigationItemSelectedListener {
 
             when (it.itemId) {
                 R.id.profile -> {

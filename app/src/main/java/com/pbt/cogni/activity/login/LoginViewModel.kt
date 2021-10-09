@@ -16,7 +16,8 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
-import com.pbt.cogni.activity.map.ResponseDataClass
+import com.pbt.cogni.activity.SplashActivity
+import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,7 +25,7 @@ import retrofit2.Response
 
 
 public class LoginViewModel(val activity: Application) : AndroidViewModel(activity),
-    Callback<ResponseDataClass> {
+    Callback<HttpResponse> {
 
     val context = activity
 
@@ -33,7 +34,7 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
     var password: ObservableField<String>? = null
     var btnSelected: ObservableBoolean? = null
     var isPasswordShow: ObservableBoolean? = null
-    var userLogin: MutableLiveData<ResponseDataClass>? = null
+    var userLogin: MutableLiveData<HttpResponse>? = null
 
     var loginListener: LoginListener? = null
 
@@ -43,7 +44,7 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
         email = ObservableField("")
         emailError = ObservableField("")
         password = ObservableField("")
-        userLogin = MutableLiveData<ResponseDataClass>()
+        userLogin = MutableLiveData<HttpResponse>()
     }
 
 
@@ -56,11 +57,13 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
     }
 
     override fun onResponse(
-        call: Call<ResponseDataClass>?,
-        response: Response<ResponseDataClass>?
+        call: Call<HttpResponse>?,
+        response: Response<HttpResponse>?
     ) {
         progressbar()
         userLogin?.value = response?.body()
+
+
 
         Log.e("##Respose", " Response : " + Gson().toJson(response?.body()))
     }
@@ -120,7 +123,7 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
         isPasswordShow?.get()?.let { loginListener!!.showPassword(it) }
     }
 
-    override fun onFailure(call: Call<ResponseDataClass>, t: Throwable) {
+    override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
         Log.e("##Respose", " Response : " + t?.message)
     }
 

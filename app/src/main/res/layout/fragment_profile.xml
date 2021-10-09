@@ -51,9 +51,8 @@
         android:layout_marginTop="36dp"
         android:layout_marginRight="50dp"
         android:text="Company"
-        android:textColor="#94949E"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        style="@style/style_profile_label"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/singleline" />
 
@@ -65,9 +64,7 @@
 
         android:layout_marginTop="36dp"
         android:text="Role"
-        android:textColor="#94949E"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        style="@style/style_profile_label"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toEndOf="@id/txtCompanyname"
         app:layout_constraintTop_toBottomOf="@id/singleline" />
@@ -75,6 +72,7 @@
     <TextView
         android:id="@+id/eCompanyName"
         style="@style/style_eText"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/analyst_pvt_ltd"
@@ -87,6 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/analyst"
+        android:textColor="#94949E"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="@id/txtRole"
         app:layout_constraintTop_toBottomOf="@id/txtRole" />
@@ -98,9 +97,7 @@
         android:layout_marginTop="30dp"
         android:layout_marginRight="40dp"
         android:text="Mobile"
-        android:textColor="#94949E"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        style="@style/style_profile_label"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="@id/txtCompanyname"
         app:layout_constraintTop_toBottomOf="@id/eCompanyName" />
@@ -111,9 +108,7 @@
         android:layout_height="wrap_content"
 
         android:text="Landline"
-        android:textColor="#94949E"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        style="@style/style_profile_label"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="@id/txtRole"
         app:layout_constraintTop_toBottomOf="@id/eRole"
@@ -125,6 +120,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="09898986052"
+        android:textColor="#94949E"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="@id/txtCompanyname"
         app:layout_constraintTop_toBottomOf="@id/txtMobile" />
@@ -135,6 +131,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="anlayst1234@gmail.com"
+        android:textColor="#94949E"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="@id/txtEmail"
         app:layout_constraintTop_toBottomOf="@id/txtEmail" />
@@ -145,9 +142,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:text="Email"
-        android:textColor="#94949E"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        style="@style/style_profile_label"
         app:layout_constraintStart_toStartOf="@id/txtCompanyname"
         app:layout_constraintTop_toBottomOf="@id/eMobile" />
 
@@ -156,6 +151,7 @@
         style="@style/style_eText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#94949E"
         android:text="(02849)252530"
         app:layout_constraintStart_toStartOf="@id/txtLandLine"
         app:layout_constraintTop_toBottomOf="@id/txtLandLine" />
