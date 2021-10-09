@@ -120,6 +120,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         videoCallEnable=intent.extras!!.getBoolean(CALL)
         roomId = intent.extras?.getString(ROOM_ID)
         name = intent.extras?.getString(CONST_NUMBER)
+        name = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
 
 
 
@@ -127,8 +128,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         Log.d("##CHeckName", "----" + name + "---" + videoCallEnable.toString())
 
         if (videoCallEnable != true) {
-            Log.d("##CHeckName", "InVoic Call")
-
+            AppUtils.logDebug(TAG, "InVoic Call")
         }
 
 //        Log.e("##CAll ","Check is video call  "+)

@@ -91,7 +91,13 @@ class AppUtils {
             return SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date().getTime())
         }
 
-
+        fun getRandomString(length: Int) : String {
+            val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+            return (1..length)
+                .map { allowedChars.random() }
+                .joinToString("")
+        }
+//        getRandomString(15),
 
     }
 

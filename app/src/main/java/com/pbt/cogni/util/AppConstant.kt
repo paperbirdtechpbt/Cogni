@@ -23,7 +23,7 @@ class AppConstant {
         var CONST_CHAT_ID = "chatID"
         var CONST_READ_STATUS = "read"
         var CONST_MESSAGE_ID = "messageID"
-
+        var CONST_SENDER_MOBILE_NUMBER="senderMobile"
         const val SHARED_PREF_NAME = "Cogni"
 
         //Preference
@@ -38,6 +38,13 @@ class AppConstant {
 
 
 
-
-    }
+    //remote message data from server
+    var ChatMessage="ChatMessage"
+    var payload="payload"
+    var data="data"
+var title="title"
+    var message="message"
+    var IncommingCall="IncommingCall"
+    var  roomId="roomId"
+    var call="call"
 }

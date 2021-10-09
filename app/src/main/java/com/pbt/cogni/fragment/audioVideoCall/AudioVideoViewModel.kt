@@ -2,6 +2,7 @@ package com.pbt.cogni.fragment.audioVideoCall
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
@@ -9,10 +10,13 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
+import com.pbt.cogni.activity.call.CallActivity
 import com.pbt.cogni.activity.map.Data
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.activity.map.Resultt
 import com.pbt.cogni.model.BaseAnalystModel
+import com.pbt.cogni.util.AppConstant
+import com.pbt.cogni.util.AppConstant.CALL
 import com.pbt.cogni.util.MyPreferencesHelper
 import retrofit2.Call
 import retrofit2.Response
@@ -33,17 +37,12 @@ class AudioVideoViewModel : ViewModel() {
     fun getLiveDataObserver(): MutableLiveData<HttpResponse> {
         return liveDataList
     }
-    fun getRandomString(length: Int) : String {
-        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-        return (1..length)
-            .map { allowedChars.random() }
-            .joinToString("")
-    }
 
-    fun oncall() {
+
+    fun oncall(context: Context) {
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
-        val call = apiInterface?.getAnalystList("58", "5", "analystanalyst@gmail.com")
+        val call = apiInterface?.getAnalystList(MyPreferencesHelper.getUser(context)!!.companyId, MyPreferencesHelper.getUser(context)!!.RoleId, MyPreferencesHelper.getUser(context)!!.UserName)
         call?.enqueue(object : retrofit2.Callback<HttpResponse> {
             override fun onResponse(
                 call: Call<HttpResponse>,
@@ -68,13 +67,12 @@ class AudioVideoViewModel : ViewModel() {
 
         })
 
-
     }
 
-    fun sendCall(call : Boolean,id : String,sendername:String,context : Context) {
+    fun sendCall(myCall : Boolean,id : String,sendername:String,context : Context,roomID :String,senderMobile : String) {
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
-        val call = apiInterface?.makeCall(getRandomString(15), MyPreferencesHelper.getUser(context)!!.Mobile, call.toString(),id,
+        val call = apiInterface?.makeCall(roomID, MyPreferencesHelper.getUser(context)!!.Mobile, myCall.toString(),id,
         sendername)
         call?.enqueue(object : retrofit2.Callback<HttpResponse> {
             override fun onResponse(
@@ -82,7 +80,15 @@ class AudioVideoViewModel : ViewModel() {
                 response: Response<HttpResponse>
             ) {
                 Log.d("####makeCAllresponse",response.body().toString())
-            }
+                val httpResponse=response.body()
+               if ( !httpResponse!!.code){
+                   val intent : Intent = Intent(context,CallActivity::class.java)
+                   intent.putExtra(CALL,myCall)
+                   intent.putExtra(AppConstant.ROOM_ID,roomID)
+                   intent.putExtra(AppConstant.CONST_SENDER_MOBILE_NUMBER,senderMobile)
+                   context.startActivity(intent)
+
+               }            }
 
             override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
                 Log.d("####makeCAllresponse",t.message.toString())
