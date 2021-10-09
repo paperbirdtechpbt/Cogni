@@ -45,9 +45,7 @@ class MainActivity : AppCompatActivity() {
 
 
        val overlaypermission= MyPreferencesHelper.getStringValue(this,PREFF_OVERYLAY_PERMISSION,null)
-
         if (overlaypermission==null){
-
             startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION));
             MyPreferencesHelper.setStringValue(this, PREFF_OVERYLAY_PERMISSION,"true")
 

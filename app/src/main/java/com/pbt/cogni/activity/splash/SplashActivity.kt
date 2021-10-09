@@ -29,26 +29,30 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
 
+        AppUtils.logDebug(
+            "SplashACtivity",
+            "Check login tokem ==>> " + MyPreferencesHelper.getStringValue(
+                this@SplashActivity,
+                PREF_TOKEN,
+                ""
+            )
+        )
+
+        AppUtils.logDebug(
+            "SplashACtivity",
+            "Check login tokem ==>> " + MyPreferencesHelper.getStringValue(
+                this@SplashActivity,
+                PREF_IS_LOGIN,
+                ""
+            )
+        )
+
+
         Handler().postDelayed({
 
-            AppUtils.logDebug(
-                "SplashACtivity",
-                "Check login Preff ==>> " + MyPreferencesHelper.getStringValue(
-                    this@SplashActivity,
-                    PREF_USER,
-                    ""
-                )
-            )
-            AppUtils.logDebug(
-                "SplashACtivity",
-                "Check login tokem ==>> " + MyPreferencesHelper.getStringValue(
-                    this@SplashActivity,
-                    PREF_TOKEN,
-                    ""
-                )
-            )
 
-            token = MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_TOKEN, "")
+
+            token = MyPreferencesHelper.getStringValue(applicationContext, PREF_TOKEN, "")
 
 
             val intent: Intent
@@ -59,8 +63,10 @@ class SplashActivity : AppCompatActivity() {
             } else {
                 if (token != "")
                     callAPi()
+                else
+                    AppUtils.logDebug("##Splash","token empty : "+token)
             }
-        }, 500)
+        }, 100)
     }
 
     fun callAPi() {
@@ -84,7 +90,7 @@ class SplashActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-
+                AppUtils.logError("##Splash"," server Error: "+t.message)
             }
 
         })

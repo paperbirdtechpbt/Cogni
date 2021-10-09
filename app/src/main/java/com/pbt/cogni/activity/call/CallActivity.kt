@@ -49,9 +49,13 @@ import java.security.SecureRandom
 import java.util.ArrayList
 import android.view.WindowManager
 import com.pbt.cogni.fcm.MyFirebaseMessagingService
+import com.pbt.cogni.fragment.audioVideoCall.AudioVideCallAdapter.Companion.callerName
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppConstant.Companion.CALL
 import com.pbt.cogni.util.AppConstant.Companion.CONST_NUMBER
+import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_MOBILE_NUMBER
+import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_NAME
+import com.pbt.cogni.util.AppUtils
 import kotlinx.android.synthetic.main.activity_call.*
 
 
@@ -92,14 +96,15 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 
 
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+//    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     public override fun onCreate(savedInstanceState: Bundle?) {
-        cancleNotification()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call_activity)
 
-
-//        MyFirebaseMessagingService().stopSound() //stop ringtone when opening this class
+        MyFirebaseMessagingService().stopSound()
+        cancleNotification()
+ //stop ringtone when opening this class
 
         textView=findViewById(R.id.txtUsernameVoiceCall)
 
@@ -119,8 +124,8 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 //        videoCallEnable = intent.extras!!.getBoolean("Call")
         videoCallEnable=intent.extras!!.getBoolean(CALL)
         roomId = intent.extras?.getString(ROOM_ID)
-        name = intent.extras?.getString(CONST_NUMBER)
-        name = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
+//        name = intent.extras?.getString(CONST_SENDER_NAME)
+//        sendername = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
 
 
 
@@ -149,7 +154,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
            imageview.setVisibility(View.VISIBLE)
 
             val textView=findViewById<TextView>(R.id.txtUsernameVoiceCall)
-            textView.setText(name)
+            textView.setText(callerName)
             cameraSwitchButton?.setVisibility(View.GONE)
             button_speker?.setVisibility(View.VISIBLE)
             pipRenderer?.visibility=View.GONE
@@ -729,6 +734,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         private const val APPRTC_URL = "https://appr.tc"
         private const val UPPER_ALPHA_DIGITS = "ACEFGHJKLMNPQRUVWXY123456789"
         var name: String? = ""
+        var sendername:String?=""
         private const val STAT_CALLBACK_PERIOD = 1000
     }
 }

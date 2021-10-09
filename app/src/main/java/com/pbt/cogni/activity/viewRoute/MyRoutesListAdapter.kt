@@ -13,7 +13,7 @@ class MyRoutesListAdapter(
 
     var list: ArrayList<MyRoutesDataClass>,
     var context: Context?,
-    var callbacks: (Int, View) -> Unit
+    var callbacks: (Int, View,String,String,String,String) -> Unit
 
 ) :
     RecyclerView.Adapter<MyRoutesListAdapter.ViewHolder>() {
@@ -30,10 +30,13 @@ class MyRoutesListAdapter(
 
     override fun onBindViewHolder(holder: MyRoutesListAdapter.ViewHolder, position: Int) {
         holder.bind(list.get(position)!!)
+        val lissst=list.get(position)
 
         holder.btnVIewRoute.setOnClickListener {
 
-            callbacks.invoke(holder.adapterPosition,it)
+            callbacks.invoke(holder.adapterPosition,it,lissst.origin,lissst.destination,
+                lissst.startLatLong.toString(), lissst.endLatLong.toString()
+            )
         }
 
 

@@ -19,12 +19,13 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.pbt.cogni.activity.MapsActivity
+import com.pbt.cogni.activity.map.ShowRouteActivity
 
 
-private const val START = "origin"
-private const val END = "destination"
-private const val STARTLATLONG = "originlatlong"
-private const val ENDLATLONG = "destinationlatlong"
+const val START = "origin"
+ const val END = "destination"
+ const val STARTLATLONG = "originlatlong"
+ const val ENDLATLONG = "destinationlatlong"
 
 class ViewRouteFragement : Fragment() {
     val mylist = ArrayList<MyRoutesDataClass>()
@@ -62,11 +63,25 @@ class ViewRouteFragement : Fragment() {
 //        start = view.findViewById(R.id.origin)
 
         recyclerView?.layoutManager = LinearLayoutManager(context)
-        listAdapter = MyRoutesListAdapter(mylist, context) { i, view ->
+        listAdapter = MyRoutesListAdapter(mylist, context) { position, view,origin,dest,orglat,destlat ->
 
             when (view.id) {
                 R.id.btnVIewRoute -> {
-                    Log.e("##Intent", " Pass Data : " + Gson().toJson(mylist.get(i)))
+
+                    val intent = Intent(context, ShowRouteActivity::class.java)
+
+                    val bundle = Bundle()
+                    bundle.putParcelable("user",mylist[position] )
+                    intent.putExtras(bundle)
+                    startActivity(intent)
+                    Log.e("##Intent", " Pass Data : " + Gson().toJson(mylist.get(position)))
+
+//                    val intent = Intent(activity, ShowRouteActivity()::class.java)
+//                    intent.putExtra(START,Gson().toJson(mylist.get(position)))
+//                    intent.putExtra(END, dest)
+//                    intent.putExtra(STARTLATLONG, orglat)
+//                    intent.putExtra(ENDLATLONG, destlat)
+//                    startActivity(intent)
                 }
             }
         }

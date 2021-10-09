@@ -11,10 +11,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.map.Resultt
+import com.pbt.cogni.fragment.Chat.UserChatListViewModel.Companion._AnalystList
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoViewModel.Companion.myResult
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoViewModel.Companion.result
 import com.pbt.cogni.model.HttpResponse
+import com.pbt.cogni.model.User
 import com.pbt.cogni.repository.AnalystRepo
+import com.pbt.cogni.util.AppConstant
+import com.pbt.cogni.util.AppConstant.Companion.RECEIVER_ID
 import com.pbt.cogni.util.MyPreferencesHelper
 
 class AudioVideCallAdapter(
@@ -24,7 +28,10 @@ class AudioVideCallAdapter(
 
 ) :
     RecyclerView.Adapter<AudioVideCallAdapter.ViewHolder>() {
-    private var countrylist: HttpResponse? = null
+    companion object{
+       var callerName:String?=null
+
+    }    private var countrylist: HttpResponse? = null
 
     fun setCountryList(countrylist: HttpResponse) {
         this.countrylist = countrylist
@@ -41,12 +48,14 @@ class AudioVideCallAdapter(
     }
 
     override fun onBindViewHolder(holder: AudioVideCallAdapter.ViewHolder, position: Int) {
-        val name=  myResult?.mydata?.get(position)?.Firstname +""+ myResult?.mydata?.get(position)?.LastName
+         callerName=  myResult?.mydata?.get(position)?.Firstname +""+ myResult?.mydata?.get(position)?.LastName
         val sendername=MyPreferencesHelper.getUser(context!!)?.FirstName+" "+MyPreferencesHelper.getUser(context!!)?.FirstName
         Log.d("##sendername",sendername)
-        holder.txtAnalyst.text =name
 
+        holder.txtAnalyst.text =callerName
         holder.txtAnalystnumber.text = myResult?.mydata?.get(position)?.Mobile
+
+
 
 //        holder.bind(list.get(position)!!)
 

@@ -7,6 +7,7 @@ class AppConstant {
         var CALL: String = "call"
         var VEW_ROUT: String = "VEW_ROUT"
         var ROOM_ID: String = "ROOM_ID"
+        var SMALL_ROOM_ID: String = "roomId"
         var ROOM_ID_SMALL: String = "roomId"
         var RECEIVER_ID: String = "RECEIVER_ID"
         var RECEIVER_NAME: String = "RECEIVER_NAME"
@@ -24,6 +25,8 @@ class AppConstant {
         var CONST_READ_STATUS = "read"
         var CONST_MESSAGE_ID = "messageID"
         var CONST_SENDER_MOBILE_NUMBER="senderMobile"
+        var CONST_SENDER_NAME="senderMobile"
+
         const val SHARED_PREF_NAME = "Cogni"
 
         //Preference
@@ -38,13 +41,4 @@ class AppConstant {
 
 
 
-    //remote message data from server
-    var ChatMessage="ChatMessage"
-    var payload="payload"
-    var data="data"
-var title="title"
-    var message="message"
-    var IncommingCall="IncommingCall"
-    var  roomId="roomId"
-    var call="call"
-}
+}}

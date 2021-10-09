@@ -16,7 +16,9 @@ import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.activity.map.Resultt
 import com.pbt.cogni.model.BaseAnalystModel
 import com.pbt.cogni.util.AppConstant
-import com.pbt.cogni.util.AppConstant.CALL
+
+import com.pbt.cogni.util.AppConstant.Companion.CALL
+import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_NAME
 import com.pbt.cogni.util.MyPreferencesHelper
 import retrofit2.Call
 import retrofit2.Response
@@ -49,6 +51,7 @@ class AudioVideoViewModel : ViewModel() {
                 response: Response<HttpResponse>
             ) {
                 liveDataList.postValue(response.body())
+
                 var httpResponse = response.body()
 
                 myResult = Gson().fromJson(Gson().toJson(httpResponse?.data), Data::class.java)
@@ -70,6 +73,8 @@ class AudioVideoViewModel : ViewModel() {
     }
 
     fun sendCall(myCall : Boolean,id : String,sendername:String,context : Context,roomID :String,senderMobile : String) {
+
+
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
         val call = apiInterface?.makeCall(roomID, MyPreferencesHelper.getUser(context)!!.Mobile, myCall.toString(),id,
@@ -79,11 +84,14 @@ class AudioVideoViewModel : ViewModel() {
                 call: Call<HttpResponse>,
                 response: Response<HttpResponse>
             ) {
+
                 Log.d("####makeCAllresponse",response.body().toString())
+                Log.d("####makeCAllresponse",roomID)
                 val httpResponse=response.body()
                if ( !httpResponse!!.code){
                    val intent : Intent = Intent(context,CallActivity::class.java)
                    intent.putExtra(CALL,myCall)
+                   intent.putExtra(CONST_SENDER_NAME,sendername)
                    intent.putExtra(AppConstant.ROOM_ID,roomID)
                    intent.putExtra(AppConstant.CONST_SENDER_MOBILE_NUMBER,senderMobile)
                    context.startActivity(intent)

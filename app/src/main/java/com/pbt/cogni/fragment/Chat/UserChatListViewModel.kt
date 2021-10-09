@@ -8,6 +8,7 @@ import com.pbt.cogni.WebService.Coroutines
 import com.pbt.cogni.model.Users
 import com.pbt.cogni.model.BaseAnalystModel
 import com.pbt.cogni.model.HttpResponse
+import com.pbt.cogni.model.User
 import com.pbt.cogni.repository.AnalystRepository
 import com.pbt.cogni.util.AppUtils
 import kotlinx.coroutines.Job
@@ -15,8 +16,12 @@ import kotlinx.coroutines.Job
 class UserChatListViewModel(private val analystRepository: AnalystRepository) : ViewModel() {
 
     private lateinit var job : Job
+    companion object{
+          val _AnalystList  = MutableLiveData<List<Users>>()
 
-    private  val _AnalystList  = MutableLiveData<List<Users>>()
+    }
+
+
     private  val _userList  = MutableLiveData<HttpResponse>()
 
     val data : LiveData<HttpResponse>
@@ -34,7 +39,7 @@ class UserChatListViewModel(private val analystRepository: AnalystRepository) : 
 
             _userList.value = it
             _AnalystList.value =  Gson().fromJson(Gson().toJson(it?.data),BaseAnalystModel::class.java).result
-//                _AnalystList.value =_userList.
+
             AppUtils.logDebug("UserChatListViewModel","Resposne Result : "+Gson().toJson(it?.data))
                 }
             })
