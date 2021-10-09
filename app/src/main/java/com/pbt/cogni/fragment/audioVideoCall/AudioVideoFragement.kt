@@ -66,10 +66,10 @@ class AudioVideoFragement() : Fragment() {
         audioVideCallAdapter = AudioVideCallAdapter(requireContext()) { i, view ,result,sendername->
             when (view.id) {
                 R.id.rlVideoCall -> {
-                   AudioVideoViewModel().sendCall(true,result.id.toString(),sendername,requireContext())
+                   AudioVideoViewModel().sendCall(true,result.id.toString(),sendername,requireContext(),AppUtils.getRandomString(15),result.Mobile)
                 }
                 R.id.rlVoiceCall -> {
-                    AudioVideoViewModel().sendCall(false,result.id.toString(),sendername,requireContext())
+                    AudioVideoViewModel().sendCall(false,result.id.toString(),sendername,requireContext(),AppUtils.getRandomString(15),result.Mobile)
                 }
             }
         }
@@ -85,7 +85,7 @@ class AudioVideoFragement() : Fragment() {
                 audioVideCallAdapter?.notifyDataSetChanged()
             }
         })
-        viewmodel.oncall()
+        viewmodel.oncall(requireContext())
     }
 
     }

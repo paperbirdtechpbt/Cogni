@@ -15,6 +15,7 @@ import com.pbt.cogni.fragment.audioVideoCall.AudioVideoViewModel.Companion.myRes
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoViewModel.Companion.result
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.repository.AnalystRepo
+import com.pbt.cogni.util.MyPreferencesHelper
 
 class AudioVideCallAdapter(
     var context: Context?,
@@ -41,19 +42,21 @@ class AudioVideCallAdapter(
 
     override fun onBindViewHolder(holder: AudioVideCallAdapter.ViewHolder, position: Int) {
         val name=  myResult?.mydata?.get(position)?.Firstname +""+ myResult?.mydata?.get(position)?.LastName
+        val sendername=MyPreferencesHelper.getUser(context!!)?.FirstName+" "+MyPreferencesHelper.getUser(context!!)?.FirstName
+        Log.d("##sendername",sendername)
         holder.txtAnalyst.text =name
-//            myResult?.mydata?.get(position)?.Firstname + " " + myResult?.mydata?.get(position)?.LastName
+
         holder.txtAnalystnumber.text = myResult?.mydata?.get(position)?.Mobile
 
 //        holder.bind(list.get(position)!!)
 
         holder.rlVideoCall.setOnClickListener {
                 callbacks.invoke(holder.adapterPosition,it, myResult?.mydata?.get(position)!!
-                ,name)
+                ,sendername)
         }
 
         holder.rlVoiceCall.setOnClickListener {
-                callbacks.invoke(holder.adapterPosition,it, myResult?.mydata?.get(position)!!,name)
+                callbacks.invoke(holder.adapterPosition,it, myResult?.mydata?.get(position)!!,sendername)
         }
 
     }

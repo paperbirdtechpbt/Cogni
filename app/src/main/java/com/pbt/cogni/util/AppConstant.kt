@@ -6,6 +6,7 @@ object AppConstant {
     var ROOM_ID : String = "ROOM_ID"
     var CALL:String="call"
     var NUMBER="number"
+    var CONST_SENDER_MOBILE_NUMBER="senderMobile"
 
     const val SHARED_PREF_NAME = "friendlymony"
     //Preference

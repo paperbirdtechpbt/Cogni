@@ -25,6 +25,7 @@ import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import com.pbt.cogni.util.AppConstant.ROOM_ID
+import com.pbt.cogni.util.AppConstant.CONST_SENDER_MOBILE_NUMBER
 import org.appspot.apprtc.AppRTCClient
 import org.appspot.apprtc.AppRTCClient.*
 import org.appspot.apprtc.PeerConnectionClient
@@ -52,6 +53,7 @@ import com.pbt.cogni.fcm.MyFirebaseMessagingService
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppConstant.CALL
 import com.pbt.cogni.util.AppConstant.NUMBER
+import com.pbt.cogni.util.AppUtils
 import kotlinx.android.synthetic.main.activity_call.*
 
 
@@ -119,7 +121,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 //        videoCallEnable = intent.extras!!.getBoolean("Call")
         videoCallEnable=intent.extras!!.getBoolean(CALL)
         roomId = intent.extras?.getString(ROOM_ID)
-        name = intent.extras?.getString(NUMBER)
+        name = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
 
 
 
@@ -127,8 +129,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         Log.d("##CHeckName", "----" + name + "---" + videoCallEnable.toString())
 
         if (videoCallEnable != true) {
-            Log.d("##CHeckName", "InVoic Call")
-
+            AppUtils.logDebug(TAG, "InVoic Call")
         }
 
 //        Log.e("##CAll ","Check is video call  "+)
