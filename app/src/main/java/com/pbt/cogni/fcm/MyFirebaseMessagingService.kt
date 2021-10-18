@@ -34,7 +34,7 @@ import com.pbt.cogni.util.MyPreferencesHelper
 import org.json.JSONObject
 
 import android.app.*
-import android.app.Notification.PRIORITY_MAX
+
 import android.content.ContentResolver
 
 import android.app.PendingIntent
@@ -45,15 +45,12 @@ import com.pbt.cogni.util.AppConstant.Companion.CONST_CHAT_MESSAGE
 import com.pbt.cogni.util.AppConstant.Companion.CONST_DATA
 import com.pbt.cogni.util.AppConstant.Companion.CONST_MESSAGE
 import com.pbt.cogni.util.AppConstant.Companion.CONST_NOTI_TITLE_INCOMMING_CALL
-import com.pbt.cogni.util.AppConstant.Companion.CONST_NUMBER
+
 import com.pbt.cogni.util.AppConstant.Companion.CONST_PAYLOAD
 import com.pbt.cogni.util.AppConstant.Companion.CONST_TITLE
 import com.pbt.cogni.util.AppConstant.Companion.ROOM_ID
 import com.pbt.cogni.util.AppConstant.Companion.SMALL_ROOM_ID
 import android.app.NotificationChannel
-import android.app.NotificationManager.IMPORTANCE_MAX
-import androidx.core.app.NotificationCompat.PRIORITY_HIGH
-import androidx.core.app.NotificationCompat.PRIORITY_MAX
 
 
 private const val CHANNEL_ID = "my_channel"
@@ -108,11 +105,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
 //_____________-------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-                var obj: JSONObject = JSONObject(remoteMessage.data.toString())
+                val obj = JSONObject(remoteMessage.data.toString())
 
 
                 if (obj.getJSONObject(CONST_DATA).has(CONST_PAYLOAD)) {
-                    var payload: JSONObject = obj.getJSONObject(CONST_DATA).getJSONObject(CONST_PAYLOAD)
+                    val payload: JSONObject = obj.getJSONObject(CONST_DATA).getJSONObject(CONST_PAYLOAD)
 
                     mobilenumber = payload.getString(CONST_MESSAGE)
                     Log.d("##Mynumber", mobilenumber.toString())
@@ -138,7 +135,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     } else if (payload.has(CONST_TITLE) && payload.getString(CONST_TITLE)
                             .equals(CONST_NOTI_TITLE_INCOMMING_CALL)
                     ) {
-                        var boolean: Boolean = payload.getString("call").toBoolean()
+                        val boolean: Boolean = payload.getString("call").toBoolean()
                         Log.d("##checkboolenad",boolean.toString())
                         checkPhoneStatus(
                             mobilenumber!!,
@@ -225,12 +222,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         passdata(intent,number,roomId,call,remoteMessage,"notificatino")
 
+
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
 
         val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_call)
 
-        val resultIntent =
-            Intent(this, CallActivity::class.java)
+        val resultIntent = Intent(this, CallActivity::class.java)
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         passdata(resultIntent,number,roomId,call,remoteMessage,"notificaiton")
 //        passdata(resultIntent, number, roomId, call, remoteMessage)
@@ -244,8 +241,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
 
         notificationLayout.setOnClickPendingIntent(R.id.txtanswer, resultPendingIntent)
-
         notificationLayout.setOnClickPendingIntent(R.id.txtreject, btPendingIntent)
+        notificationLayout.setTextViewText(R.id.txtCallerName, sendernamee)
 
 
 
@@ -255,8 +252,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setContentText("message")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCustomContentView(notificationLayout)
-            .setContentIntent(pendingIntent)
-//            .setFullScreenIntent(pendingIntent,true)
+//            .setContentIntent(pendingIntent)
+            .setFullScreenIntent(pendingIntent,true)
 
 
 //         Since android Oreo notification channel is needed.
@@ -359,13 +356,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val sound: Uri =
             Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.callringotn);
 //        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-     ringtone = RingtoneManager.getRingtone(applicationContext, sound)
+        ringtone = RingtoneManager.getRingtone(applicationContext, sound)
         ringtone?.play()
 
         val buttonIntent = Intent(this, ButtonReceiver::class.java)
         buttonIntent.putExtra("notificationId", NOTIFICATION_ID)
-
-
 
         val intent = Intent(this, CallActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -383,8 +378,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         notificationLayout.setOnClickPendingIntent(R.id.txtanswer, resultPendingIntent)
         notificationLayout.setOnClickPendingIntent(R.id.txtreject, btPendingIntent)
-
-
 
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic__chat_profile)
@@ -431,7 +424,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "MyFirebaseMsgService"
-        public var ringtone: Ringtone? = null
+         var ringtone: Ringtone? = null
         var mobilenumber: String? = null
         var sendernamee=""
         var sendernumberr=""
