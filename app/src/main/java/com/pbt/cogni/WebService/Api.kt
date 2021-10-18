@@ -15,6 +15,10 @@ interface Api {
     @POST("api/Analyst")
     suspend fun getAnylyst(@Field("companyId") companyId: String, @Field("RoleId") RoleId: String, @Field("UserName") UserName: String) : Response<HttpResponse>
 
+    @FormUrlEncoded
+    @POST("api/request")
+    suspend fun getRouteList(@Field("companyId") companyId: String, @Field("roleId") RoleId: String, @Field("userName") UserName: String) : Response<HttpResponse>
+
 
     companion object{
         operator fun invoke() : Api{

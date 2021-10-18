@@ -33,12 +33,7 @@ import java.net.URL
 import java.util.HashMap
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLngBounds
-import com.pbt.cogni.activity.MapsActivity
-import com.pbt.cogni.fragment.ViewRoute.END
-import com.pbt.cogni.fragment.ViewRoute.ENDLATLONG
-import com.pbt.cogni.fragment.ViewRoute.START
-import com.pbt.cogni.fragment.ViewRoute.STARTLATLONG
-import com.pbt.cogni.util.AppConstant.Companion.VEW_ROUT
+
 
 
 class ShowRouteActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailedListener {

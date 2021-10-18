@@ -48,4 +48,12 @@ interface ApiInterface {
         @Field("senderID")senderID:String,
         @Field("senderName")senderName:String
     ):retrofit2.Call<HttpResponse>
+
+    @FormUrlEncoded
+    @POST("api/request")
+    fun getRoutes(
+        @Field("companyId")companyId:String,
+        @Field("roleId")roleId:String,
+        @Field("userName")userName:String
+    ):retrofit2.Call<HttpResponse>
 }

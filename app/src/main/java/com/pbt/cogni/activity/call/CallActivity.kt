@@ -49,6 +49,8 @@ import java.security.SecureRandom
 import java.util.ArrayList
 import android.view.WindowManager
 import com.pbt.cogni.fcm.MyFirebaseMessagingService
+import com.pbt.cogni.fcm.MyFirebaseMessagingService.Companion.sendernamee
+import com.pbt.cogni.fcm.MyFirebaseMessagingService.Companion.sendernumberr
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideCallAdapter.Companion.callerName
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppConstant.Companion.CALL
@@ -57,7 +59,8 @@ import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_MOBILE_NUMBER
 import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_NAME
 import com.pbt.cogni.util.AppUtils
 import kotlinx.android.synthetic.main.activity_call.*
-
+import kotlinx.android.synthetic.main.activity_call.txtTimerVoiceCall
+import kotlinx.android.synthetic.main.activity_call_activity.*
 
 
 class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents {
@@ -80,6 +83,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var isSwappedFeeds = false
     val PERMISSIONS_REQUEST_READ_CONTACTS = 100
     var timerTextView: TextView? = null
+    var check:Boolean=false
 
 
     // Control buttons for limited UI
@@ -92,11 +96,10 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var isSpeker = true
 
     var roomId: String? = ""
-    var textView:TextView?=null
+    var textView: TextView? = null
 
 
-
-//    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    //    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     public override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -104,15 +107,18 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 
         MyFirebaseMessagingService().stopSound()
         cancleNotification()
- //stop ringtone when opening this class
 
-        textView=findViewById(R.id.txtUsernameVoiceCall)
+
+        //stop ringtone when opening this class
+
+        textView = findViewById(R.id.txtUsernameVoiceCall)
 
 
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                     or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                    or WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+        )
 
 
         supportActionBar?.hide()
@@ -120,49 +126,90 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         Log.d("##CHan", "oncreate")
 
 
-
 //        videoCallEnable = intent.extras!!.getBoolean("Call")
-        videoCallEnable=intent.extras!!.getBoolean(CALL)
+        videoCallEnable = intent.extras!!.getBoolean(CALL)
         roomId = intent.extras?.getString(ROOM_ID)
-//        name = intent.extras?.getString(CONST_SENDER_NAME)
-//        sendername = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
+        name = intent.extras?.getString(CONST_SENDER_NAME)
+        sendername = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
 
-
-
-
+        if (intent?.extras?.getString("notification") != null) {
+            incomingCallLayout.visibility = View.VISIBLE
+            layout_callername.setText(sendernamee)
+            layout_callernumber.setText(sendernumberr)
+        }
         Log.d("##CHeckName", "----" + name + "---" + videoCallEnable.toString())
 
-        if (videoCallEnable != true) {
-            AppUtils.logDebug(TAG, "InVoic Call")
+        btn_rejectCall.setOnClickListener{
+            finish()
         }
 
-//        Log.e("##CAll ","Check is video call  "+)
+disconnectButton?.setOnClickListener{
+    if (check)
+    {
+     onCallHangUp()
+    }
+    else{
+        finish()
+    }
+}
+
+        StartCallProcess()
+
+
+        btnAcceptCall.setOnClickListener {
+            check=true
+            incomingCallLayout.visibility= View.GONE
+            txtTimerVoiceCall.setText("Connecting")
+            txtUsernameVoiceCall.setText("$sendernamee")
+
+            StartCallProcess()
+
+        }
+    }
+
+    private fun StartCallProcess() {
         iceConnected = false
         signalingParameters = null
 
-        // Create UI controls.
         pipRenderer = findViewById(R.id.pip_video_view)
         fullscreenRenderer = findViewById(R.id.fullscreen_video_view)
         disconnectButton = findViewById(R.id.button_call_disconnect)
         cameraSwitchButton = findViewById(R.id.button_call_switch_camera)
         toggleMuteButton = findViewById(R.id.button_call_toggle_mic)
         button_speker = findViewById(R.id.button_speker)
+        toggleMuteButton?.visibility = View.VISIBLE
+
         if (!videoCallEnable) {
 
-            Log.d("##CHance","-----")
+            Log.d("##CHance", "-----")
             val imageview = findViewById<ImageView>(R.id.voicebackgroundumage)
-           imageview.setVisibility(View.VISIBLE)
+            imageview.setVisibility(View.VISIBLE)
 
-            val textView=findViewById<TextView>(R.id.txtUsernameVoiceCall)
+            val textView = findViewById<TextView>(R.id.txtUsernameVoiceCall)
             textView.setText(callerName)
             cameraSwitchButton?.setVisibility(View.GONE)
             button_speker?.setVisibility(View.VISIBLE)
-            pipRenderer?.visibility=View.GONE
-            fullscreenRenderer?.visibility= View.GONE
+            pipRenderer?.visibility = View.GONE
+            toggleMuteButton?.visibility = View.VISIBLE
+            fullscreenRenderer?.visibility = View.GONE
+
         }
 
+
+
+        if (videoCallEnable != true) {
+            AppUtils.logDebug(TAG, "InVoic Call")
+        }
+
+//        Log.e("##CAll ","Check is video call  "+)
+
+
+        // Create UI controls.
+
+
+
         // Add buttons click events.
-        disconnectButton?.setOnClickListener(OnClickListener { onCallHangUp() })
+
         cameraSwitchButton?.setOnClickListener(OnClickListener { onCameraSwitch() })
         toggleMuteButton?.setOnClickListener(OnClickListener {
             val enabled = onToggleMic()
@@ -185,6 +232,9 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 
         // Swap feeds on pip view click.
         pipRenderer?.setOnClickListener(OnClickListener { setSwappedFeeds(!isSwappedFeeds) })
+        disconnectButton?.setOnClickListener{
+            onCallHangUp()
+        }
         button_speker?.setOnClickListener(OnClickListener {
             if (button_speker?.getVisibility() == View.VISIBLE) {
             } else {
@@ -227,7 +277,8 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         roomId?.let { connectVideoCall(it) }
     }
 
-     fun cancleNotification() {
+
+    fun cancleNotification() {
 //         txtTimerVoiceCall.setText(" ")
         val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
@@ -323,7 +374,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private fun startCall() {
         if (appRtcClient == null) {
             Log.e(TAG, "AppRTC client is not allocated for a call.")
-            Log.d("##CallCOnected","On swapped feeds")
+            Log.d("##CallCOnected", "On swapped feeds")
             return
         }
         callStartedTimeMs = System.currentTimeMillis()
@@ -331,10 +382,10 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         // Start room connection.
         logAndToast(getString(R.string.connecting_to, roomConnectionParameters!!.roomUrl))
         appRtcClient!!.connectToRoom(roomConnectionParameters)
-        Log.d("##CallCOnected","On swapped feeds")
+        Log.d("##CallCOnected", "On swapped feeds")
     }
 
-    @UiThread
+//    @UiThread
     private fun callConnected() {
 
         var startTime: Long = 0
@@ -345,17 +396,18 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
                 val millis = System.currentTimeMillis() - startTime
                 var seconds = (millis / 1000).toInt()
                 var minutes = seconds / 60
-                var hours=minutes / 60
+                var hours = minutes / 60
                 seconds = seconds % 60
                 minutes = minutes % 60
-                timerTextView!!.text = String.format("%02d:%02d:%02d",hours, minutes, seconds)
+                timerTextView!!.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
                 timerHandler.postDelayed(this, 500)
-            }}
+            }
+        }
 
         timerTextView = findViewById(R.id.txtTimerVoiceCall)
         startTime = System.currentTimeMillis()
         timerHandler.postDelayed(timerRunnable, 0)
-        Toast.makeText(this,"Call Connected",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Call Connected", Toast.LENGTH_SHORT).show()
 
         val delta = System.currentTimeMillis() - callStartedTimeMs
         Log.i(TAG, "Call connected: delay=" + delta + "ms")
@@ -366,7 +418,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         // Enable statistics callback.
         peerConnectionClient!!.enableStatsEvents(true, STAT_CALLBACK_PERIOD)
         setSwappedFeeds(true /* isSwappedFeeds */)
-        Log.d("##CallCOnected","On VoiceCAll COnnected")
+        Log.d("##CallCOnected", "On VoiceCAll COnnected")
     }
 
     // Disconnect from remote resources, dispose of local resources, and exit.
@@ -398,7 +450,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         }
         setHeadsetOn()
         finish()
-        Log.d("##CallCOnected","On disconnect")
+        Log.d("##CallCOnected", "On disconnect")
     }
 
     private fun disconnectWithErrorMessage(errorMessage: String) {
@@ -504,7 +556,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         remoteProxyRenderer.setTarget(if (isSwappedFeeds) pipRenderer else fullscreenRenderer)
         fullscreenRenderer!!.setMirror(isSwappedFeeds)
         pipRenderer!!.setMirror(!isSwappedFeeds)
-        Log.d("##CallCOnected","On swapped feeds")
+        Log.d("##CallCOnected", "On swapped feeds")
     }
 
     // -----Implementation of AppRTCClient.AppRTCSignalingEvents ---------------
@@ -734,7 +786,8 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         private const val APPRTC_URL = "https://appr.tc"
         private const val UPPER_ALPHA_DIGITS = "ACEFGHJKLMNPQRUVWXY123456789"
         var name: String? = ""
-        var sendername:String?=""
+        var sendername: String? = ""
         private const val STAT_CALLBACK_PERIOD = 1000
     }
 }
+

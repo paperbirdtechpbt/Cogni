@@ -21,7 +21,6 @@ class UserChatListViewModel(private val analystRepository: AnalystRepository) : 
 
     }
 
-
     private  val _userList  = MutableLiveData<HttpResponse>()
 
     val data : LiveData<HttpResponse>
@@ -43,10 +42,7 @@ class UserChatListViewModel(private val analystRepository: AnalystRepository) : 
             AppUtils.logDebug("UserChatListViewModel","Resposne Result : "+Gson().toJson(it?.data))
                 }
             })
-
-
-    }
-
+     }
     override fun onCleared() {
         super.onCleared()
         if (::job.isInitialized)

@@ -34,6 +34,7 @@ import com.pbt.cogni.util.MyPreferencesHelper
 import org.json.JSONObject
 
 import android.app.*
+import android.app.Notification.PRIORITY_MAX
 import android.content.ContentResolver
 
 import android.app.PendingIntent
@@ -49,6 +50,10 @@ import com.pbt.cogni.util.AppConstant.Companion.CONST_PAYLOAD
 import com.pbt.cogni.util.AppConstant.Companion.CONST_TITLE
 import com.pbt.cogni.util.AppConstant.Companion.ROOM_ID
 import com.pbt.cogni.util.AppConstant.Companion.SMALL_ROOM_ID
+import android.app.NotificationChannel
+import android.app.NotificationManager.IMPORTANCE_MAX
+import androidx.core.app.NotificationCompat.PRIORITY_HIGH
+import androidx.core.app.NotificationCompat.PRIORITY_MAX
 
 
 private const val CHANNEL_ID = "my_channel"
@@ -57,7 +62,7 @@ private const val CHANNEL_ID = "my_channel"
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     private var isInBackground: Boolean? = null
     var NOTIFICATION_ID = 1
-    var NOTifiicatioid = 2
+
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -111,8 +116,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
                     mobilenumber = payload.getString(CONST_MESSAGE)
                     Log.d("##Mynumber", mobilenumber.toString())
-                    val intent = Intent(this, CallActivity::class.java)
-                    intent.putExtra("mobilenumber", mobilenumber)
+//                    val intent = Intent(this, CallActivity::class.java)
+//                    intent.putExtra("mobilenumber", mobilenumber)
+
+                    sendernamee= payload.getString("senderName")
+                    sendernumberr=payload.getString(CONST_MESSAGE)
+
 
                     if (payload.has(CONST_TITLE) && payload.getString(CONST_TITLE).equals(
                             CONST_CHAT_MESSAGE)) {
@@ -130,6 +139,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                             .equals(CONST_NOTI_TITLE_INCOMMING_CALL)
                     ) {
                         var boolean: Boolean = payload.getString("call").toBoolean()
+                        Log.d("##checkboolenad",boolean.toString())
                         checkPhoneStatus(
                             mobilenumber!!,
                             payload.getString(SMALL_ROOM_ID),
@@ -161,15 +171,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 //    //     Check if message contains a notification payload.
         remoteMessage.notification?.let {
 
-//            val intentt = Intent(this, CallActivity::class.java).apply {
-//                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//            }
-//            intentt.putExtra("notfication", false)
-//
-//
-//            startActivity(intentt)
-//            Log.d(TAG, "Message Notification Body: ${it.body}")
-//            sendNotification(it.body.ge)
         }
 
     }
@@ -197,8 +198,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             } else {
                 //app inbackground but not locked
                 Log.d("##checkstatus", "app inbackground but not locked")
-                sendNotification("test","hello")
+
                 popUpNotificaiton(number, roomId, call, remoteMessage)
+
             }
         } else {
             //app in foreground
@@ -206,20 +208,32 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             openIntent(number, roomId, call, remoteMessage)
         }
     }
+    private fun popUpNotificaiton(number: String, roomId: String, call: Boolean, remoteMessage: RemoteMessage) {
+        Log.d("##notification","In method send Notification ")
+        val sound: Uri =
+            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.callringotn);
+//        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        ringtone = RingtoneManager.getRingtone(applicationContext, sound)
+        ringtone?.play()
 
-
-    private fun popUpNotificaiton(
-        number: String, roomId: String, call: Boolean, remoteMessage: RemoteMessage
-    ) {
-        Log.d("##number", "-----number-----" + number)
         val buttonIntent = Intent(this, ButtonReceiver::class.java)
         buttonIntent.putExtra("notificationId", NOTIFICATION_ID)
 
 
+
+        val intent = Intent(this, CallActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        passdata(intent,number,roomId,call,remoteMessage,"notificatino")
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+
+        val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_call)
+
         val resultIntent =
             Intent(this, CallActivity::class.java)
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        passdata(resultIntent, number, roomId, call, remoteMessage)
+        passdata(resultIntent,number,roomId,call,remoteMessage,"notificaiton")
+//        passdata(resultIntent, number, roomId, call, remoteMessage)
 
 
         val resultPendingIntent =
@@ -228,60 +242,40 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 //Create the PendingIntent
         val btPendingIntent = PendingIntent.getBroadcast(this, 0, buttonIntent, 0)
 
-        val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_call)
-        notificationLayout.setTextViewText(R.id.txtCallerName, number)
-        notificationLayout.setOnClickPendingIntent(R.id.txtanswer, resultPendingIntent)
 
+        notificationLayout.setOnClickPendingIntent(R.id.txtanswer, resultPendingIntent)
 
         notificationLayout.setOnClickPendingIntent(R.id.txtreject, btPendingIntent)
 
 
-//            val sound: Uri =
-//                Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.callringotn);
-//        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-//             ringtone = RingtoneManager.getRingtone(applicationContext, sound)
-//            ringtone?.play()
 
-            val intent = Intent(this, CallActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra(CALL, call)
-        intent.putExtra(ROOM_ID, roomId)
-
-            val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-//        val sound: Uri =  Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.notification);
-//            val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_call)
-//        contentView.setImageViewResource(R.id.image, R.mipmap.ic_launcher);
-            val channelId = getString(R.string.default_notification_channel_id)
-
-            val notificationBuilder = NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic__chat_profile)
-                .setContentTitle("title")
-                .setContentText("message")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setCustomContentView(notificationLayout)
-//                .setSound(sound)
-                .setFullScreenIntent(pendingIntent,true)
-//            .setSound(defaultSoundUri)
-
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            // Since android Oreo notification channel is needed.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(
-                    channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_HIGH
-                )
-                playsound()
-                notificationManager.createNotificationChannel(channel)
-            }
-            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic__chat_profile)
+            .setContentTitle("title")
+            .setContentText("message")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCustomContentView(notificationLayout)
+            .setContentIntent(pendingIntent)
+//            .setFullScreenIntent(pendingIntent,true)
 
 
+//         Since android Oreo notification channel is needed.
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "channelname"
+            val description =" getString(R.string.channel_description)"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANNEL_ID, name, importance)
+            channel.description = description
+            channel.setShowBadge(true)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val buildNotification = notificationBuilder.build()
+        val mNotifyMgr = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        mNotifyMgr.notify(1,  buildNotification)
     }
 
     private fun passdata(
@@ -289,46 +283,21 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         number: String,
         roomId: String,
         call: Boolean,
-        remoteMessage: RemoteMessage
+        remoteMessage: RemoteMessage,
+        notification:String
     ) {
-//        resultIntent.putExtra(AppConstant.CONST_SENDER_NAME, number)
+        Log.d("##passdata",number+roomId+call+remoteMessage)
+        resultIntent.putExtra(AppConstant.CONST_SENDER_NAME, number)
         resultIntent.putExtra(CALL, call)
         resultIntent.putExtra(ROOM_ID, roomId)
+        resultIntent.putExtra(remoteMessage.from, AppConstant.CONST_SENDER_MOBILE_NUMBER)
+        resultIntent.putExtra("notification",notification)
 
     }
 
 
-    private fun NotificationManager.buildChannel() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            val name = "channelId"
-            val descriptionText = "Incoming Voice Call"
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val mChannel = NotificationChannel("CHANNEL_ID", name, importance)
-            mChannel.description = descriptionText
-            mChannel.enableVibration(true)
-
-//            playsound()
-
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(mChannel)
-        }
-
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val name = "Example Notification Channel"
-//            val descriptionText = "This is used to demonstrate the Full Screen Intent"
-//            val importance = NotificationManager.IMPORTANCE_HIGH
-//            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-//                description = descriptionText
-//            }
-//
-//            createNotificationChannel(channel)
-//        }
-    }
-
-    private fun playsound() {
+     fun playsound() {
         val soundUri =
             Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + applicationContext.packageName + "/" + R.raw.callringotn)
 
@@ -341,29 +310,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         ringtone?.stop()
     }
 
-    private fun getFullScreenIntent(
-        number: String,
-        roomId: String,
-        call: Boolean,
-        remoteMessage: RemoteMessage
-    ): PendingIntent? {
-        Log.d("##number", "-----number-----" + number)
-
-
-//        val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-//        notificationManager.cancelAll()
-
-//        ringtone?.stop()
-        Log.d("##number", number)
-
-        val intent = Intent(this, CallActivity::class.java)
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        passdata(intent, number, roomId, call, remoteMessage)
-
-
-        // flags and request code are 0 for the purpose of demonstration
-        return PendingIntent.getActivity(this, 0, intent, 0)
-    }
 
 
     private fun openIntent(
@@ -377,7 +323,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, CallActivity::class.java)
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
-        passdata(intent, number, roomId, call, remoteMessage)
+        passdata(intent, number, roomId, call, remoteMessage,"notificaiton")
         startActivity(intent)
 
         Log.d("Tutorialspoint.com", "Your application is in ForeGround state")
@@ -406,106 +352,69 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         Log.d(TAG, "sendRegistrationTokenToServer($token)")
     }
 
-    private fun customeNotification() {
-        // Get the layouts to use in the custom notification
-        val notificationLayout = RemoteViews(packageName, R.layout.custom_push)
-//        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large)
-        val channelId = getString(R.string.default_notification_channel_id)
-// Apply the layouts to the notification
-        val customNotification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setCustomContentView(notificationLayout)
-//            .setCustomBigContentView(notificationLayoutExpanded)
-            .build()
-    }
 
     //show notification
     private fun sendNotification(title: String, message: String) {
+        Log.d("##notification","In method send Notification ")
         val sound: Uri =
             Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.callringotn);
 //        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val r = RingtoneManager.getRingtone(applicationContext, sound)
-        r.play()
+     ringtone = RingtoneManager.getRingtone(applicationContext, sound)
+        ringtone?.play()
+
+        val buttonIntent = Intent(this, ButtonReceiver::class.java)
+        buttonIntent.putExtra("notificationId", NOTIFICATION_ID)
+
+
 
         val intent = Intent(this, CallActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-//        val sound: Uri =  Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.notification);
+
         val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_call)
-//        contentView.setImageViewResource(R.id.image, R.mipmap.ic_launcher);
-//        notificationLayout.setTextViewText(R.id.title, title);
-//        notificationLayout.setTextViewText(R.id.text, message);
-        val channelId = getString(R.string.default_notification_channel_id)
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+
+        val resultIntent =
+            Intent(this, CallActivity::class.java)
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//        passdata(resultIntent, number, roomId, call, remoteMessage)
+
+        val resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val btPendingIntent = PendingIntent.getBroadcast(this, 0, buttonIntent, 0)
+
+        notificationLayout.setOnClickPendingIntent(R.id.txtanswer, resultPendingIntent)
+        notificationLayout.setOnClickPendingIntent(R.id.txtreject, btPendingIntent)
+
+
+
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic__chat_profile)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-
-            .setAutoCancel(true)
             .setCustomContentView(notificationLayout)
-            .setSound(sound)
-//            .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent)
+//            .setFullScreenIntent(pendingIntent,true)
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Since android Oreo notification channel is needed.
+//         Since android Oreo notification channel is needed.
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+            val name = "channelname"
+            val description =" getString(R.string.channel_description)"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANNEL_ID, name, importance)
+            channel.description = description
+            channel.setShowBadge(true)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
-    }    private fun PopupNotification(title: String, message: String) {
-        val sound: Uri =
-            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.callringotn);
-//        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val r = RingtoneManager.getRingtone(applicationContext, sound)
-        r.play()
 
-        val intent = Intent(this, CallActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-//        val sound: Uri =  Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.notification);
-        val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_call)
-//        contentView.setImageViewResource(R.id.image, R.mipmap.ic_launcher);
-//        notificationLayout.setTextViewText(R.id.title, title);
-//        notificationLayout.setTextViewText(R.id.text, message);
-        val channelId = getString(R.string.default_notification_channel_id)
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic__chat_profile)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-
-            .setAutoCancel(true)
-            .setCustomContentView(notificationLayout)
-            .setSound(sound)
-//            .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
-
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            notificationManager.createNotificationChannel(channel)
-        }
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+        val buildNotification = notificationBuilder.build()
+        val mNotifyMgr = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        mNotifyMgr.notify(1,  buildNotification)
     }
+
 
 
     fun sendMessageToServer(payload: JSONObject) {
@@ -524,6 +433,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         private const val TAG = "MyFirebaseMsgService"
         public var ringtone: Ringtone? = null
         var mobilenumber: String? = null
+        var sendernamee=""
+        var sendernumberr=""
 
     }
 
