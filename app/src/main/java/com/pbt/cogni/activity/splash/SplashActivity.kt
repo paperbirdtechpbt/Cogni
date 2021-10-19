@@ -7,9 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.activity.login.LoginActivity
-import com.pbt.cogni.util.AppConstant.PREF_IS_LOGIN
-import com.pbt.cogni.util.AppConstant.PREF_TOKEN
-import com.pbt.cogni.util.AppConstant.PREF_USER
+import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
+import com.pbt.cogni.util.AppConstant.Companion.PREF_TOKEN
+import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 

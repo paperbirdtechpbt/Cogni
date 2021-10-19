@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.pbt.cogni.activity.login.User
 import com.pbt.cogni.activity.login.UserDetailsData
-import com.pbt.cogni.util.AppConstant.PREF_USER
+import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
 
 class MyPreferencesHelper {
 

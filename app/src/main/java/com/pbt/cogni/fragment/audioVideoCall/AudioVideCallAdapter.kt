@@ -13,8 +13,8 @@ import com.pbt.cogni.activity.call.CallActivity
 import com.pbt.cogni.repository.AnalystRepo
 import com.pbt.cogni.repository.AnalystRepository
 import com.pbt.cogni.util.AppConstant
-import com.pbt.cogni.util.AppConstant.KEY_CALL
-import com.pbt.cogni.util.AppConstant.ROOM_ID
+import com.pbt.cogni.util.AppConstant.Companion.KEY_CALL
+import com.pbt.cogni.util.AppConstant.Companion.ROOM_ID
 
 class AudioVideCallAdapter (
 

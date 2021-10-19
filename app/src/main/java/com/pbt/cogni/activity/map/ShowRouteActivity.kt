@@ -23,7 +23,6 @@ import com.pbt.cogni.R
 import com.pbt.cogni.activity.viewRoute.MyRoutesDataClass
 import com.pbt.cogni.activity.map.ShowRouteActivity.Companion.mMap
 import com.pbt.cogni.activity.map.ShowRouteActivity.Companion.mPolyline
-import com.pbt.cogni.util.AppConstant.VEW_ROUT
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStream
@@ -33,6 +32,7 @@ import java.net.URL
 import java.util.HashMap
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLngBounds
+import com.pbt.cogni.util.AppConstant.Companion.VEW_ROUT
 
 
 class ShowRouteActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailedListener {

@@ -5,7 +5,7 @@ import android.os.Parcelable
 import java.util.*
 
 data class Chat(
-    var sender: String? = "",
+    var sender: Int? = 0,
     var timestamp: Long? = Date().time,
     var type: String? = "",
     var text: String? = "",
@@ -14,7 +14,7 @@ data class Chat(
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-        parcel.readString(),
+        parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readValue(Long::class.java.classLoader) as? Long,
         parcel.readString(),
         parcel.readString(),
@@ -28,12 +28,12 @@ data class Chat(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(sender)
+        parcel.writeValue(sender)
         parcel.writeValue(timestamp)
         parcel.writeString(type)
         parcel.writeString(text)
         parcel.writeValue(read)
-        parcel.writeValue(key)
+        parcel.writeString(key)
     }
 
     companion object CREATOR : Parcelable.Creator<Chat> {
@@ -45,4 +45,6 @@ data class Chat(
             return arrayOfNulls(size)
         }
     }
+
+
 }

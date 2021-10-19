@@ -12,8 +12,8 @@ import com.google.gson.Gson
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.databinding.ActivityLoginBinding
-import com.pbt.cogni.util.AppConstant.PREF_IS_LOGIN
-import com.pbt.cogni.util.AppConstant.PREF_USER
+import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
+import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import es.dmoral.toasty.Toasty

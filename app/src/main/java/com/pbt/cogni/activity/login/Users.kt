@@ -15,5 +15,6 @@ data class Users (
     @SerializedName("companyname") var companyname : String,
     @SerializedName("RoleId") var RoleId : String,
     @SerializedName("Rolename") var Rolename : String,
-    @SerializedName("Type") var Type : Int
+    @SerializedName("Type") var Type : Int,
+    @SerializedName("Email") var Email : String
 )
