@@ -16,6 +16,8 @@ android:textStyle="bold"
         android:layout_marginTop="18dp"
         android:text="CallersName"
 />
+
+
     <TextView
         android:id="@+id/label_incomingcall"
         android:layout_width="wrap_content"
@@ -26,9 +28,7 @@ android:textStyle="bold"
         android:text="Incoming Voice Call" />
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-       >
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/txtanswer"

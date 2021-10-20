@@ -31,7 +31,8 @@ class AudioVideCallAdapter(
     companion object{
        var callerName:String?=null
 
-    }    private var countrylist: HttpResponse? = null
+    }
+    private var countrylist: HttpResponse? = null
 
     fun setCountryList(countrylist: HttpResponse) {
         this.countrylist = countrylist
@@ -50,10 +51,11 @@ class AudioVideCallAdapter(
     override fun onBindViewHolder(holder: AudioVideCallAdapter.ViewHolder, position: Int) {
          callerName=  myResult?.mydata?.get(position)?.Firstname +""+ myResult?.mydata?.get(position)?.LastName
         val sendername=MyPreferencesHelper.getUser(context!!)?.FirstName+" "+MyPreferencesHelper.getUser(context!!)?.FirstName
-        Log.d("##sendername",sendername)
+        Log.d("##sendername", callerName)
 
         holder.txtAnalyst.text =callerName
         holder.txtAnalystnumber.text = myResult?.mydata?.get(position)?.Mobile
+
 
 
 
