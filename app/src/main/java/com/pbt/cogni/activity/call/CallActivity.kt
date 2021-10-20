@@ -53,6 +53,12 @@ import kotlinx.android.synthetic.main.activity_call.txtTimerVoiceCall
 import kotlinx.android.synthetic.main.activity_call_activity.*
 
 
+import android.media.MediaPlayer
+import android.os.Build
+import android.os.Looper
+import androidx.annotation.RequiresApi
+
+
 class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents {
     private val remoteProxyRenderer = ProxyRenderer()
     private val localProxyVideoSink = ProxyVideoSink()
@@ -73,9 +79,14 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var isSwappedFeeds = false
   private  var timerTextView: TextView? = null
     private var check:Boolean=false
+     var mp: MediaPlayer?=null
+    var ringtone:Ringtone?=null
+    var autodisconnect=false
+
 
 
     // Control buttons for limited UI
+
     private var button_speker: TextView? = null
     private var disconnectButton: TextView? = null
     private var cameraSwitchButton: TextView? = null
@@ -83,19 +94,22 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var toggleMuteButton: TextView? = null
     private var videoCallEnable = false
     private var isSpeker = true
-
+   var handler=Handler()
+    var postmilli:Long?=null
+var currentMilli:Long?=null
     var roomId: String? = ""
     var textView: TextView? = null
 
 
+//    @RequiresApi(Build.VERSION_CODES.P)
     public override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call_activity)
 
-
         cancleNotification()
 
+//        autodisconnect.setl
         textView = findViewById(R.id.txtUsernameVoiceCall)
         layout_callername.setText(sendernamee)
         layout_callernumber.setText(sendernumberr)
@@ -111,8 +125,15 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         roomId = intent.extras?.getString(ROOM_ID)
         name = intent.extras?.getString(CONST_SENDER_NAME)
         sendername = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
+        postmilli=intent.extras?.getLong("currentmilli")
+
+    Log.d("##diconnet",postmilli.toString())
+      currentMilli=System.currentTimeMillis()
 
         if (intent?.extras?.getString("notification") != null) {
+
+//            MyFirebaseMessagingService().setautoCancle()
+            setAutoDisconnect(true)
 
             incomingCallLayout.visibility = View.VISIBLE
             layout_callername.setText(sendernamee)
@@ -120,25 +141,23 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
             textView?.setText(sendernamee)
         }
         else{
-            val sound: Uri =Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.tringtringtring)
-            OutGoingRingtone = RingtoneManager.getRingtone(applicationContext, sound)
-            OutGoingRingtone?.play()
 
-            textView?.setText("$callerName")
+            setAutoDisconnect(false)
+            playOutGoingRing()
             StartCallProcess()
         }
-        Log.d("##CHeckName", "----" + name + "---" + videoCallEnable.toString())
 
-        btn_rejectCall.setOnClickListener{
+    btn_rejectCall.setOnClickListener{
+        disconnect()
             finish()
-            disconnect()
-        }
 
-   disconnectButton?.setOnClickListener{
-    if (check) { onCallHangUp() }
+        }
+    disconnectButton?.setOnClickListener{
+        if (check) { onCallHangUp() }
     else{ finish() }
 }
         btnAcceptCall.setOnClickListener {
+
             check=true
 
             incomingCallLayout.visibility= View.GONE
@@ -149,6 +168,44 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
             StartCallProcess()
         }
     }
+
+    private fun playOutGoingRing() {
+        val sound: Uri =
+            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.tringtringtring)
+
+        ringtone = RingtoneManager.getRingtone(applicationContext, sound)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ringtone?.setLooping(true)
+        }
+        ringtone?.play()
+        textView?.setText("$callerName")
+    }
+
+    private fun setAutoDisconnect(boolean:Boolean) {
+        var timer:Long=0
+
+        if (boolean){
+            if (postmilli.toString()=="0"){
+                postmilli=29000
+                Log.d("##diconnect","postmilli---"+postmilli.toString())
+                timer=postmilli!!
+            }
+            else{
+                val mytimer=currentMilli!!-postmilli!!
+                val timerrr:Long=30000-mytimer
+                timer=timerrr
+            }
+        }
+        else{ timer=30000 }
+        if (!autodisconnect){
+            handler.postDelayed({
+                ringtone?.stop()
+                finish()
+            }, timer)
+        }
+    }
+
     private fun StartCallProcess() {
 
         layout_callername.setText(sendernamee)
@@ -166,7 +223,6 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         toggleMuteButton?.visibility = View.VISIBLE
 
         if (!videoCallEnable) {
-
             Log.d("##CHance", "-----")
             val imageview = findViewById<ImageView>(R.id.voicebackgroundumage)
             imageview.setVisibility(View.VISIBLE)
@@ -253,6 +309,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 
 
     private fun setSpeakerOn() {
+        mp?.start()
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         audioManager!!.isSpeakerphoneOn = true
         audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
@@ -276,7 +333,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 
     // Join video call with randomly generated roomId
     private fun connectVideoCall(roomId: String) {
-        OutGoingRingtone?.stop()
+
 
         Log.e("##Call", "RoomOID : " + roomId)
         val roomUri = Uri.parse(APPRTC_URL)
@@ -355,7 +412,8 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 //    @UiThread
     private fun callConnected() {
 
-    OutGoingRingtone?.stop()
+    handler.removeCallbacksAndMessages(null)
+    ringtone?.stop()
 
         var startTime: Long = 0
         var timerHandler = Handler()
@@ -394,6 +452,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 
     // Disconnect from remote resources, dispose of local resources, and exit.
     private fun disconnect() {
+        ringtone?.stop()
 
         activityRunning = false
         remoteProxyRenderer.setTarget(null)

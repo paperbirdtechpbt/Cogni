@@ -11,7 +11,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
 
         <ImageView
@@ -39,7 +40,6 @@
             tools:ignore="MissingConstraints" />
 
         <TextView
-
             android:id="@+id/txtTimerVoiceCall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -185,7 +185,7 @@
         android:layout_height="match_parent"
         android:id="@+id/incomingCallLayout"
         android:background="#658A66"
-        android:visibility="visible">
+        android:visibility="gone">
 
       <ImageView
           android:layout_width="match_parent"

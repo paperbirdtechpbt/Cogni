@@ -51,6 +51,7 @@ import com.pbt.cogni.util.AppConstant.Companion.CONST_TITLE
 import com.pbt.cogni.util.AppConstant.Companion.ROOM_ID
 import com.pbt.cogni.util.AppConstant.Companion.SMALL_ROOM_ID
 import android.app.NotificationChannel
+import android.os.Handler
 
 
 private const val CHANNEL_ID = "my_channel"
@@ -206,9 +207,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
     private fun popUpNotificaiton(number: String, roomId: String, call: Boolean, remoteMessage: RemoteMessage) {
-        Log.d("##notification","In method send Notification ")
+        notificationCurrentmili=System.currentTimeMillis()
+
         val sound: Uri =
-            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.callringotn);
+            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.callringotn)
 //        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         ringtone = RingtoneManager.getRingtone(applicationContext, sound)
         ringtone?.play()
@@ -220,7 +222,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val intent = Intent(this, CallActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        passdata(intent,number,roomId,call,remoteMessage,"notificatino")
+        passdata(intent,number,roomId,call,remoteMessage,"notificatino", notificationCurrentmili)
 
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
@@ -229,7 +231,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val resultIntent = Intent(this, CallActivity::class.java)
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        passdata(resultIntent,number,roomId,call,remoteMessage,"notificaiton")
+        passdata(resultIntent,number,roomId,call,remoteMessage,"notificaiton", 0)
 //        passdata(resultIntent, number, roomId, call, remoteMessage)
 
 
@@ -252,7 +254,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setContentText("message")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCustomContentView(notificationLayout)
-//            .setContentIntent(pendingIntent)
+            .setTimeoutAfter(28000)
             .setFullScreenIntent(pendingIntent,true)
 
 
@@ -273,7 +275,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val buildNotification = notificationBuilder.build()
         val mNotifyMgr = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         mNotifyMgr.notify(1,  buildNotification)
-    }
+
+
+            }
+
+
 
     private fun passdata(
         resultIntent: Intent,
@@ -281,7 +287,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         roomId: String,
         call: Boolean,
         remoteMessage: RemoteMessage,
-        notification:String
+        notification:String,
+        currentmilli:Long
+
     ) {
         Log.d("##passdata",number+roomId+call+remoteMessage)
         resultIntent.putExtra(AppConstant.CONST_SENDER_NAME, number)
@@ -289,6 +297,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         resultIntent.putExtra(ROOM_ID, roomId)
         resultIntent.putExtra(remoteMessage.from, AppConstant.CONST_SENDER_MOBILE_NUMBER)
         resultIntent.putExtra("notification",notification)
+        resultIntent.putExtra("currentmilli",currentmilli)
 
     }
 
@@ -320,7 +329,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, CallActivity::class.java)
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
-        passdata(intent, number, roomId, call, remoteMessage,"notificaiton")
+        passdata(intent, number, roomId, call, remoteMessage,"notificaiton",0)
         startActivity(intent)
 
         Log.d("Tutorialspoint.com", "Your application is in ForeGround state")
@@ -428,6 +437,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         var mobilenumber: String? = null
         var sendernamee=""
         var sendernumberr=""
+        var notificationCurrentmili:Long=0
 
     }
 

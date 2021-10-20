@@ -84,7 +84,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
 
 
-        drawRoute()
+//        drawRoute()
 
 
         startlocation = findViewById(R.id.startLocation)
@@ -174,7 +174,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                 if (markerPoints.size >= 2) {
                     origin = markerPoints[0] as LatLng
                     dest = markerPoints[1] as LatLng
-//                    callApi()
+                    callApi()
                 }
             }
 
@@ -472,7 +472,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                 mMap?.animateCamera(cu)
 
 
-//                drawRoute()
+                drawRoute()
             }
 
         }
@@ -484,20 +484,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 //        val
 //
 //
-//        val url: String = getDirectionsUrl(data., mydesti!!)
-//        Log.d("urlll", url)
-//        val downloadTask = DownloadTask()
-//
-//        downloadTask.execute(url)
+        val url: String = getDirectionsUrl(origin!!, dest!!)
+        Log.d("urlll", url)
+        val downloadTask = DownloadTask()
+
+        downloadTask.execute(url)
     }
 
     private fun getDirectionsUrl(origin: LatLng, dest: LatLng): String {
 
         val str_originn = "origin=" + origin.latitude + "," + origin.longitude
         val str_dest = "destination=" + dest.latitude + "," + dest.longitude
-//        val waypointssss = "waypoints=" + "via:22.7788%2C73.6143%7Cvia:23.686720%2C73.383644"
+
+//        val waypointssss = "waypoints=" + "via:9.0765%2C7.3986%7Cvia:7.8023%2C6.7333"
+        val waypointssss = "waypoints=" + "via:22.1723%2C71.6636%7Cvia:22.3039%2C70.8022%7Cvia:21.5222%2C70.4579"
         val key = "key=" + getString(R.string.google_maps_key)
-        val parameters = "$str_originn&$str_dest&$key"
+        val parameters = "$str_originn&$str_dest&$waypointssss&$key"
         val output = "json"
         val urll = "https://maps.googleapis.com/maps/api/directions/$output?$parameters"
 
