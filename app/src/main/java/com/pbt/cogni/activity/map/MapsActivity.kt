@@ -91,7 +91,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
         floatButton?.setOnClickListener {
 //            23.638096496165915, 72.44615984161454
-            var uri = "waypoints=22.7349,72.4402|22.7507,72.6847"
+//            var uri = "waypoints=22.7349,72.4402|22.7507,72.6847"
+            var uri = "$myWaypoint"
             val navigation = Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse(
@@ -355,6 +356,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             var listLatLong: BaseRoutLatLng =
                 Gson().fromJson(response?.body()?.data.toString(), BaseRoutLatLng::class.java)
 
+           Log.d("##myresponse",listLatLong.listLatLng.toString())
+
             coordinates.clear()
             listLatLong.listLatLng?.forEach {
                 val latitude = it.lat
@@ -370,22 +373,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
 
             var uri = "waypoints="
-//            var k: Int = 1
-//            var count: Int = 0
-//            var size: Int = listLatLong.listLatLng!!.size / 22
-            //            listLatLong.listLatLng?.forEach {
-//                if (k == 1) {
-//                    count++
-//                    val latitude = it.lat
-//                    val longitude = it.long
+            var k: Int = 1
+            var count: Int = 0
+            var size: Int = listLatLong.listLatLng!!.size / 22
+                        listLatLong.listLatLng?.forEach {
+                if (k == 1) {
+                    count++
+                    val latitude = it.lat
+                    val longitude = it.long
 //                    uri = uri + latitude + "," + longitude + "|"
-//                    Log.d("##mylatlong","lat--"+latitude+"long--"+longitude)
-//                }
-//                if (size == k) {
-//                    k = 1
-//                }
-//                k++
-//            }
+                    uri = uri + latitude + "," + longitude
+                    Log.d("##mylatlong","lat--"+latitude+"long--"+longitude)
+                }
+                if (size == k) {
+                    k = 1
+                }
+                k++
+            }
             myWaypoint = uri
             AppUtils.logDebug(TAG, "Last Char " + uri)
             AppUtils.logDebug(TAG, "Last Char " + uri.dropLast(1))
