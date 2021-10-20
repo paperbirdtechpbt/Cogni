@@ -1,12 +1,9 @@
-package com.pbt.cogni.ImageCapture
+package com.pbt.cogni.activity.ImageCapture
 
-import android.R.attr
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,20 +11,8 @@ import android.provider.MediaStore.Images
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.pbt.cogni.R
-import io.grpc.Compressor
 import kotlinx.android.synthetic.main.activity_image_capture.*
 import java.io.ByteArrayOutputStream
-import java.io.File
-import android.R.attr.bitmap
-
-import android.R.attr.path
-import android.util.Log
-import java.io.FileOutputStream
-import java.io.InputStream
-import android.R.attr.data
-
-
-
 
 
 class ImageCapture : AppCompatActivity() {

@@ -157,9 +157,7 @@ var currentMilli:Long?=null
     else{ finish() }
 }
         btnAcceptCall.setOnClickListener {
-
             check=true
-
             incomingCallLayout.visibility= View.GONE
             txtTimerVoiceCall.setText("Connecting")
             textView?.setText("$sendernamee")

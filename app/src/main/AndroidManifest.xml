@@ -32,7 +32,7 @@
         android:theme="@style/Theme.Cogni"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".ImageCapture.ImageCapture"
+            android:name="com.pbt.cogni.activity.ImageCapture.ImageCapture"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
