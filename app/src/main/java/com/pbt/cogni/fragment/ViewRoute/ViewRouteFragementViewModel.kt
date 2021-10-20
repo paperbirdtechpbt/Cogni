@@ -16,63 +16,80 @@ import com.pbt.cogni.activity.map.Data
 import com.pbt.cogni.activity.map.Resultt
 import com.pbt.cogni.model.*
 import com.pbt.cogni.repository.AnalystRepository
+import com.pbt.cogni.repository.BaseRoutes
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
+import com.pbt.cogni.viewModel.LoginViewModel
 import kotlinx.coroutines.Job
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 
-class ViewRouteFragementViewModel:ViewModel(){
-    lateinit var liveDataList: MutableLiveData<HttpResponse>
-    companion object {
+class ViewRouteFragementViewModel:ViewModel(), Callback<HttpResponse> {
 
-        var result: ArrayList<Resultt>? = null
-        var myDAta: com.pbt.cogni.model.Data? = null
+    var routesList  = MutableLiveData<List<Routes>>()
+
+    companion object {
+        private var TAG : String = "ViewRouteFragment"
     }
 
     init {
-        liveDataList = MutableLiveData()
-
+        routesList = MutableLiveData<List<Routes>>()
     }
 
-    fun getLiveDataObserver(): MutableLiveData<HttpResponse> {
-        return liveDataList
+    fun getLiveDataObserver(): MutableLiveData<List<Routes>> {
+        return routesList
     }
 
 
     fun onRouteListRequest(context: Context) {
-        val apiclient = ApiClient.getClient()
-        val apiInterface = apiclient?.create(ApiInterface::class.java)
-        val call = apiInterface?.getRoutes("59","2","clientrequester@gmail.com")
-        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
-            override fun onResponse(
-                call: Call<HttpResponse>,
-                response: Response<HttpResponse>
-            ) {
-                liveDataList.postValue(response.body())
+        ApiClient.client.create(ApiInterface::class.java).getRoutes(MyPreferencesHelper.getUser(context)!!.companyId,
+            MyPreferencesHelper.getUser(context)!!.RoleId,
+            MyPreferencesHelper.getUser(context)!!.UserName).enqueue(this)
+    }
+//        val apiclient = ApiClient.getClient()
+//        val apiInterface = apiclient?.create(ApiInterface::class.java)
+//        val call = apiInterface?.getRoutes("59","2","clientrequester@gmail.com")
+//        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
+//            override fun onResponse(
+//                call: Call<HttpResponse>,
+//                response: Response<HttpResponse>
+//            ) {
+//                liveDataList.postValue(response.body())
+//
+//                var httpResponse = response.body()
+//
+//              myDAta = Gson().fromJson(Gson().toJson(httpResponse?.data), com.pbt.cogni.model.Data::class.java)
+//                result = Gson().fromJson(
+//                    Gson().toJson(myDAta?.result),
+//                    ArrayList<Resultt>()::class.java
+//                )
+//                Log.d("####", "result---${result}")
+////             result = Gson().fromJson(Gson().toJson(myResult?.mydata), ArrayList<Resultt>()::class.java)
+//
+//            }
+//
+//            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+//Log.d("##routelist","api faile"+t.message)
+//            }
+//
+//        })
 
-                var httpResponse = response.body()
+//    }
 
-              myDAta = Gson().fromJson(Gson().toJson(httpResponse?.data), com.pbt.cogni.model.Data::class.java)
-                result = Gson().fromJson(
-                    Gson().toJson(myDAta?.result),
-                    ArrayList<Resultt>()::class.java
-                )
-                Log.d("####", "result---${result}")
-//             result = Gson().fromJson(Gson().toJson(myResult?.mydata), ArrayList<Resultt>()::class.java)
+    override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
 
-            }
-
-            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-Log.d("##routelist","api faile"+t.message)
-            }
-
-        })
-
+        if(response?.body()?.code == false){
+           var baseList :  BaseRoutes =  Gson().fromJson(response?.body()?.data.toString(),BaseRoutes::class.java)
+            routesList.value = baseList.listRoutes
+            AppUtils.logDebug(TAG,  " Response : " + Gson().toJson(baseList.listRoutes))
+        }
     }
 
-
+    override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+        AppUtils.logError(TAG,  " onFailure : " + t?.message)
+    }
 }
 
 

@@ -24,7 +24,7 @@ class MyRoutesListAdapter(
         viewType: Int
     ): MyRoutesListAdapter.ViewHolder {
         var view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.myroutes, parent, false)
+            .inflate(R.layout.item_routes, parent, false)
         return ViewHolder(view)
     }
 

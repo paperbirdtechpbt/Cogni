@@ -3,39 +3,45 @@ package com.pbt.cogni.activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.location.Address
-import android.location.Geocoder
 import android.net.Uri
 import android.os.AsyncTask
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.internal.OnConnectionFailedListener
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
-import com.pbt.cogni.activity.map.PlaceAutoSuggestAdapter
-import com.pbt.cogni.activity.map.Data
-import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.Parse.DirectionsJSONParser
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
+import com.pbt.cogni.activity.MapsActivity.Companion.endLat
+import com.pbt.cogni.activity.MapsActivity.Companion.endLong
 import com.pbt.cogni.activity.MapsActivity.Companion.mMap
 import com.pbt.cogni.activity.MapsActivity.Companion.mPolyline
+import com.pbt.cogni.activity.MapsActivity.Companion.startLat
+import com.pbt.cogni.activity.MapsActivity.Companion.startLong
+import com.pbt.cogni.model.BaseRoutLatLng
+import com.pbt.cogni.model.HttpResponse
+import com.pbt.cogni.util.AppConstant.Companion.CONST_FROM_ADDRESS
+import com.pbt.cogni.util.AppConstant.Companion.CONST_ROUTE_ID
+import com.pbt.cogni.util.AppConstant.Companion.CONST_STATUS
+import com.pbt.cogni.util.AppConstant.Companion.CONST_STATUS_APPROVED
+import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_ADDRESS
+import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_DESTINATION_LAT
+import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_DESTINATION_LONG
+import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_ORIGIN_LAT
+import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_ORIGIN_LONG
+import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.Config.BASE_GOOGLE_MAP_ROUTES
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -45,257 +51,82 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.HashMap
+import java.util.*
+import kotlin.collections.ArrayList
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailedListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailedListener,
+    Callback<HttpResponse> {
 
-
-    private var markerPoints = ArrayList<Any>()
-    private var origin: LatLng? = null
-    private var dest: LatLng? = null
-    private val options = MarkerOptions()
-    private var apiInterface: ApiInterface? = null
     private var startcity: String? = ""
     private var endcity: String? = ""
-    private var startcitylatlong: LatLng? = null
-    private var endcitylatlng: LatLng? = null
-    private var startlocation: AutoCompleteTextView? = null
-    private var endlocation: AutoCompleteTextView? = null
-    private var seachbutton: Button? = null
-    private var bottomNavigation: BottomNavigationView? = null
+    private var startAddress: String = ""
+    private var endAddress: String = ""
+    private var myWaypoint: String = ""
 
     companion object {
+        val options = MarkerOptions()
+        var markerPoints = ArrayList<Any>()
         var mMap: GoogleMap? = null
         var mPolyline: Polyline? = null
         val coordinates: ArrayList<LatLng> = ArrayList()
-        var startpoint: LatLng? = null
-        var lastpoint: LatLng? = null
-    }
+        var TAG: String = "MapsActivity"
+        var startLat: Double = 00.00
+        var startLong: Double = 00.00
+        var endLat: Double = 00.00
+        var endLong: Double = 00.00
+        var routeId: String = ""
 
+        var floatButton : FloatingActionButton ? = null;
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
+        floatButton = findViewById(R.id.floating_action_button)
 
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+
+
+        floatButton?.setOnClickListener {
+            val navigation = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse(
+                "google.navigation:q=" + endLat+","+ endLong+"&"+ myWaypoint)
+        )
+        navigation.setPackage("com.google.android.apps.maps")
+        startActivity(navigation)
+        }
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        startAddress = intent.getStringExtra(CONST_TO_ADDRESS)
+        endAddress = intent.getStringExtra(CONST_FROM_ADDRESS)
 
+        if (intent.getStringExtra(CONST_STATUS).equals(CONST_STATUS_APPROVED)) {
+            startLat = intent.getDoubleExtra(CONST_TO_ORIGIN_LAT, 00.00)
+            startLong = intent.getDoubleExtra(CONST_TO_ORIGIN_LONG, 00.00)
+            endLat = intent.getDoubleExtra(CONST_TO_DESTINATION_LAT, 00.00)
+            endLong = intent.getDoubleExtra(CONST_TO_DESTINATION_LONG, 00.00)
+            routeId = intent.getIntExtra(CONST_ROUTE_ID, 0).toString()
+//            drawRoute()
+            getWayPoint()
 
-        drawRoute()
-
-
-        startlocation = findViewById(R.id.startLocation)
-        endlocation = findViewById(R.id.endLocation)
-        seachbutton = findViewById(R.id.btn_searLocation)
-        bottomNavigation = findViewById(R.id.bottom_navigationnn)
-
-        bottomNavigation!!.setOnNavigationItemReselectedListener {
-            when (it.itemId) {
-                R.id.viewroute -> {
-//                    Toast.makeText(
-//                        applicationContext,
-//                        getString("R.string.msg_View_Routes"),
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-
-                }
-                R.id.audiovideo -> {
-//                    Toast.makeText(
-//                        applicationContext,
-//                        getString(R.string.msg_audio_video),
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-                }
-                R.id.chat -> {
-//                    Toast.makeText(
-//                        applicationContext,
-//                        getString(R.string.msg_chats),
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-
-                }
-
-            }
-        }
-
-        if (startlocation!!.text.isEmpty()) {
-
-            markerPoints.clear()
-        }
-        setAdapterForPredictions()
-
-
-        startlocation?.setOnItemClickListener { parent, view, position, id ->
-
-            if (markerPoints.size > 1) {
-                markerPoints.clear()
-                mMap?.clear()
-            }
-
-            val latLng = getLatLngFromAddress(startlocation?.text.toString())
-            startcitylatlong = latLng
-            setMarker(latLng!!)
-
-
-            if (latLng != null) {
-                val address = getAddressFromLatLng(latLng)
-                startcity = address?.subAdminArea
-            }
-        }
-
-
-        endlocation?.setOnItemClickListener { parent, view, position, id ->
-
-            var latLng = getLatLngFromAddress(endlocation!!.text.toString())
-            endcitylatlng = latLng
-            setMarker(latLng!!)
-
-
-            if (latLng != null) {
-                val address = getAddressFromLatLng(latLng)
-                endcity = address?.subAdminArea
-            }
-        }
-
-
-        seachbutton?.setOnClickListener {
-
-            if (startlocation!!.text.isEmpty() && endlocation!!.text.isEmpty()) {
-                Toast.makeText(
-                    this,
-                    "R.string.msg_Please_select_start_and_end_location",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-            } else {
-                if (markerPoints.size >= 2) {
-                    origin = markerPoints[0] as LatLng
-                    dest = markerPoints[1] as LatLng
-//                    callApi()
-                }
-            }
-
+            AppUtils.logDebug(TAG, " Routes Id " + routeId)
         }
     }
 
-    private fun setAdapterForPredictions() {
-        endlocation?.setAdapter(
-            PlaceAutoSuggestAdapter(
-                this,
-                android.R.layout.simple_list_item_1
-            )
-        )
-        startlocation?.setAdapter(
-            PlaceAutoSuggestAdapter(
-                this,
-                android.R.layout.simple_list_item_1
-            )
-        )
-    }
-
-    private fun callApi() {
-        apiInterface = ApiClient.client.create(ApiInterface::class.java)
-
-        val call: Call<HttpResponse> = apiInterface!!.sentOriginDest(startcity!!, endcity!!)
-
-        call.enqueue(object : Callback<HttpResponse> {
-            override fun onResponse(
-                call: Call<HttpResponse>,
-                response: Response<HttpResponse>
-            ) {
-
-                if (response.body()?.data == null) {
-                    Toast.makeText(applicationContext, response.body()?.message, Toast.LENGTH_LONG)
-                        .show()
-                } else {
-                    hidekeyboard()
-
-                    coordinates.clear()
-                    mMap?.clear()
-
-
-                    val responseDataClass: HttpResponse? = response.body()
-                    val myResult: Data? =
-                        Gson().fromJson(Gson().toJson(responseDataClass!!.data), Data::class.java)
-
-                    saveLatlongPoints(myResult)
-
-                    drawPolyline()
-                    startNavigation()
-
-                }
-            }
-
-            override fun onFailure(call: Call<HttpResponse>, t: Throwable?) {
-                Toast.makeText(
-                    applicationContext,
-                    "getString(R.string.msg_Sorry_No_Routes_Found)",
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-            }
-        })
-    }
-
-    private fun startNavigation() {
-        val pareseuri = "google.navigation:q=$endcity,$endcity&mode=l"
-//                    val gmmIntentUri = Uri.parse("google.navigation:q=Rajkot,Botad&mode=l")
-        val gmmIntentUri = Uri.parse(pareseuri)
-        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-        mapIntent.setPackage("com.google.android.apps.maps")
-        startActivity(mapIntent)
+    public fun getWayPoint() {
+        ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
     }
 
     private fun drawPolyline() {
-        val options = PolylineOptions().width(8f).color(Color.BLUE).geodesic(true)
+        val options = PolylineOptions().width(8f).color(Color.BLUE).geodesic(false)
         for (z in 0 until coordinates.size) {
             val point: LatLng = coordinates.get(z)
             options.add(point)
         }
         mPolyline = mMap?.addPolyline(options)
-    }
-
-    private fun saveLatlongPoints(myResult: Data?) {
-        myResult?.mydata?.forEach {
-            val latitude = it.lat
-            val longitude = it.lng
-            coordinates.add(LatLng(latitude, longitude))
-        }
-        startpoint = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
-        lastpoint = LatLng(
-            coordinates.get(coordinates.lastIndex).latitude,
-            coordinates.get(coordinates.lastIndex).longitude
-        )
-        setMarkerPoints(startpoint!!, lastpoint!!)
-    }
-
-    private fun setMarkerPoints(start: LatLng, end: LatLng) {
-        if (startpoint == start) {
-            markerPoints.clear()
-            mMap?.clear()
-            markerPoints.add(start)
-            options.position(start)
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-            mMap?.addMarker(options)
-            if (lastpoint == end) {
-                markerPoints.add(end)
-                options.position(end)
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                mMap?.addMarker(options)
-            }
-        }
-
-        val builder = LatLngBounds.Builder()
-
-        for (marker in markerPoints) {
-            builder.include(marker as LatLng)
-        }
-        val bounds = builder.build()
-        val cu = CameraUpdateFactory.newLatLngBounds(bounds, 450)
-        mMap?.animateCamera(cu)
     }
 
     private fun hidekeyboard() {
@@ -307,218 +138,212 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         )
     }
 
-    private fun getAddressFromLatLng(latLng: LatLng): Address? {
-        val geocoder = Geocoder(this)
-        val addresses: List<Address>?
-        return try {
-            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 5)
-            addresses?.get(0)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
 
-    private fun setMarker(latLng: LatLng) {
-        markerPoints.add(latLng)
-
-        options.position(latLng)
-
-        if (markerPoints.size == 1) {
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-        } else if (markerPoints.size == 2) {
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-        }
-        mMap?.addMarker(options)
-    }
-
-    private fun getLatLngFromAddress(address: String): LatLng? {
-        val geocoder = Geocoder(this)
-        val addressList: List<Address>?
-        return try {
-            addressList = geocoder.getFromLocationName(address, 1)
-            if (addressList != null) {
-                val singleaddress = addressList[0]
-                LatLng(singleaddress.latitude, singleaddress.longitude)
-            } else {
-                null
-            }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
+//    private fun setMarker(latLng: LatLng) {
+//        markerPoints.add(latLng)
+//
+//        options.position(latLng)
+//
+//        if (markerPoints.size == 1) {
+//            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+//        } else if (markerPoints.size == 2) {
+//            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+//        }
+//        mMap?.addMarker(options)
+//    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
 
-        mMap?.setOnMapClickListener {
-            if (markerPoints.size > 1) {
-                markerPoints.clear()
-                mMap?.clear()
-            }
-
-            markerPoints.add(it)
-
-            options.position(it)
-            if (markerPoints.size == 1) {
-
-                val addresses = getAddressFromLatLng(it)
-
-                Log.d("adresss", "----" + addresses)
-                val state = addresses?.adminArea
-                val socityr = addresses?.premises
-                val area = addresses?.subLocality
-                startcity = addresses?.locality
-                val district = addresses?.subAdminArea
-                val country = addresses?.countryName
-                var add = ""
-                Log.d(
-                    "Myaddress", "start---$state \n " +
-                            "society---$socityr  \n   " +
-                            "area---$area \n  ciyt---$startcity \n" +
-                            "distric----$district  \n country--$country"
-                )
-
-                if (socityr != null) {
-                    add += socityr + ", "
-
-                }
-
-                if (area != null) {
-                    add += area + ", "
-
-                }
-                if (startcity != null) {
-                    add += startcity + ", "
-
-                }
-                if (district != null) {
-                    add += district + ", "
-
-                }
-                if (state != null) {
-                    add += state + ", "
-
-                }
-                if (country != null) {
-                    add += country + ", "
-
-                }
-                if (country == null) {
-                    add += "Sea"
-                }
-
-
-
-                startlocation?.setText(add)
-
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-
-
-            } else if (markerPoints.size == 2) {
-
-                val addresses = getAddressFromLatLng(it)
-                val state = addresses?.adminArea
-                val socityr = addresses?.premises
-                val area = addresses?.subLocality
-
-                endcity = addresses?.locality
-                val country = addresses?.countryName
-                var add = ""
-                if (socityr != null) {
-                    add += socityr + ", "
-
-                }
-                if (area != null) {
-                    add += area + ", "
-
-                }
-                if (endcity != null) {
-                    add += endcity + ", "
-
-                }
-                if (state != null) {
-                    add += state + ", "
-
-                }
-                if (country == null) {
-                    add += "Sea"
-                }
-                if (country != null) {
-                    add += country + ", "
-
-                }
-                endlocation?.setText(add)
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-
-            }
-
-            mMap?.addMarker(options)
-
-            if (markerPoints.size >= 2) {
-                origin = markerPoints[0] as LatLng
-                dest = markerPoints[1] as LatLng
-
-
-                val builder = LatLngBounds.Builder()
-                for (marker in markerPoints) {
-                    builder.include(marker as LatLng)
-                }
-                val bounds = builder.build()
-                val cu = CameraUpdateFactory.newLatLngBounds(bounds, 450)
-                mMap?.animateCamera(cu)
-
-
-//                drawRoute()
-            }
-
-        }
+//        mMap?.setOnMapClickListener {
+//            if (markerPoints.size > 1) {
+//                markerPoints.clear()
+//                mMap?.clear()
+//            }
+//
+//            markerPoints.add(it)
+//
+//            options.position(it)
+//            if (markerPoints.size == 1) {
+//
+//                val addresses = getAddressFromLatLng(it)
+//
+//                Log.d("adresss", "----" + addresses)
+//                val state = addresses?.adminArea
+//                val socityr = addresses?.premises
+//                val area = addresses?.subLocality
+//                startcity = addresses?.locality
+//                val district = addresses?.subAdminArea
+//                val country = addresses?.countryName
+//                var add = ""
+//                Log.d(
+//                    "Myaddress", "start---$state \n " +
+//                            "society---$socityr  \n   " +
+//                            "area---$area \n  ciyt---$startcity \n" +
+//                            "distric----$district  \n country--$country"
+//                )
+//
+//                if (socityr != null) {
+//                    add += socityr + ", "
+//
+//                }
+//
+//                if (area != null) {
+//                    add += area + ", "
+//
+//                }
+//                if (startcity != null) {
+//                    add += startcity + ", "
+//
+//                }
+//                if (district != null) {
+//                    add += district + ", "
+//
+//                }
+//                if (state != null) {
+//                    add += state + ", "
+//
+//                }
+//                if (country != null) {
+//                    add += country + ", "
+//
+//                }
+//                if (country == null) {
+//                    add += "Sea"
+//                }
+//
+//
+//
+//                startlocation?.setText(add)
+//
+//                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+//
+//
+//            } else if (markerPoints.size == 2) {
+//
+//                val addresses = getAddressFromLatLng(it)
+//                val state = addresses?.adminArea
+//                val socityr = addresses?.premises
+//                val area = addresses?.subLocality
+//
+//                endcity = addresses?.locality
+//                val country = addresses?.countryName
+//                var add = ""
+//                if (socityr != null) {
+//                    add += socityr + ", "
+//
+//                }
+//                if (area != null) {
+//                    add += area + ", "
+//
+//                }
+//                if (endcity != null) {
+//                    add += endcity + ", "
+//
+//                }
+//                if (state != null) {
+//                    add += state + ", "
+//
+//                }
+//                if (country == null) {
+//                    add += "Sea"
+//                }
+//                if (country != null) {
+//                    add += country + ", "
+//
+//                }
+//                endlocation?.setText(add)
+//                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+//
+//            }
+//
+//            mMap?.addMarker(options)
+//
+//            if (markerPoints.size >= 2) {
+//                origin = markerPoints[0] as LatLng
+//                dest = markerPoints[1] as LatLng
+//
+//
+//                val builder = LatLngBounds.Builder()
+//                for (marker in markerPoints) {
+//                    builder.include(marker as LatLng)
+//                }
+//                val bounds = builder.build()
+//                val cu = CameraUpdateFactory.newLatLngBounds(bounds, 450)
+//                mMap?.animateCamera(cu)
+//
+//
+////                drawRoute()
+//            }
+//
+//        }
     }
 
-    private fun drawRoute() {
+    private fun drawRoute(wayPoint: String) {
+        val url: String = getDirectionsUrl(wayPoint)
 
-
-//        val
-//
-//
-//        val url: String = getDirectionsUrl(data., mydesti!!)
-//        Log.d("urlll", url)
-//        val downloadTask = DownloadTask()
-//
-//        downloadTask.execute(url)
+        val downloadTask = DownloadTask()
+        AppUtils.logDebug(TAG, " url  " + url)
+        downloadTask.execute(url)
     }
 
-    private fun getDirectionsUrl(origin: LatLng, dest: LatLng): String {
+    private fun getDirectionsUrl(wayPoint: String): String {
 
-        val str_originn = "origin=" + origin.latitude + "," + origin.longitude
+        var origin = LatLng(startLat, startLong)//startLatLng
+        var dest = LatLng(endLat, endLong)//endLatLng
+        val waypointssss = "waypoints=" + "6.140432,-75.185903"
+
+        val str_origin = "origin=" + origin.latitude + "," + origin.longitude
         val str_dest = "destination=" + dest.latitude + "," + dest.longitude
-//        val waypointssss = "waypoints=" + "via:22.7788%2C73.6143%7Cvia:23.686720%2C73.383644"
         val key = "key=" + getString(R.string.google_maps_key)
-        val parameters = "$str_originn&$str_dest&$key"
-        val output = "json"
-        val urll = "https://maps.googleapis.com/maps/api/directions/$output?$parameters"
 
+//        "via:22.1723%2C71.6636%7Cvia:23.686720%2C73.383644"\
 
-        val jsonRequest = JsonObjectRequest(Request.Method.GET, urll, null, { response ->
-            Log.d("onresponse", "Success Response----googleAPi" + response)
-        })
+        val parameters = "$str_origin&$str_dest&$waypointssss&$key"
 
-        { error ->
-            Log.d("onresponse", "Failure Responser-----googleAPi")
-            error.printStackTrace()
-        }
-
-        Volley.newRequestQueue(this).add(jsonRequest)
-        return urll
+        return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
 
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
 
     }
+
+    override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
+        if (response?.body()?.code == false) {
+            var listLatLong: BaseRoutLatLng =
+                Gson().fromJson(response?.body()?.data.toString(), BaseRoutLatLng::class.java)
+            var uri = "waypoints="
+            var k: Int = 1
+            var count: Int = 0
+            var size: Int = listLatLong.listLatLng!!.size / 22;
+
+            listLatLong.listLatLng?.forEach {
+                if (k == 1) {
+                    count++;
+                    val latitude = it.lat
+                    val longitude = it.long
+                    uri = uri + latitude + "," + longitude + "|"
+                }
+                if (size == k) {
+                    k = 1;
+                }
+                k++
+            }
+            myWaypoint = uri
+            AppUtils.logDebug(TAG, "Last Char " + uri)
+            AppUtils.logDebug(TAG, "Last Char " + uri.dropLast(1))
+            drawRoute(uri.dropLast(1))
+        }
+    }
+
+    override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+        AppUtils.logError(TAG, "Error " + t.message)
+    }
+
+
+
 }
 
 
@@ -593,6 +418,7 @@ private class DownloadTask : AsyncTask<String?, Void?, String>() {
             val points: ArrayList<LatLng?>? = ArrayList()
             var lineOptions: PolylineOptions? = PolylineOptions()
 
+
             for (i in result!!.indices) {
 
 
@@ -611,14 +437,32 @@ private class DownloadTask : AsyncTask<String?, Void?, String>() {
                 lineOptions?.color(Color.BLUE)
             }
 
+            setMarkerPoints(LatLng(startLat, startLong))
+            setMarkerPoints(LatLng(endLat, endLong))
+
             if (lineOptions != null) {
                 if (mPolyline != null) {
                     mPolyline!!.remove()
                 }
                 mPolyline = mMap?.addPolyline(lineOptions)
+                mMap?.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(startLat, startLong),
+                        12F
+                    )
+                )
             }
-
+            //var startLat: Double = 00.00
+            //    var startLat: Double =  00.00
         }
 
+        private fun setMarkerPoints(start: LatLng) {
+//            mMap?.clear()
+            MapsActivity.markerPoints.add(start)
+            MapsActivity.options.position(start)
+            MapsActivity.options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            mMap?.addMarker(MapsActivity.options)
+        }
     }
+
 }

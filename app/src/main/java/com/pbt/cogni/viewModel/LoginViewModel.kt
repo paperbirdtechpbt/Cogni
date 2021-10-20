@@ -60,10 +60,7 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
         btnSelected?.set(AppUtils.isEmailValid(email?.get()!!) && s.toString().length >= 5)
     }
 
-    override fun onResponse(
-        call: Call<HttpResponse>?,
-        response: Response<HttpResponse>?
-    ) {
+    override fun onResponse(call: Call<HttpResponse>?, response: Response<HttpResponse>?) {
         progressbar()
         userLogin?.value = response?.body()
 

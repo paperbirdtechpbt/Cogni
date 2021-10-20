@@ -20,5 +20,9 @@ data class Routes(
     @SerializedName("StartLocation") val StartLocation: String,
     @SerializedName("StartTime") val StartTime: String,
     @SerializedName("companyName") val companyName: String,
+    @SerializedName("StartLat") val startLat: String,
+    @SerializedName("StartLong") val startLong: String,
+    @SerializedName("EndLat") val endLat: String,
+    @SerializedName("EndLong") val endLong: String,
     @SerializedName("statusName") val statusName: String
 )

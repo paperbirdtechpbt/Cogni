@@ -26,6 +26,16 @@ class AppConstant {
         var CONST_MESSAGE_ID = "messageID"
         var CONST_SENDER_MOBILE_NUMBER="senderMobile"
         var CONST_SENDER_NAME="senderMobile"
+        var CONST_TO_ADDRESS="toAddress"
+        var CONST_FROM_ADDRESS="fromAddress"
+        var CONST_TO_ORIGIN="origin"
+        var CONST_TO_ORIGIN_LAT="startLat"
+        var CONST_ROUTE_ID="routId"
+        var CONST_TO_ORIGIN_LONG="startLong"
+        var CONST_TO_DESTINATION_LAT="endLat"
+        var CONST_TO_DESTINATION_LONG="endLong"
+        var CONST_STATUS="status"
+        var CONST_STATUS_APPROVED="Approved"
 
         const val SHARED_PREF_NAME = "Cogni"
 

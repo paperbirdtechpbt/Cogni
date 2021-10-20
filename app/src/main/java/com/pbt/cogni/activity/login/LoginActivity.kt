@@ -70,34 +70,6 @@ class LoginActivity : AppCompatActivity(), LoginListener {
         })
     }
 
-     fun callAPi() {
-
-        var token: String?
-        token = MyPreferencesHelper.getStringValue(this, PREF_TOKEN, "")
-        val userdataDetails: UserDetailsData? = MyPreferencesHelper.getUser(this)
-
-        Log.e("##id", userdataDetails?.id + "\n" + token)
-
-        val apiclient = ApiClient.clientUpdateToken()
-        val apiInterface = apiclient?.create(ApiInterface::class.java)
-        val call = apiInterface?.updateToken(userdataDetails!!.id, token!!)
-
-        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
-            override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
-
-                Log.e("##apiSuccess", response.body()?.code.toString())
-                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                finish()
-
-
-            }
-
-            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-
-            }
-
-        })
-    }
 
 
     override fun showPassword(isShow: Boolean) {
