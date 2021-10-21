@@ -4,5 +4,4 @@ import android.widget.ProgressBar
 
 interface LoginListener {
     fun showPassword(isShow : Boolean)
-
 }

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="addExpenseViewModel"
+            type="com.pbt.cogni.viewModel.AddExpenseViewModel" />
+    </data>
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activity.expense.ExpenseActivity">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_20sdp"
+        android:layout_marginBottom="37dp"
+        android:background="@drawable/button_gradiant"
+        android:drawableLeft="@drawable/ic_add_money"
+        android:onClick="@{(v)->addExpenseViewModel.addExpense(v)}"
+        android:drawableTint="@color/white"
+        android:text="@string/add_expense" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_40sdp"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="5dp"
+            app:cardUseCompatPadding="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                  android:paddingBottom="@dimen/_20sdp"
+                >
+
+                <LinearLayout
+                    android:id="@+id/rlExpensetype"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtExpensetype"
+                    android:layout_alignBottom="@+id/imgExpenseType"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_toEndOf="@+id/imgExpenseType">
+
+                    <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/button_gradiant"
+                        android:backgroundTint="@color/lowWhite"
+                        android:dropDownSelector="@color/lowBlue"
+                        android:theme="@style/Spinner"
+                        android:paddingStart="@dimen/_8sdp"
+                        android:entries="@{addExpenseViewModel.listType}"
+                        android:onItemSelected="@{(parent,view,pos,id)->addExpenseViewModel.onSelectItem(parent,view,pos,id)}"
+                        android:layout_below="@+id/txtExpensetype" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/imgExpenseType"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_below="@+id/txtExpensetype"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/orange"
+                    android:padding="@dimen/_5sdp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_expense_type"
+                        android:backgroundTint="@color/white" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/txtExpensetype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/droidsans"
+                    android:text="@string/expense_type" />
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="5dp"
+            app:cardUseCompatPadding="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/_20sdp"
+               >
+
+                <TextView
+                    android:id="@+id/txtImageCapture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/droidsans"
+                    android:text="@string/upload_slip" />
+
+                <RelativeLayout
+                    android:id="@+id/rlImageCapture"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_below="@+id/txtImageCapture"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/perple"
+                    android:padding="@dimen/_5sdp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_image"
+                        android:backgroundTint="@color/white" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/llImageCapture"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/txtImageCapture"
+                    android:layout_alignBottom="@+id/rlImageCapture"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_toEndOf="@+id/rlImageCapture"
+                    >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/button_gradiant"
+                        android:backgroundTint="@color/lowWhite"
+                        android:drawableRight="@drawable/ic_image_choose"
+                        android:drawablePadding="@dimen/_40sdp"
+                        android:drawableTint="@color/lowBlue"
+                        android:gravity="center|start"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingEnd="@dimen/_20sdp"
+                        android:onClick="@{(v)->addExpenseViewModel.captureImage(v)}"
+                        android:text="@{addExpenseViewModel.selectedImage}"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:textColor="@color/lowBlue" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="5dp"
+            app:cardUseCompatPadding="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_120sdp"
+                  >
+
+                <TextView
+                    android:id="@+id/txtDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/droidsans"
+                    android:text="@string/description" />
+
+                <RelativeLayout
+                    android:id="@+id/rlDesc"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/skyblue"
+                    android:layout_centerVertical="true"
+                    >
+
+                    <ImageView
+                        android:layout_width="19dp"
+                        android:layout_height="15dp"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/ic_description"
+                        android:backgroundTint="@color/white" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/llDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/txtDesc"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_toEndOf="@+id/rlDesc"
+                    >
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_80sdp"
+                        android:background="@drawable/bg_squar"
+                        android:maxLines="5"
+                        android:textSize="@dimen/_12sdp"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:textAlignment="textStart"
+                        android:gravity="start"
+                        android:hint="@string/please_enter_description"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:text="@={addExpenseViewModel.description}"
+                        android:textColorHint="@color/lowBlue" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="5dp"
+            app:cardUseCompatPadding="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                  android:paddingBottom="@dimen/_20sdp">
+
+                <TextView
+                    android:id="@+id/txtAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/droidsans"
+                    android:text="@string/amount" />
+
+                <RelativeLayout
+                    android:id="@+id/rlAmount"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_below="@+id/txtAmount"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/lowred"
+                    android:padding="@dimen/_5sdp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_money_currency"
+                        android:backgroundTint="@color/white" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/llAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtAmount"
+                    android:layout_alignBottom="@+id/rlAmount"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_toEndOf="@+id/rlAmount"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="@dimen/_12sdp"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:hint="Please enter amount"
+                        android:textColorHint="@color/lowBlue"
+                        android:text="@={addExpenseViewModel.ammount}"
+                        android:background="@drawable/bg_squar"
+                        android:inputType="number" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+</RelativeLayout>
+
+</layout>

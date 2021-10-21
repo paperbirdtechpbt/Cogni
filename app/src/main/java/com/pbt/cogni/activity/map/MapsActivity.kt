@@ -3,13 +3,16 @@ package com.pbt.cogni.activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Rect
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.internal.OnConnectionFailedListener
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -17,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.pbt.cogni.Parse.DirectionsJSONParser
@@ -29,7 +33,10 @@ import com.pbt.cogni.activity.MapsActivity.Companion.mMap
 import com.pbt.cogni.activity.MapsActivity.Companion.mPolyline
 import com.pbt.cogni.activity.MapsActivity.Companion.startLat
 import com.pbt.cogni.activity.MapsActivity.Companion.startLong
+import com.pbt.cogni.activity.expense.ExpenseActivity
+import com.pbt.cogni.activity.map.AdapterExpense
 import com.pbt.cogni.model.BaseRoutLatLng
+import com.pbt.cogni.model.Expense
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppConstant.Companion.CONST_FROM_ADDRESS
 import com.pbt.cogni.util.AppConstant.Companion.CONST_ROUTE_ID
@@ -41,7 +48,9 @@ import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_DESTINATION_LONG
 import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_ORIGIN_LAT
 import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_ORIGIN_LONG
 import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.ClickListener
 import com.pbt.cogni.util.Config.BASE_GOOGLE_MAP_ROUTES
+import kotlinx.android.synthetic.main.activity_maps.*
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -54,14 +63,15 @@ import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailedListener,
-    Callback<HttpResponse> {
+    Callback<HttpResponse>, ClickListener {
 
     private var startcity: String? = ""
     private var endcity: String? = ""
-    private var startAddress: String = ""
-    private var endAddress: String = ""
-    private var myWaypoint: String = ""
+    private var startAddress: String? = ""
+    private var endAddress: String? = ""
+    private var myWaypoint: String? = ""
 
     companion object {
         val options = MarkerOptions()
@@ -76,7 +86,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         var endLong: Double = 00.00
         var routeId: String = ""
 
-        var floatButton : FloatingActionButton ? = null;
+        var floatButton: FloatingActionButton? = null;
 
     }
 
@@ -86,34 +96,101 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
         floatButton = findViewById(R.id.floating_action_button)
 
+        from(bottomSheet).apply {
+            peekHeight = 80
+            this.state = STATE_COLLAPSED
+        }
 
-
+        btnBack?.setOnClickListener {
+            onBackPressed()
+        }
         floatButton?.setOnClickListener {
             val navigation = Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse(
-                "google.navigation:q=" + endLat+","+ endLong+"&"+ myWaypoint)
-        )
-        navigation.setPackage("com.google.android.apps.maps")
-        startActivity(navigation)
+                Intent.ACTION_VIEW,
+                Uri.parse(
+                    "google.navigation:q=" + endLat + "," + endLong + "&" + myWaypoint
+                )
+            )
+            navigation.setPackage("com.google.android.apps.maps")
+            startActivity(navigation)
         }
+
+        floatingAddExpense?.setOnClickListener {
+          startActivity(Intent(this,ExpenseActivity::class.java))
+        }
+
+
+        var list = ArrayList<Expense>()
+        var toll = Expense(
+            10,
+            "Toll tax receipt",
+            "500",
+            "https://www.consumercomplaints.in/thumb.php?complaints=2186655&src=51870105.jpg&wmax=900&hmax=900&quality=85&nocrop=1",
+            "this ahemedabad toll text reciept"
+        )
+        var toll2 = Expense(
+            10,
+            "petrol",
+            "500",
+            "https://images.financialexpress.com/2018/05/petrol-30-may-2018.jpg",
+               "Indian Oil petrol pump gota"
+        )
+
+        var toll3 = Expense(
+            10,
+            "Lunch",
+            "500",
+            "https://www.moneyunder30.com/images/2017/01/save_receipt.jpeg",
+            " Dominos pizza"
+        )
+
+        list.add(toll)
+        list.add(toll2)
+        list.add(toll3)
+        list.add(toll)
+        list.add(toll2)
+        list.add(toll3)
+
+        recyclerViewExpense?.layoutManager = LinearLayoutManager(applicationContext)
+        var listAdapter  = AdapterExpense(list, this)
+        recyclerViewExpense.adapter = listAdapter
+
+//        ?.routesList.observe(viewLifecycleOwner, Observer { routes ->
+//            recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+//            listAdapter = AdapterViewRouteList(routes, this)
+//            recyclerView?.adapter = listAdapter
+//        })
+
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         startAddress = intent.getStringExtra(CONST_TO_ADDRESS)
         endAddress = intent.getStringExtra(CONST_FROM_ADDRESS)
 
-        if (intent.getStringExtra(CONST_STATUS).equals(CONST_STATUS_APPROVED)) {
+        if (intent?.getStringExtra(CONST_STATUS).equals(CONST_STATUS_APPROVED)) {
             startLat = intent.getDoubleExtra(CONST_TO_ORIGIN_LAT, 00.00)
             startLong = intent.getDoubleExtra(CONST_TO_ORIGIN_LONG, 00.00)
             endLat = intent.getDoubleExtra(CONST_TO_DESTINATION_LAT, 00.00)
             endLong = intent.getDoubleExtra(CONST_TO_DESTINATION_LONG, 00.00)
             routeId = intent.getIntExtra(CONST_ROUTE_ID, 0).toString()
-//            drawRoute()
             getWayPoint()
-
             AppUtils.logDebug(TAG, " Routes Id " + routeId)
         }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            if (from(bottomSheet)!!.state === STATE_EXPANDED) {
+                val outRect = Rect()
+                bottomSheet.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(
+                        event.rawX.toInt(),
+                        event.rawY.toInt()
+                    )
+                ) from(bottomSheet).state = STATE_COLLAPSED
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 
     public fun getWayPoint() {
@@ -138,23 +215,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         )
     }
 
-
-//    private fun setMarker(latLng: LatLng) {
-//        markerPoints.add(latLng)
-//
-//        options.position(latLng)
-//
-//        if (markerPoints.size == 1) {
-//            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-//        } else if (markerPoints.size == 2) {
-//            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-//        }
-//        mMap?.addMarker(options)
-//    }
-
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
 
 //        mMap?.setOnMapClickListener {
 //            if (markerPoints.size > 1) {
@@ -342,8 +404,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         AppUtils.logError(TAG, "Error " + t.message)
     }
 
-
-
+    override fun onItemClick(position: Int, v: View?) {
+        AppUtils.logDebug(TAG,"Item click Call")
+    }
 }
 
 

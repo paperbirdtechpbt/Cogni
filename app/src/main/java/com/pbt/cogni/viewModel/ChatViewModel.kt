@@ -163,14 +163,17 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
                 } else {
 
                     val map = snapshot.value as Map<*, *>
-                    var obj = map.get("user1") as Map<*, *>
-                    if (obj.get("id") == userId!!.get()!!.toInt()) {
-                        AppUtils.logDebug(TAG, "query Change Call ===>> " + obj.get("id"))
-                        currentUser!!.set("user1")
-                    } else {
-                        AppUtils.logDebug(TAG, "query Change Call else ==> " + obj.get("id"))
+                    if(map.get("user1") != null) {
+                        var obj = map.get("user1") as Map<*, *>
+                        if (obj.get("id") == userId!!.get()!!.toInt()) {
+                            AppUtils.logDebug(TAG, "query Change Call ===>> " + obj.get("id"))
+                            currentUser!!.set("user1")
+                        } else {
+                            AppUtils.logDebug(TAG, "query Change Call else ==> " + obj.get("id"))
+                            currentUser!!.set("user2")
+                        }
+                    }else
                         currentUser!!.set("user2")
-                    }
                 }
             }
 

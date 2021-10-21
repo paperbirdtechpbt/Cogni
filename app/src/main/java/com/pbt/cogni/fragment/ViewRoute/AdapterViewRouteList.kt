@@ -1,14 +1,14 @@
 package com.pbt.cogni.fragment.ViewRoute
 
-import android.os.Parcel
-import android.os.Parcelable
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
-import com.pbt.cogni.databinding.ItemChatUserBinding
+import com.pbt.cogni.activity.MapsActivity
 import com.pbt.cogni.databinding.ItemRoutesBinding
 import com.pbt.cogni.model.Routes
 import com.pbt.cogni.model.Users
@@ -16,7 +16,7 @@ import com.pbt.cogni.util.RecyclerviewClickLisetner
 import com.pbt.cogni.util.RoutesViewRecyclerViewItemClick
 
 
-class AdapterViewRouteList(private val listAnalystList: List<Routes>, private  val listener : RoutesViewRecyclerViewItemClick) :
+class AdapterViewRouteList(private val listAnalystList: List<Routes>, private val listener: RoutesViewRecyclerViewItemClick) :
     RecyclerView.Adapter<AdapterViewRouteList.MyViewHolder>() {
     inner class MyViewHolder(val recyclerViewBinding: ItemRoutesBinding) :
         RecyclerView.ViewHolder(recyclerViewBinding.root)
@@ -35,5 +35,6 @@ class AdapterViewRouteList(private val listAnalystList: List<Routes>, private  v
         holder.recyclerViewBinding.root.setOnClickListener{
             listener.onRecyclerViewItemClick(holder.recyclerViewBinding.itemRow,listAnalystList[position])
         }
+
     }
 }
