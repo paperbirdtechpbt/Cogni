@@ -3,6 +3,7 @@ package com.pbt.cogni.activity
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
+import android.location.Location
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
@@ -69,6 +70,8 @@ import kotlin.collections.ArrayList
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailedListener,
     Callback<HttpResponse>, ClickListener {
 
+    private var startcitylatlng: String? = ""
+    private var endcitylatlng: String? = ""
     private var startcity: String? = ""
     private var endcity: String? = ""
     private var startAddress: String? = ""
@@ -106,15 +109,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         btnBack?.setOnClickListener {
             onBackPressed()
         }
+
+
         floatButton?.setOnClickListener {
-//            23.638096496165915, 72.44615984161454
-//            var uri = "waypoints=22.7349,72.4402|22.7507,72.6847"
             var uri = "$myWaypoint"
             val navigation = Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse(
-                    "google.navigation:q=" + "$startcitylatlng,$endcitylatlng"+"&"+uri)
-//                    "google.navigation:q=" + "23.577571,72.352010"+"&"+uri)
+                    "google.navigation:q=" + "$startcitylatlng,$endcitylatlng" + "&" + uri
+                )
             )
             navigation.setPackage("com.google.android.apps.maps")
             startActivity(navigation)
@@ -122,7 +125,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         }
 
         floatingAddExpense?.setOnClickListener {
-          startActivity(Intent(this,ExpenseActivity::class.java))
+            startActivity(Intent(this, ExpenseActivity::class.java))
         }
 
 
@@ -139,7 +142,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             "petrol",
             "500",
             "https://images.financialexpress.com/2018/05/petrol-30-may-2018.jpg",
-               "Indian Oil petrol pump gota"
+            "Indian Oil petrol pump gota"
         )
 
         var toll3 = Expense(
@@ -158,7 +161,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         list.add(toll3)
 
         recyclerViewExpense?.layoutManager = LinearLayoutManager(applicationContext)
-        var listAdapter  = AdapterExpense(list, this)
+        var listAdapter = AdapterExpense(list, this)
         recyclerViewExpense.adapter = listAdapter
 
 //        ?.routesList.observe(viewLifecycleOwner, Observer { routes ->
@@ -184,7 +187,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         }
     }
 
-     fun getWayPoint() {
+
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             if (from(bottomSheet)!!.state === STATE_EXPANDED) {
@@ -200,226 +203,230 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         return super.dispatchTouchEvent(event)
     }
 
-    public fun getWayPoint() {
-        ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
-    }
 
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+        public fun getWayPoint() {
+            ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
+        }
 
-    }
 
-    private fun drawRoute(org: LatLng, dest: LatLng) {
-        val url: String = getDirectionsUrl(org,dest)
+        override fun onMapReady(googleMap: GoogleMap) {
+            mMap = googleMap
 
-        val downloadTask = DownloadTask()
-        AppUtils.logDebug(TAG, " url  " + url)
-        downloadTask.execute(url)
-    }
+        }
 
-    private fun getDirectionsUrl(org: LatLng, dest: LatLng): String {
+        private fun drawRoute(org: LatLng, dest: LatLng) {
+            val url: String = getDirectionsUrl(org, dest)
+
+            val downloadTask = DownloadTask()
+            AppUtils.logDebug(TAG, " url  " + url)
+            downloadTask.execute(url)
+        }
+
+        private fun getDirectionsUrl(org: LatLng, dest: LatLng): String {
 
 //        var origin = LatLng(startLat, startLong)//startLatLng
 //        var dest = LatLng(endLat, endLong)//endLatLng
 //        val waypointssss = "waypoints=" + "6.140432,-75.185903"
 //        val waypointssss = "waypoints=" + "23.0225,72.5714"
-                val waypointssss = "waypoints=" + "via:22.7349%2C72.4402"
-        startcitylatlng=dest.latitude.toString()
-        endcitylatlng=dest.longitude.toString()
+            val waypointssss = "waypoints=" + "via:22.7349%2C72.4402"
+            startcitylatlng = dest.latitude.toString()
+            endcitylatlng = dest.longitude.toString()
 
-        val str_origin = "origin=" + org.latitude + "," + org.longitude
-        val str_dest = "destination=" + dest.latitude + "," + dest.longitude
+            val str_origin = "origin=" + org.latitude + "," + org.longitude
+            val str_dest = "destination=" + dest.latitude + "," + dest.longitude
 
 
-        val key = "key=" + getString(R.string.google_maps_key)
+            val key = "key=" + getString(R.string.google_maps_key)
 
 //        "via:22.1723%2C71.6636%7Cvia:23.686720%2C73.383644"\
 
 //        val parameters = "$str_origin&$str_dest&$waypointssss&$key"
-        val parameters = "$str_origin&$str_dest&$key"
+            val parameters = "$str_origin&$str_dest&$key"
 
 
-        val startPoint = Location("locationA")
-        startPoint.latitude = org.latitude
-        startPoint.longitude = org.longitude
+            val startPoint = Location("locationA")
+            startPoint.latitude = org.latitude
+            startPoint.longitude = org.longitude
 
-        val endPoint = Location("locationA")
-        endPoint.latitude = dest.latitude
-        endPoint.longitude = dest.longitude
-
-
-        return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
-
-    }
-
-    override fun onConnectionFailed(p0: ConnectionResult) {
-
-    }
-
-    override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
-        if (response?.body()?.code == false) {
-            var listLatLong: BaseRoutLatLng =
-                Gson().fromJson(response?.body()?.data.toString(), BaseRoutLatLng::class.java)
-
-           Log.d("##myresponse",listLatLong.listLatLng.toString())
-
-            coordinates.clear()
-            listLatLong.listLatLng?.forEach {
-                val latitude = it.lat
-                val longitude = it.long
-                coordinates.add(LatLng(latitude, longitude))
-            }
-
-            var orgn = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
-           var  dest = LatLng(
-                coordinates.get(coordinates.lastIndex).latitude,
-                coordinates.get(coordinates.lastIndex).longitude)
+            val endPoint = Location("locationA")
+            endPoint.latitude = dest.latitude
+            endPoint.longitude = dest.longitude
 
 
+            return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
 
-            var uri = "waypoints="
-            var k: Int = 1
-            var count: Int = 0
-            var size: Int = listLatLong.listLatLng!!.size / 22
-                        listLatLong.listLatLng?.forEach {
-                if (k == 1) {
-                    count++
+        }
+
+        override fun onConnectionFailed(p0: ConnectionResult) {
+
+        }
+
+        override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
+            if (response?.body()?.code == false) {
+                var listLatLong: BaseRoutLatLng =
+                    Gson().fromJson(response?.body()?.data.toString(), BaseRoutLatLng::class.java)
+
+                Log.d("##myresponse", listLatLong.listLatLng.toString())
+
+                coordinates.clear()
+                listLatLong.listLatLng?.forEach {
                     val latitude = it.lat
                     val longitude = it.long
-//                    uri = uri + latitude + "," + longitude + "|"
-                    uri = uri + latitude + "," + longitude
-                    Log.d("##mylatlong","lat--"+latitude+"long--"+longitude)
+                    coordinates.add(LatLng(latitude, longitude))
                 }
-                if (size == k) {
-                    k = 1
-                }
-                k++
-            }
-            myWaypoint = uri
-            AppUtils.logDebug(TAG, "Last Char " + uri)
-            AppUtils.logDebug(TAG, "Last Char " + uri.dropLast(1))
-//            drawRoute(uri.dropLast(1))
-            drawRoute(orgn,dest)
-        }
-    }
 
-    override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-        AppUtils.logError(TAG, "Error " + t.message)
-        Toast.makeText(this,"Sorry No routesFound",Toast.LENGTH_LONG).show()
-    }
+                var orgn = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
+                var dest = LatLng(
+                    coordinates.get(coordinates.lastIndex).latitude,
+                    coordinates.get(coordinates.lastIndex).longitude
+                )
+
+
+                var uri = "waypoints="
+                var k: Int = 1
+                var count: Int = 0
+                var size: Int = listLatLong.listLatLng!!.size / 22
+                listLatLong.listLatLng?.forEach {
+                    if (k == 1) {
+                        count++
+                        val latitude = it.lat
+                        val longitude = it.long
+//                    uri = uri + latitude + "," + longitude + "|"
+                        uri = uri + latitude + "," + longitude
+                        Log.d("##mylatlong", "lat--" + latitude + "long--" + longitude)
+                    }
+                    if (size == k) {
+                        k = 1
+                    }
+                    k++
+                }
+                myWaypoint = uri
+                AppUtils.logDebug(TAG, "Last Char " + uri)
+                AppUtils.logDebug(TAG, "Last Char " + uri.dropLast(1))
+//            drawRoute(uri.dropLast(1))
+                drawRoute(orgn, dest)
+            }
+        }
+
+        override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+            AppUtils.logError(TAG, "Error " + t.message)
+            Toast.makeText(this, "Sorry No routesFound", Toast.LENGTH_LONG).show()
+        }
 
     override fun onItemClick(position: Int, v: View?) {
-        AppUtils.logDebug(TAG,"Item click Call")
-    }
-}
-
-
-private class DownloadTask : AsyncTask<String?, Void?, String>() {
-
-    override fun doInBackground(vararg url: String?): String {
-
-        var data = ""
-        try {
-            data = downloadurl(url[0])
-        } catch (e: Exception) {
-        }
-        return data
+        AppUtils.logDebug(TAG, "Item click Call")
     }
 
-    private fun downloadurl(strUrl: String?): String {
+    private class DownloadTask : AsyncTask<String?, Void?, String>() {
 
-        var data = ""
-        var iStream: InputStream? = null
-        var urlConnection: HttpURLConnection? = null
+        override fun doInBackground(vararg url: String?): String {
 
-        try {
-            val url = URL(strUrl)
-
-            urlConnection = url.openConnection() as HttpURLConnection
-
-            urlConnection.connect()
-
-            iStream = urlConnection.inputStream
-            val br = BufferedReader(InputStreamReader(iStream))
-            val sb = StringBuffer()
-            var line: String?
-            while (br.readLine().also { line = it } != null) {
-                sb.append(line)
-            }
-            data = sb.toString()
-            br.close()
-        } catch (e: java.lang.Exception) {
-            Log.d("Exception on download", e.toString())
-        } finally {
-            iStream!!.close()
-            urlConnection!!.disconnect()
-        }
-        return data
-    }
-
-    override fun onPostExecute(result: String) {
-        super.onPostExecute(result)
-        val parserTask = ParserTask()
-
-        parserTask.execute(result)
-    }
-
-    class ParserTask : AsyncTask<String?, Int?, List<List<HashMap<String, String>>>?>() {
-
-        override fun doInBackground(vararg jsonData: String?): List<List<HashMap<String, String>>>? {
-            val jObject: JSONObject
-            var routes: List<List<HashMap<String, String>>>? = null
+            var data = ""
             try {
+                data = downloadurl(url[0])
+            } catch (e: Exception) {
+            }
+            return data
+        }
 
-                jObject = JSONObject(jsonData[0])
-                val parser = DirectionsJSONParser()
-                routes = parser.parse(jObject)
+        private fun downloadurl(strUrl: String?): String {
 
+            var data = ""
+            var iStream: InputStream? = null
+            var urlConnection: HttpURLConnection? = null
+
+            try {
+                val url = URL(strUrl)
+
+                urlConnection = url.openConnection() as HttpURLConnection
+
+                urlConnection.connect()
+
+                iStream = urlConnection.inputStream
+                val br = BufferedReader(InputStreamReader(iStream))
+                val sb = StringBuffer()
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    sb.append(line)
+                }
+                data = sb.toString()
+                br.close()
             } catch (e: java.lang.Exception) {
-                e.printStackTrace()
+                Log.d("Exception on download", e.toString())
+            } finally {
+                iStream!!.close()
+                urlConnection!!.disconnect()
             }
-            return routes
+            return data
         }
 
+        override fun onPostExecute(result: String) {
+            super.onPostExecute(result)
+            val parserTask = ParserTask()
 
-        override fun onPostExecute(result: List<List<HashMap<String, String>>>?) {
-            val lineOptions: PolylineOptions? = PolylineOptions()
-
-
-            for (i in result!!.indices) {
-
-                lineOptions?.addAll(coordinates)
-                lineOptions?.width(9f)
-                lineOptions?.color(Color.BLUE)
-            }
-
-            setMarkerPoints(LatLng(startLat, startLong))
-            setMarkerPoints(LatLng(endLat, endLong))
-
-            if (lineOptions != null) {
-                if (mPolyline != null) {
-                    mPolyline!!.remove()
-                }
-                mPolyline = mMap?.addPolyline(lineOptions)
-
-                val builder = LatLngBounds.Builder()
-                for (marker in markerPoints) {
-                    builder.include(marker as LatLng)
-                }
-                val bounds = builder.build()
-                val cu = CameraUpdateFactory.newLatLngBounds(bounds, 200)
-                mMap?.animateCamera(cu)
-            }
-
+            parserTask.execute(result)
         }
 
-        private fun setMarkerPoints(start: LatLng) {
-          markerPoints.add(start)
-            MapsActivity.options.position(start)
-            MapsActivity.options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-            mMap?.addMarker(MapsActivity.options)
+        class ParserTask : AsyncTask<String?, Int?, List<List<HashMap<String, String>>>?>() {
+
+            override fun doInBackground(vararg jsonData: String?): List<List<HashMap<String, String>>>? {
+                val jObject: JSONObject
+                var routes: List<List<HashMap<String, String>>>? = null
+                try {
+
+                    jObject = JSONObject(jsonData[0])
+                    val parser = DirectionsJSONParser()
+                    routes = parser.parse(jObject)
+
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+                return routes
+            }
+
+
+            override fun onPostExecute(result: List<List<HashMap<String, String>>>?) {
+                val lineOptions: PolylineOptions? = PolylineOptions()
+
+
+                for (i in result!!.indices) {
+
+                    lineOptions?.addAll(coordinates)
+                    lineOptions?.width(9f)
+                    lineOptions?.color(Color.BLUE)
+                }
+
+                setMarkerPoints(LatLng(startLat, startLong))
+                setMarkerPoints(LatLng(endLat, endLong))
+
+                if (lineOptions != null) {
+                    if (mPolyline != null) {
+                        mPolyline!!.remove()
+                    }
+                    mPolyline = mMap?.addPolyline(lineOptions)
+
+                    val builder = LatLngBounds.Builder()
+                    for (marker in markerPoints) {
+                        builder.include(marker as LatLng)
+                    }
+                    val bounds = builder.build()
+                    val cu = CameraUpdateFactory.newLatLngBounds(bounds, 200)
+                    mMap?.animateCamera(cu)
+                }
+
+            }
+
+            private fun setMarkerPoints(start: LatLng) {
+                markerPoints.add(start)
+                MapsActivity.options.position(start)
+                MapsActivity.options.icon(
+                    BitmapDescriptorFactory.defaultMarker(
+                        BitmapDescriptorFactory.HUE_RED
+                    )
+                )
+                mMap?.addMarker(MapsActivity.options)
+            }
         }
     }
-
 }
