@@ -1,10 +1,10 @@
 package com.pbt.cogni.WebService
 
 import com.pbt.cogni.model.HttpResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface ApiInterface {
     @FormUrlEncoded
@@ -58,4 +58,15 @@ interface ApiInterface {
         @Field("roleId") roleId: String,
         @Field("userName") userName: String
     ): retrofit2.Call<HttpResponse>
+
+    @Multipart
+    @POST("api/request")
+    fun addExpense(
+        @Part("routeid") id: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("descrition") descrition: RequestBody,
+        @Part("expenseType") expenseType: RequestBody,
+        @Part("expenseTypeId") expenseTypeId: RequestBody,
+        @Part image: MultipartBody.Part
+        ): retrofit2.Call<HttpResponse>
 }
