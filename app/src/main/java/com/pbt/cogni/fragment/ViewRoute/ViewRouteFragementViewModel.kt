@@ -38,9 +38,6 @@ class ViewRouteFragementViewModel:ViewModel(), Callback<HttpResponse> {
         routesList = MutableLiveData<List<Routes>>()
     }
 
-    fun getLiveDataObserver(): MutableLiveData<List<Routes>> {
-        return routesList
-    }
 
 
     fun onRouteListRequest(context: Context) {
@@ -48,35 +45,7 @@ class ViewRouteFragementViewModel:ViewModel(), Callback<HttpResponse> {
             MyPreferencesHelper.getUser(context)!!.RoleId,
             MyPreferencesHelper.getUser(context)!!.UserName).enqueue(this)
     }
-//        val apiclient = ApiClient.getClient()
-//        val apiInterface = apiclient?.create(ApiInterface::class.java)
-//        val call = apiInterface?.getRoutes("59","2","clientrequester@gmail.com")
-//        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
-//            override fun onResponse(
-//                call: Call<HttpResponse>,
-//                response: Response<HttpResponse>
-//            ) {
-//                liveDataList.postValue(response.body())
-//
-//                var httpResponse = response.body()
-//
-//              myDAta = Gson().fromJson(Gson().toJson(httpResponse?.data), com.pbt.cogni.model.Data::class.java)
-//                result = Gson().fromJson(
-//                    Gson().toJson(myDAta?.result),
-//                    ArrayList<Resultt>()::class.java
-//                )
-//                Log.d("####", "result---${result}")
-////             result = Gson().fromJson(Gson().toJson(myResult?.mydata), ArrayList<Resultt>()::class.java)
-//
-//            }
-//
-//            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-//Log.d("##routelist","api faile"+t.message)
-//            }
-//
-//        })
 
-//    }
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
 

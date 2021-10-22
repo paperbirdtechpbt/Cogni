@@ -1,10 +1,8 @@
 package com.pbt.cogni.fragment.audioVideoCall
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
@@ -14,9 +12,7 @@ import com.pbt.cogni.activity.call.CallActivity
 import com.pbt.cogni.activity.map.Data
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.activity.map.Resultt
-import com.pbt.cogni.model.BaseAnalystModel
 import com.pbt.cogni.util.AppConstant
-
 import com.pbt.cogni.util.AppConstant.Companion.CALL
 import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_NAME
 import com.pbt.cogni.util.MyPreferencesHelper
@@ -24,16 +20,15 @@ import retrofit2.Call
 import retrofit2.Response
 
 class AudioVideoViewModel : ViewModel() {
-    lateinit var liveDataList: MutableLiveData<HttpResponse>
-    companion object {
+     var liveDataList: MutableLiveData<HttpResponse>
 
+     companion object {
         var result: ArrayList<Resultt>? = null
         var myResult: Data? = null
     }
 
     init {
         liveDataList = MutableLiveData()
-
     }
 
     fun getLiveDataObserver(): MutableLiveData<HttpResponse> {
@@ -65,16 +60,12 @@ class AudioVideoViewModel : ViewModel() {
             }
 
             override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-
             }
-
         })
 
     }
 
     fun sendCall(myCall : Boolean,id : String,sendername:String,context : Context,roomID :String,senderMobile : String) {
-
-
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
         val call = apiInterface?.makeCall(roomID, MyPreferencesHelper.getUser(context)!!.Mobile, myCall.toString(),id,

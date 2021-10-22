@@ -52,11 +52,8 @@ class ChatActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Please enter a message", Toast.LENGTH_SHORT).show()
             }
-
-
         }
         getData()
-
     }
 
     private fun sendMessage() {
@@ -65,17 +62,12 @@ class ChatActivity : AppCompatActivity() {
             database?.reference?.child("message")?.child(getMessageId(loggedUserId!!, user?.uid!!))?.child(key!!)
 
         firebase?.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(p0: DataSnapshot) {
-
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
+            override fun onDataChange(p0: DataSnapshot) {}
+            override fun onCancelled(p0: DatabaseError) {}
 
         })
 
-        var message = Message(etMessage.text.toString().trim(), loggedUserId!!, user?.uid!!, System.currentTimeMillis())
+        val message = Message(etMessage.text.toString().trim(), loggedUserId!!, user?.uid!!, System.currentTimeMillis())
         firebase?.setValue(message)
 
         etMessage.setText("")

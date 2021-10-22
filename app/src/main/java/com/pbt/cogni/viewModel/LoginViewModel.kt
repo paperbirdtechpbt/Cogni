@@ -3,7 +3,6 @@ package com.pbt.cogni.viewModel
 import android.app.Application
 import android.content.Context
 import android.os.Handler
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -24,7 +23,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-public class LoginViewModel(val activity: Application) : AndroidViewModel(activity),
+class LoginViewModel(val activity: Application) : AndroidViewModel(activity),
     Callback<HttpResponse> {
 
     companion object{
@@ -32,7 +31,6 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
     }
 
     val context = activity
-
     var email: ObservableField<String>? = null
     var emailError: ObservableField<String>? = null
     var password: ObservableField<String>? = null
@@ -69,15 +67,9 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
 
     fun progressbar() {
 
-
         var progressBar = ProgressBar(this.activity)
-
         val handler = Handler()
-
-
-
         progressBar = progressBar
-
 
         var i = 0
         Thread(Runnable {
@@ -107,8 +99,6 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
         ) as InputMethodManager
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
 
-
-//        progressDialog?.value = true
         ApiClient.client.create(ApiInterface::class.java).login(
             email = email?.get()!!, password = password?.get()!!
         ).enqueue(this)
@@ -124,10 +114,7 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
         AppUtils.logError(TAG,  " Response : " + t?.message)
     }
 
-
-    fun onDoneClicked(view: View, actionId: Int, event: KeyEvent?): Boolean {
-
-
+     fun onDoneClicked(view: View, actionId: Int, event: KeyEvent?): Boolean {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             val imm = activity.getSystemService(
                 Context.INPUT_METHOD_SERVICE
@@ -139,7 +126,5 @@ public class LoginViewModel(val activity: Application) : AndroidViewModel(activi
         }
         return false
     }
-
-
-}
+    }
 

@@ -15,11 +15,7 @@ public class ButtonReceiver extends BroadcastReceiver  {
 
     public void onReceive(Context context, Intent intent) {
         Log.d("##onrecieve","On recivece");
-        int notificationId = intent.getIntExtra("notificationId", 0);
-
-
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-//        notificationManager.cancel(notificationId);
         notificationManager.cancelAll();
         new MyFirebaseMessagingService().stopSound();
 

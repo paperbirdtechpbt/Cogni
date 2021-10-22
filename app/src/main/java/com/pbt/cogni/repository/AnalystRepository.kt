@@ -10,8 +10,3 @@ class AnalystRepository(private  var api : Api): ApiRequest(){
     suspend fun getRouteList( companyId: String,roleId: String, userName: String) = apiRequest { api.getRouteList(companyId,roleId,userName)}
 
 }
-//data class ResponseDataClass(
-//    @SerializedName("error")  val code: Boolean,
-//    @SerializedName("msg")  val message: String,
-//    @SerializedName("result") val data: JsonObject
-//)

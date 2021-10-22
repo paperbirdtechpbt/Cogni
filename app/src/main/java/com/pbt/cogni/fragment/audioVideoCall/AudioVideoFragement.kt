@@ -15,19 +15,12 @@ import com.pbt.cogni.util.AppUtils
 import org.apache.http.HttpResponse
 
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-
 class AudioVideoFragement() : Fragment() {
+
     var viewModel: AudioVideoViewModel? = null
     val context  = activity
-
-
-    val listAnalyst = ArrayList<HttpResponse>()
     var audioVideCallAdapter: AudioVideCallAdapter? = null
     var recyclerViewAnalyst: RecyclerView? = null
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,9 +35,6 @@ class AudioVideoFragement() : Fragment() {
         initViewModel()
         initRecyclerView()
 
-
-
-
         return view
     }
 
@@ -55,14 +45,12 @@ class AudioVideoFragement() : Fragment() {
                 R.id.rlVideoCall -> {
                    AudioVideoViewModel().sendCall(true,result.id.toString(),sendername,requireContext(),
                        AppUtils.getRandomString(15),result.Mobile)
-
                 }
                 R.id.rlVoiceCall -> {
                     AudioVideoViewModel().sendCall(false,result.id.toString(),sendername,requireContext(),AppUtils.getRandomString(15),result.Mobile)
                 }
             }
         }
-
         recyclerViewAnalyst?.adapter = audioVideCallAdapter
     }
     private fun initViewModel() {

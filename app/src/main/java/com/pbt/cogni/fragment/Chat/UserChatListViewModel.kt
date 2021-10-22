@@ -8,7 +8,6 @@ import com.pbt.cogni.WebService.Coroutines
 import com.pbt.cogni.model.Users
 import com.pbt.cogni.model.BaseAnalystModel
 import com.pbt.cogni.model.HttpResponse
-import com.pbt.cogni.model.User
 import com.pbt.cogni.repository.AnalystRepository
 import com.pbt.cogni.util.AppUtils
 import kotlinx.coroutines.Job

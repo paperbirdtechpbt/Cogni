@@ -3,6 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.pbt.cogni">
 
+    <uses-permission android:name="android.permission.access_coarse_location" />
+    <uses-permission android:name="android.permission.access_fine_location" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY " />
+
     <application
         android:allowBackup="true"
         android:clearTaskOnLaunch="true"
@@ -17,10 +35,17 @@
         <activity android:name="com.pbt.cogni.activity.expense.ExpenseActivity"
             android:label="@string/addexpense"/>
         <activity
-            android:name=".activity.ImageCapture.ImageCapture"
+            android:name="com.pbt.cogni.activity.ImageCapture.ImageCapture"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+        <activity
+            android:name=".fcm.TestClassNotification"
+            android:exported="true"></activity>
         <activity
             android:name=".activity.chat.ChatActivity"
             android:theme="@style/AppTheme.NoActionBar"
@@ -54,13 +79,7 @@
         <activity
             android:name=".activity.SplashActivity"
             android:exported="true"
-            android:theme="@style/AppTheme.NoActionBar" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activity.call.CallActivity"
             android:enabled="true"
@@ -86,23 +105,5 @@
             </intent-filter>
         </service>
     </application>
-    <uses-permission android:name="android.permission.access_coarse_location" />
-    <uses-permission android:name="android.permission.access_fine_location" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-
-    <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY " />
 
 </manifest>

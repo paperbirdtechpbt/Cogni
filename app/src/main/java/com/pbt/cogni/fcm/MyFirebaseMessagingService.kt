@@ -2,41 +2,32 @@ package com.pbt.cogni.fcm
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager.RunningAppProcessInfo
-
 import android.app.NotificationManager.IMPORTANCE_HIGH
-
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
-
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-
 import com.firebase.client.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
-
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.call.CallActivity
 import com.pbt.cogni.activity.chat.ChatActivity
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppUtils
-
 import com.pbt.cogni.util.Config
 import com.pbt.cogni.util.MyPreferencesHelper
 import org.json.JSONObject
-
 import android.app.*
-
 import android.content.ContentResolver
-
 import android.app.PendingIntent
 import android.app.NotificationManager
 import android.media.Ringtone
@@ -45,13 +36,12 @@ import com.pbt.cogni.util.AppConstant.Companion.CONST_CHAT_MESSAGE
 import com.pbt.cogni.util.AppConstant.Companion.CONST_DATA
 import com.pbt.cogni.util.AppConstant.Companion.CONST_MESSAGE
 import com.pbt.cogni.util.AppConstant.Companion.CONST_NOTI_TITLE_INCOMMING_CALL
-
 import com.pbt.cogni.util.AppConstant.Companion.CONST_PAYLOAD
 import com.pbt.cogni.util.AppConstant.Companion.CONST_TITLE
 import com.pbt.cogni.util.AppConstant.Companion.ROOM_ID
 import com.pbt.cogni.util.AppConstant.Companion.SMALL_ROOM_ID
 import android.app.NotificationChannel
-import android.os.Handler
+
 
 
 private const val CHANNEL_ID = "my_channel"
