@@ -6,26 +6,19 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.gson.Gson
 import com.pbt.cogni.R
-import com.pbt.cogni.WebService.Api
 import com.pbt.cogni.fragment.Chat.UserChatListFragment
 import com.pbt.cogni.fragment.Profile.ProfileFragment
 import com.pbt.cogni.fragment.ViewRoute.ViewRouteFragement
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoFragement
-import com.pbt.cogni.repository.AnalystRepository
-import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppConstant.Companion.PREFF_OVERYLAY_PERMISSION
-import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
@@ -50,22 +43,6 @@ class MainActivity : AppCompatActivity() {
             MyPreferencesHelper.setStringValue(this, PREFF_OVERYLAY_PERMISSION,"true")
 
         }
-
-
-
-
-
-        val repository = AnalystRepository(Api())
-
-
-//       var   map  = mutableMapOf<String,String>()
-//        map.put("companyId","58")
-//        map.put("RoleId","5")
-//        map.put("UserName","analystanalyst@gmail.com")
-//
-
-
-
         getSupportActionBar()?.setTitle("Analyst Routes List ")
 
         if (savedInstanceState == null) {
@@ -74,17 +51,13 @@ class MainActivity : AppCompatActivity() {
             }
             supportFragmentManager.beginTransaction()
                 .replace(R.id.framelayout, ViewRouteFragement()).commit()
-
-
             bottomNavigation = findViewById(R.id.bottom_navigation)
             bottomNavigation?.getMenu()?.get(0)?.setChecked(true)
         }
-
         bottomNavigation?.setOnNavigationItemSelectedListener {
 
             when (it.itemId) {
                 R.id.profile -> {
-//                    supportActionBar?.hide()
                     getSupportActionBar()?.setTitle("Profile")
 
                     profileFragement = ProfileFragment()
@@ -126,8 +99,6 @@ class MainActivity : AppCompatActivity() {
                     getSupportActionBar()?.setTitle("Analyst Routes List ")
                     supportActionBar?.show()
 
-
-
                     viewRouteFragement = ViewRouteFragement()
                     supportFragmentManager
                         .beginTransaction()
@@ -136,12 +107,8 @@ class MainActivity : AppCompatActivity() {
                         .commit()
                 }
             }
-            true
-        }
-
-
+            true }
     }
-
     private fun chechpermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
                 android.Manifest.permission.READ_CONTACTS

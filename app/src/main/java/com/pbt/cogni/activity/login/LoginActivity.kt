@@ -4,41 +4,30 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.pbt.cogni.R
-import com.pbt.cogni.WebService.ApiClient
-import com.pbt.cogni.WebService.ApiInterface
 import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.callback.LoginListener
 
 import com.pbt.cogni.databinding.ActivityLoginBinding
-import com.pbt.cogni.model.HttpResponse
-import com.pbt.cogni.model.UserDetailsData
 import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
-import com.pbt.cogni.util.AppConstant.Companion.PREF_TOKEN
 import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.viewModel.LoginViewModel
 import es.dmoral.toasty.Toasty
-import retrofit2.Call
-import retrofit2.Response
-
 
 class LoginActivity : AppCompatActivity(), LoginListener {
 
     var viewModel: LoginViewModel? = null
     var binding: ActivityLoginBinding? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         viewModel = ViewModelProvider(
@@ -47,11 +36,9 @@ class LoginActivity : AppCompatActivity(), LoginListener {
         ).get(LoginViewModel::class.java)
 
         binding?.viewModel = viewModel
-
         viewModel!!.loginListener = this
 
         initObservables()
-
     }
 
     private fun initObservables() {
@@ -69,8 +56,6 @@ class LoginActivity : AppCompatActivity(), LoginListener {
                 Toasty.warning(this, "${response?.message}", Toasty.LENGTH_SHORT).show()
         })
     }
-
-
 
     override fun showPassword(isShow: Boolean) {
         if (isShow == true)

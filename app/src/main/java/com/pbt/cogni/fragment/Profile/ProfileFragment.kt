@@ -37,12 +37,6 @@ class ProfileFragment : Fragment() {
 
         setProfileData(view)
 
-
-
-
-
-//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-
         return view
     }
 

@@ -1,18 +1,13 @@
 package com.pbt.cogni.fragment.ViewRoute
 
-import android.os.Parcel
-import android.os.Parcelable
+
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
-import com.pbt.cogni.databinding.ItemChatUserBinding
 import com.pbt.cogni.databinding.ItemRoutesBinding
 import com.pbt.cogni.model.Routes
-import com.pbt.cogni.model.Users
-import com.pbt.cogni.util.RecyclerviewClickLisetner
 import com.pbt.cogni.util.RoutesViewRecyclerViewItemClick
 
 

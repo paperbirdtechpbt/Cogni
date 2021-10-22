@@ -68,18 +68,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
                 timestamp.setText(String.valueOf(AppUtils.Companion.getDisplayableTime(chat.getTimestamp())));
             }
-//            else if (chat.getType().equals("image")) {
-//                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_mine_image, parent, false);
-//                ImageView mine_image = convertView.findViewById(R.id.mine_image);
-//                TextView timestamp = convertView.findViewById(R.id.timestamp);
-//                timestamp.setText(String.valueOf(getDisplayableTime(chat.getTimestamp())));
-//                Glide.with(context)
-//                        .load(chat.getUrl())
-//                        .apply(RequestOptions
-//                                .placeholderOf(R.drawable.ic_user_placeholder)
-//                                .dontAnimate().error(R.drawable.ic_user_placeholder))
-//                        .into(mine_image);
-//            }
+
         } else {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_other_message, parent, false);
             if (chat.getType().equals("text")) {
@@ -89,19 +78,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
                 TextView timestamp = convertView.findViewById(R.id.timestamp);
                 timestamp.setText(String.valueOf(AppUtils.Companion.getDisplayableTime(chat.getTimestamp())));
             }
-//            else if (chat.getType().equals("image")) {
-//                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_other_image, parent, false);
-//                ImageView other_image = convertView.findViewById(R.id.other_image);
-//                TextView timestamp = convertView.findViewById(R.id.timestamp);
-//                timestamp.setText(String.valueOf(getDisplayableTime(chat.getTimestamp())));
-//                Glide.with(context)
-//                        .load(chat.getUrl())
-//                        .apply(RequestOptions
-//                                .placeholderOf(R.drawable.ic_user_placeholder)
-//                                .dontAnimate()
-//                                .error(R.drawable.ic_user_placeholder))
-//                        .into(other_image);
-//            }
+
         }
         return convertView;
     }

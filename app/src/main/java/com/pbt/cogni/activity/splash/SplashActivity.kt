@@ -14,7 +14,6 @@ import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.model.UserDetailsData
 import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
 import com.pbt.cogni.util.AppConstant.Companion.PREF_TOKEN
-import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import retrofit2.Call

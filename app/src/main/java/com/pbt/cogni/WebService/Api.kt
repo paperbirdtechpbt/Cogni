@@ -10,7 +10,6 @@ import retrofit2.http.POST
 
 interface Api {
 
-
     @FormUrlEncoded
     @POST("api/Analyst")
     suspend fun getAnylyst(@Field("companyId") companyId: String, @Field("RoleId") RoleId: String, @Field("UserName") UserName: String) : Response<HttpResponse>

@@ -1,6 +1,5 @@
 package com.pbt.cogni.activity
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.location.Location
@@ -8,7 +7,7 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
-import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.internal.OnConnectionFailedListener
@@ -77,8 +76,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         var endLat: Double = 00.00
         var endLong: Double = 00.00
         var routeId: String = ""
-
-        var floatButton : FloatingActionButton ? = null;
+        var floatButton : FloatingActionButton ? = null
 
     }
 
@@ -96,26 +94,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             val navigation = Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse(
-                    //pela ahiya end location mukine check karje
                     "google.navigation:q=" + "$startcitylatlng,$endcitylatlng"+"&"+uri)
 //                    "google.navigation:q=" + "23.577571,72.352010"+"&"+uri)
             )
             navigation.setPackage("com.google.android.apps.maps")
             startActivity(navigation)
 
-//            val strUri =
-//            "http://maps.google.com/maps?q=loc:" + startcitylatlng.toString() + "," + endcitylatlng.toString() + " (" + "Sola".toString() + ")"
-//            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(strUri))
-//            intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity")
-////            startActivity(intent)
-////
-////            val navigation = Intent(
-////            Intent.ACTION_VIEW,
-////            Uri.parse(
-////                "google.navigation:q=" + endLat+","+ endLong+"&"+ myWaypoint)
-////        )
-////        navigation.setPackage("com.google.android.apps.maps")
-//        startActivity(intent)
         }
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -136,168 +120,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         }
     }
 
-    public fun getWayPoint() {
+     fun getWayPoint() {
         ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
     }
 
-    private fun drawPolyline() {
-        val options = PolylineOptions().width(8f).color(Color.BLUE).geodesic(false)
-        for (z in 0 until coordinates.size) {
-            val point: LatLng = coordinates.get(z)
-            options.add(point)
-        }
-        mPolyline = mMap?.addPolyline(options)
-    }
-
-    private fun hidekeyboard() {
-        val inputManager: InputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputManager.hideSoftInputFromWindow(
-            currentFocus?.windowToken,
-            InputMethodManager.SHOW_FORCED
-        )
-    }
-
-
-//    private fun setMarker(latLng: LatLng) {
-//        markerPoints.add(latLng)
-//
-//        options.position(latLng)
-//
-//        if (markerPoints.size == 1) {
-//            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-//        } else if (markerPoints.size == 2) {
-//            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-//        }
-//        mMap?.addMarker(options)
-//    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-
-//        mMap?.setOnMapClickListener {
-//            if (markerPoints.size > 1) {
-//                markerPoints.clear()
-//                mMap?.clear()
-//            }
-//
-//            markerPoints.add(it)
-//
-//            options.position(it)
-//            if (markerPoints.size == 1) {
-//
-//                val addresses = getAddressFromLatLng(it)
-//
-//                Log.d("adresss", "----" + addresses)
-//                val state = addresses?.adminArea
-//                val socityr = addresses?.premises
-//                val area = addresses?.subLocality
-//                startcity = addresses?.locality
-//                val district = addresses?.subAdminArea
-//                val country = addresses?.countryName
-//                var add = ""
-//                Log.d(
-//                    "Myaddress", "start---$state \n " +
-//                            "society---$socityr  \n   " +
-//                            "area---$area \n  ciyt---$startcity \n" +
-//                            "distric----$district  \n country--$country"
-//                )
-//
-//                if (socityr != null) {
-//                    add += socityr + ", "
-//
-//                }
-//
-//                if (area != null) {
-//                    add += area + ", "
-//
-//                }
-//                if (startcity != null) {
-//                    add += startcity + ", "
-//
-//                }
-//                if (district != null) {
-//                    add += district + ", "
-//
-//                }
-//                if (state != null) {
-//                    add += state + ", "
-//
-//                }
-//                if (country != null) {
-//                    add += country + ", "
-//
-//                }
-//                if (country == null) {
-//                    add += "Sea"
-//                }
-//
-//
-//
-//                startlocation?.setText(add)
-//
-//                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-//
-//
-//            } else if (markerPoints.size == 2) {
-//
-//                val addresses = getAddressFromLatLng(it)
-//                val state = addresses?.adminArea
-//                val socityr = addresses?.premises
-//                val area = addresses?.subLocality
-//
-//                endcity = addresses?.locality
-//                val country = addresses?.countryName
-//                var add = ""
-//                if (socityr != null) {
-//                    add += socityr + ", "
-//
-//                }
-//                if (area != null) {
-//                    add += area + ", "
-//
-//                }
-//                if (endcity != null) {
-//                    add += endcity + ", "
-//
-//                }
-//                if (state != null) {
-//                    add += state + ", "
-//
-//                }
-//                if (country == null) {
-//                    add += "Sea"
-//                }
-//                if (country != null) {
-//                    add += country + ", "
-//
-//                }
-//                endlocation?.setText(add)
-//                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-//
-//            }
-//
-//            mMap?.addMarker(options)
-//
-//            if (markerPoints.size >= 2) {
-//                origin = markerPoints[0] as LatLng
-//                dest = markerPoints[1] as LatLng
-//
-//
-//                val builder = LatLngBounds.Builder()
-//                for (marker in markerPoints) {
-//                    builder.include(marker as LatLng)
-//                }
-//                val bounds = builder.build()
-//                val cu = CameraUpdateFactory.newLatLngBounds(bounds, 450)
-//                mMap?.animateCamera(cu)
-//
-//
-////                drawRoute()
-//            }
-//
-//        }
     }
 
     private fun drawRoute(org: LatLng, dest: LatLng) {
@@ -318,10 +148,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         startcitylatlng=dest.latitude.toString()
         endcitylatlng=dest.longitude.toString()
 
-
-
-//        val str_origin = "origin=" + origin.latitude + "," + origin.longitude
-//        val str_dest = "destination=" + dest.latitude + "," + dest.longitude
         val str_origin = "origin=" + org.latitude + "," + org.longitude
         val str_dest = "destination=" + dest.latitude + "," + dest.longitude
 
@@ -400,11 +226,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
     override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
         AppUtils.logError(TAG, "Error " + t.message)
+        Toast.makeText(this,"Sorry No routesFound",Toast.LENGTH_LONG).show()
     }
 
-
-
-}
+    }
 
 
 private class DownloadTask : AsyncTask<String?, Void?, String>() {
@@ -420,9 +245,11 @@ private class DownloadTask : AsyncTask<String?, Void?, String>() {
     }
 
     private fun downloadurl(strUrl: String?): String {
+
         var data = ""
         var iStream: InputStream? = null
         var urlConnection: HttpURLConnection? = null
+
         try {
             val url = URL(strUrl)
 
@@ -474,23 +301,11 @@ private class DownloadTask : AsyncTask<String?, Void?, String>() {
 
 
         override fun onPostExecute(result: List<List<HashMap<String, String>>>?) {
-            val points: ArrayList<LatLng?>? = ArrayList()
-            var lineOptions: PolylineOptions? = PolylineOptions()
+            val lineOptions: PolylineOptions? = PolylineOptions()
 
 
             for (i in result!!.indices) {
 
-
-//                val path = result[i]
-//
-//
-//                for (j in path.indices) {
-//                    val point = path[j]
-//                    val lat = point["lat"]!!.toDouble()
-//                    val lng = point["lng"]!!.toDouble()
-//                    val position = LatLng(lat, lng)
-//                    points?.add(position)
-//                }
                 lineOptions?.addAll(coordinates)
                 lineOptions?.width(9f)
                 lineOptions?.color(Color.BLUE)
@@ -504,12 +319,7 @@ private class DownloadTask : AsyncTask<String?, Void?, String>() {
                     mPolyline!!.remove()
                 }
                 mPolyline = mMap?.addPolyline(lineOptions)
-//                mMap?.moveCamera(
-//                    CameraUpdateFactory.newLatLngZoom(
-//                        LatLng(startLat, startLong),
-//                        12F
-//                    )
-//                )
+
                 val builder = LatLngBounds.Builder()
                 for (marker in markerPoints) {
                     builder.include(marker as LatLng)
@@ -518,13 +328,11 @@ private class DownloadTask : AsyncTask<String?, Void?, String>() {
                 val cu = CameraUpdateFactory.newLatLngBounds(bounds, 200)
                 mMap?.animateCamera(cu)
             }
-            //var startLat: Double = 00.00
-            //    var startLat: Double =  00.00
+
         }
 
         private fun setMarkerPoints(start: LatLng) {
-//            mMap?.clear()
-            MapsActivity.markerPoints.add(start)
+          markerPoints.add(start)
             MapsActivity.options.position(start)
             MapsActivity.options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             mMap?.addMarker(MapsActivity.options)

@@ -51,12 +51,8 @@ import com.pbt.cogni.util.AppUtils
 import kotlinx.android.synthetic.main.activity_call.*
 import kotlinx.android.synthetic.main.activity_call.txtTimerVoiceCall
 import kotlinx.android.synthetic.main.activity_call_activity.*
-
-
 import android.media.MediaPlayer
 import android.os.Build
-import android.os.Looper
-import androidx.annotation.RequiresApi
 
 
 class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents {
@@ -79,9 +75,9 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var isSwappedFeeds = false
   private  var timerTextView: TextView? = null
     private var check:Boolean=false
-     var mp: MediaPlayer?=null
-    var ringtone:Ringtone?=null
-    var autodisconnect=false
+    private var mp: MediaPlayer?=null
+    private var ringtone:Ringtone?=null
+    private var autodisconnect=false
 
 
 
@@ -160,7 +156,7 @@ var currentMilli:Long?=null
             check=true
             incomingCallLayout.visibility= View.GONE
             txtTimerVoiceCall.setText("Connecting")
-            textView?.setText("$sendernamee")
+            textView?.setText(sendernamee)
             MyFirebaseMessagingService().stopSound()
 
             StartCallProcess()
@@ -181,7 +177,7 @@ var currentMilli:Long?=null
     }
 
     private fun setAutoDisconnect(boolean:Boolean) {
-        var timer:Long=0
+        val timer:Long
 
         if (boolean){
             if (postmilli.toString()=="0"){
@@ -235,7 +231,7 @@ var currentMilli:Long?=null
         if (videoCallEnable != true) { AppUtils.logDebug(TAG, "InVoic Call") }
 
         cameraSwitchButton?.setOnClickListener({ onCameraSwitch() })
-        toggleMuteButton?.setOnClickListener( {
+        toggleMuteButton?.setOnClickListener{
             val enabled = onToggleMic()
             Log.e("##Call", "Toggle : $enabled")
             if (enabled) toggleMuteButton?.setBackground(getDrawable(R.drawable.ic_mic_on)) else toggleMuteButton?.setBackground(
@@ -251,15 +247,16 @@ var currentMilli:Long?=null
                 }
             }
             toggleMuteButton?.setAlpha(if (enabled) 1.0f else 0.3f)
-        })
+        }
 
         // Swap feeds on pip view click.
-        pipRenderer?.setOnClickListener(OnClickListener { setSwappedFeeds(!isSwappedFeeds) })
+        pipRenderer?.setOnClickListener { setSwappedFeeds(!isSwappedFeeds) }
         disconnectButton?.setOnClickListener{
             onCallHangUp()
         }
         button_speker?.setOnClickListener(OnClickListener {
-            if (button_speker?.getVisibility() == View.VISIBLE) { } else { }
+            if (button_speker?.getVisibility() == View.VISIBLE) { Log.d(TAG,"") }
+            else { Log.d(TAG,"") }
             if (!isSpeker) {
                 setHeadsetOn()
                 isSpeker = true
@@ -299,7 +296,6 @@ var currentMilli:Long?=null
 
 
     fun cancleNotification() {
-//         txtTimerVoiceCall.setText(" ")
         val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
         MyFirebaseMessagingService().stopSound()
@@ -319,7 +315,7 @@ var currentMilli:Long?=null
         audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
     }
 
-    // Create a random string
+
     private fun randomString(length: Int, characterSet: String): String {
         val sb = StringBuilder() //consider using StringBuffer if needed
         for (i in 0 until length) {
@@ -329,9 +325,7 @@ var currentMilli:Long?=null
         return sb.toString()
     }
 
-    // Join video call with randomly generated roomId
     private fun connectVideoCall(roomId: String) {
-
 
         Log.e("##Call", "RoomOID : " + roomId)
         val roomUri = Uri.parse(APPRTC_URL)
@@ -359,10 +353,8 @@ var currentMilli:Long?=null
             null
         )
 
-        // Create connection client. Use the standard WebSocketRTCClient.
-        // DirectRTCClient could be used for point-to-point connection
         appRtcClient = WebSocketRTCClient(this)
-        // Create connection parameters.
+
         roomConnectionParameters = RoomConnectionParameters(
             roomUri.toString(),
             roomId,
@@ -414,14 +406,14 @@ var currentMilli:Long?=null
     ringtone?.stop()
 
         var startTime: Long = 0
-        var timerHandler = Handler()
+        val timerHandler = Handler()
 
-        var timerRunnable: Runnable = object : Runnable {
+        val timerRunnable: Runnable = object : Runnable {
             override fun run() {
                 val millis = System.currentTimeMillis() - startTime
                 var seconds = (millis / 1000).toInt()
                 var minutes = seconds / 60
-                var hours = minutes / 60
+                val hours = minutes / 60
                 seconds = seconds % 60
                 minutes = minutes % 60
                 timerTextView!!.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
@@ -434,9 +426,7 @@ var currentMilli:Long?=null
         timerHandler.postDelayed(timerRunnable, 0)
         Toast.makeText(this, "Call Connected", Toast.LENGTH_SHORT).show()
 
-
-
-        val delta = System.currentTimeMillis() - callStartedTimeMs
+    val delta = System.currentTimeMillis() - callStartedTimeMs
         Log.i(TAG, "Call connected: delay=" + delta + "ms")
         if (peerConnectionClient == null || isError) {
             Log.w(TAG, "Call is connected in closed or error state")
@@ -448,7 +438,6 @@ var currentMilli:Long?=null
         Log.d("##CallCOnected", "On VoiceCAll COnnected")
     }
 
-    // Disconnect from remote resources, dispose of local resources, and exit.
     private fun disconnect() {
         ringtone?.stop()
 
@@ -486,35 +475,22 @@ var currentMilli:Long?=null
             Log.e(TAG, "Critical error: $errorMessage")
             disconnect()
         }
-        //when was full else was user
+
         else {
             txtTimerVoiceCall.setText("Call Ended")
             Handler().postDelayed({
                 finish()
             }, 1500)
 
-//            AlertDialog.Builder(this)
-//                .setTitle(getText(R.string.channel_error_title))
-//                .setMessage(errorMessage)
-//                .setCancelable(false)
-//                .setNeutralButton(
-//                    R.string.ok
-//                ) { dialog, id ->
-//                    dialog.cancel()
-//                    disconnect()
-//                }
-//                .create()
-//                .show()
         }
     }
 
-    // Log |msg| and Toast about it.
     private fun logAndToast(msg: String) {
         Log.d(TAG, msg)
         if (logToast != null) {
             logToast!!.cancel()
         }
-//       Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
 
     }
 
@@ -563,7 +539,6 @@ var currentMilli:Long?=null
             }
         }
 
-        // Front facing camera not found, try something else
         Logging.d(TAG, "Looking for other cameras.")
         for (deviceName in deviceNames) {
             if (!enumerator.isFrontFacing(deviceName)) {
@@ -587,9 +562,6 @@ var currentMilli:Long?=null
         Log.d("##CallCOnected", "On swapped feeds")
     }
 
-    // -----Implementation of AppRTCClient.AppRTCSignalingEvents ---------------
-    // All callbacks are invoked from websocket signaling looper thread and
-    // are routed to UI thread.
     private fun onConnectedToRoomInternal(params: SignalingParameters) {
         val delta = System.currentTimeMillis() - callStartedTimeMs
         signalingParameters = params
@@ -603,19 +575,17 @@ var currentMilli:Long?=null
         )
         if (signalingParameters!!.initiator) {
             logAndToast("Creating OFFER...")
-            // Create offer. Offer SDP will be sent to answering client in
-            // PeerConnectionEvents.onLocalDescription event.
+
             peerConnectionClient!!.createOffer()
         } else {
             if (params.offerSdp != null) {
                 peerConnectionClient!!.setRemoteDescription(params.offerSdp)
                 logAndToast("Creating ANSWER...")
-                // Create answer. Answer SDP will be sent to offering client in
-                // PeerConnectionEvents.onLocalDescription event.
+
                 peerConnectionClient!!.createAnswer()
             }
             if (params.iceCandidates != null) {
-                // Add remote ICE candidates from room.
+
                 for (iceCandidate in params.iceCandidates) {
                     peerConnectionClient!!.addRemoteIceCandidate(iceCandidate)
                 }
@@ -640,8 +610,6 @@ var currentMilli:Long?=null
 
             if (!signalingParameters!!.initiator) {
                 logAndToast("Creating ANSWER...")
-                // Create answer. Answer SDP will be sent to offering client in
-                // PeerConnectionEvents.onLocalDescription event.
                 peerConnectionClient!!.createAnswer()
             }
         })
@@ -678,10 +646,6 @@ var currentMilli:Long?=null
         reportError(description)
     }
 
-    // -----Implementation of PeerConnectionClient.PeerConnectionEvents.---------
-    // Send local peer connection SDP and ICE candidates to remote party.
-    // All callbacks are invoked from peer connection client looper thread and
-    // are routed to UI thread.
     override fun onLocalDescription(sdp: SessionDescription) {
         val delta = System.currentTimeMillis() - callStartedTimeMs
         runOnUiThread {
@@ -816,7 +780,6 @@ var currentMilli:Long?=null
         var name: String? = ""
         var sendername: String? = ""
         private const val STAT_CALLBACK_PERIOD = 1000
-       var  OutGoingRingtone:Ringtone?=null
     }
 }
 

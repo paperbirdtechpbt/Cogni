@@ -33,35 +33,21 @@ class ImageCapture : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-
-
-
         if (requestCode === CAMERA_REQUEST && resultCode === RESULT_OK) {
 
             val imageBitmap = data?.extras?.get("data") as Bitmap
-
-
             img_caputredimage.setImageBitmap(imageBitmap)
-//            val pic =data?.getParcelableExtra<Bitmap>("data")
-
             getImageUri(applicationContext, imageBitmap)
 
         }
     }
-
-
-
     private fun getImageUri(context: Context, pic: Bitmap?): Uri {
-
         val bytes = ByteArrayOutputStream()
         pic?.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
         val path: String =
             Images.Media.insertImage(context.getContentResolver(), pic, "Title", null)
         return Uri.parse(path)
     }
-
-
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == MY_CAMERA_PERMISSION_CODE) {
@@ -74,9 +60,4 @@ class ImageCapture : AppCompatActivity() {
 
             else {
                 Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-
-}
+            } } } }

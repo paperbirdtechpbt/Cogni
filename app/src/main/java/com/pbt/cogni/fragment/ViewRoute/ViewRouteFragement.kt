@@ -57,7 +57,7 @@ class ViewRouteFragement : Fragment(), RoutesViewRecyclerViewItemClick {
 
         recyclerView = view.findViewById(R.id.recyclerRoutes)
 
-        initRecyclerView()
+
         initViewModel()
         return view
     }
@@ -66,13 +66,6 @@ class ViewRouteFragement : Fragment(), RoutesViewRecyclerViewItemClick {
         val viewmodel: ViewRouteFragementViewModel =
             ViewModelProvider(this).get(ViewRouteFragementViewModel::class.java)
 
-
-//        viewmodel.getLiveDataObserver()?.observe(viewLifecycleOwner, Observer {
-//            if (it != null) {
-//                listAdapter?.setCountryList(it)
-//                listAdapter?.notifyDataSetChanged()
-//            }
-//        })
         viewmodel.onRouteListRequest(requireContext())
 
         viewmodel?.routesList.observe(viewLifecycleOwner, Observer { routes ->
@@ -82,11 +75,7 @@ class ViewRouteFragement : Fragment(), RoutesViewRecyclerViewItemClick {
         })
     }
 
-    private fun initRecyclerView() {
-//        recyclerView?.layoutManager = LinearLayoutManager(requireContext())
-//        listAdapter = AdapterViewRouteList(routes,this)
-//        recyclerView?.adapter = listAdapter
-    }
+
 
     companion object {
 

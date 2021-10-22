@@ -13,8 +13,6 @@ import kotlinx.android.synthetic.main.row_my_message.view.*
 class ChatAdapter(val context: Context, val data: ArrayList<Message>, val loggedUId: String) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
-
-
     override fun onCreateViewHolder(p0: ViewGroup, type: Int): ViewHolder {
         return if (type == 1) {
             ViewHolder(LayoutInflater.from(context).inflate(R.layout.row_others_message, p0, false))
