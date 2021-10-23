@@ -7,17 +7,22 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pbt.cogni.R
+import com.pbt.cogni.activity.login.LoginActivity
 import com.pbt.cogni.fragment.Chat.UserChatListFragment
 import com.pbt.cogni.fragment.Profile.ProfileFragment
 import com.pbt.cogni.fragment.ViewRoute.ViewRouteFragement
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoFragement
 import com.pbt.cogni.util.AppConstant.Companion.PREFF_OVERYLAY_PERMISSION
+import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 
 
@@ -109,6 +114,26 @@ class MainActivity : AppCompatActivity() {
             }
             true }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.ic_menu_logout -> {
+                MyPreferencesHelper.clearPref(this)
+                startActivity(Intent(this,LoginActivity::class.java))
+                this.finishAffinity()
+                true
+            }
+          else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun chechpermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
                 android.Manifest.permission.READ_CONTACTS

@@ -30,7 +30,7 @@ class SplashActivity : AppCompatActivity() {
 
         AppUtils.logDebug(
             "SplashACtivity",
-            "Check login tokem ==>> " + MyPreferencesHelper.getStringValue(
+            "Check login tokem ==>> " + MyPreferencesHelper.getStringTokenValue(
                 this@SplashActivity,
                 PREF_TOKEN,
                 ""
@@ -51,7 +51,7 @@ class SplashActivity : AppCompatActivity() {
 
 
 
-            token = MyPreferencesHelper.getStringValue(applicationContext, PREF_TOKEN, "")
+            token = MyPreferencesHelper.getStringTokenValue(applicationContext, PREF_TOKEN, "")
 
 
             val intent: Intent
@@ -65,7 +65,7 @@ class SplashActivity : AppCompatActivity() {
                 else
                     AppUtils.logDebug("##Splash","token empty : "+token)
             }
-        }, 100)
+        }, 5000)
     }
 
     fun callAPi() {
@@ -74,7 +74,7 @@ class SplashActivity : AppCompatActivity() {
 
         Log.e("##id", userdataDetails?.id + "\n" + token)
 
-        val apiclient = ApiClient.clientUpdateToken()
+        val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
         val call = apiInterface?.updateToken(userdataDetails!!.id, token!!)
 

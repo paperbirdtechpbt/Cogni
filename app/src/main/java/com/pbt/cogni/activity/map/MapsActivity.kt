@@ -8,10 +8,9 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
@@ -28,19 +27,9 @@ import com.pbt.cogni.Parse.DirectionsJSONParser
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
-import com.pbt.cogni.activity.MapsActivity.Companion.coordinates
-import com.pbt.cogni.activity.MapsActivity.Companion.endLat
-import com.pbt.cogni.activity.MapsActivity.Companion.endLong
-import com.pbt.cogni.activity.MapsActivity.Companion.mMap
-import com.pbt.cogni.activity.MapsActivity.Companion.mPolyline
-import com.pbt.cogni.activity.MapsActivity.Companion.markerPoints
-import com.pbt.cogni.activity.MapsActivity.Companion.startLat
-import com.pbt.cogni.activity.MapsActivity.Companion.startLong
 import com.pbt.cogni.activity.expense.ExpenseActivity
 import com.pbt.cogni.activity.map.AdapterExpense
-import com.pbt.cogni.model.BaseRoutLatLng
-import com.pbt.cogni.model.Expense
-import com.pbt.cogni.model.HttpResponse
+import com.pbt.cogni.model.*
 import com.pbt.cogni.util.AppConstant.Companion.CONST_FROM_ADDRESS
 import com.pbt.cogni.util.AppConstant.Companion.CONST_ROUTE_ID
 import com.pbt.cogni.util.AppConstant.Companion.CONST_STATUS
@@ -98,6 +87,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+markerPoints.clear()
+        coordinates.clear()
 
         floatButton = findViewById(R.id.floating_action_button)
 
@@ -125,50 +116,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         }
 
         floatingAddExpense?.setOnClickListener {
-            startActivity(Intent(this, ExpenseActivity::class.java))
+            var intent = Intent(this, ExpenseActivity::class.java)
+            intent.putExtra(CONST_ROUTE_ID, routeId)
+            startActivity(intent)
         }
 
-
-        var list = ArrayList<Expense>()
-        var toll = Expense(
-            10,
-            "Toll tax receipt",
-            "500",
-            "https://www.consumercomplaints.in/thumb.php?complaints=2186655&src=51870105.jpg&wmax=900&hmax=900&quality=85&nocrop=1",
-            "this ahemedabad toll text reciept"
-        )
-        var toll2 = Expense(
-            10,
-            "petrol",
-            "500",
-            "https://images.financialexpress.com/2018/05/petrol-30-may-2018.jpg",
-            "Indian Oil petrol pump gota"
-        )
-
-        var toll3 = Expense(
-            10,
-            "Lunch",
-            "500",
-            "https://www.moneyunder30.com/images/2017/01/save_receipt.jpeg",
-            " Dominos pizza"
-        )
-
-        list.add(toll)
-        list.add(toll2)
-        list.add(toll3)
-        list.add(toll)
-        list.add(toll2)
-        list.add(toll3)
-
-        recyclerViewExpense?.layoutManager = LinearLayoutManager(applicationContext)
-        var listAdapter = AdapterExpense(list, this)
-        recyclerViewExpense.adapter = listAdapter
-
-//        ?.routesList.observe(viewLifecycleOwner, Observer { routes ->
-//            recyclerView?.layoutManager = LinearLayoutManager(requireContext())
-//            listAdapter = AdapterViewRouteList(routes, this)
-//            recyclerView?.adapter = listAdapter
-//        })
+        getExpense()
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -182,11 +135,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             endLat = intent.getDoubleExtra(CONST_TO_DESTINATION_LAT, 00.00)
             endLong = intent.getDoubleExtra(CONST_TO_DESTINATION_LONG, 00.00)
             routeId = intent.getIntExtra(CONST_ROUTE_ID, 0).toString()
+
             getWayPoint()
             AppUtils.logDebug(TAG, " Routes Id " + routeId)
         }
+
+
     }
 
+
+    fun getExpense() {
+
+        val apiclient = ApiClient.getClient()
+        val apiInterface = apiclient?.create(ApiInterface::class.java)
+        val call = apiInterface?.getExpense(routeId)
+
+        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
+            override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
+
+                var listLatLong: BaseExpense = Gson().fromJson(response?.body()?.data.toString(), BaseExpense::class.java)
+                recyclerViewExpense?.layoutManager = LinearLayoutManager(applicationContext)
+                var listAdapter = AdapterExpense(listLatLong.listExpense, this@MapsActivity)
+                recyclerViewExpense.adapter = listAdapter
+
+            }
+
+            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+                AppUtils.logError(TAG, " server Error: " + t.message)
+            }
+
+        })
+    }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
@@ -203,116 +182,111 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         return super.dispatchTouchEvent(event)
     }
 
+    public fun getWayPoint() {
+        ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
+    }
 
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
-        public fun getWayPoint() {
-            ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
-        }
+    }
 
+    private fun drawRoute(org: LatLng, dest: LatLng) {
+        val url: String = getDirectionsUrl(org, dest)
 
-        override fun onMapReady(googleMap: GoogleMap) {
-            mMap = googleMap
+        val downloadTask = DownloadTask()
+        AppUtils.logDebug(TAG, " url  " + url)
+        downloadTask.execute(url)
+    }
 
-        }
-
-        private fun drawRoute(org: LatLng, dest: LatLng) {
-            val url: String = getDirectionsUrl(org, dest)
-
-            val downloadTask = DownloadTask()
-            AppUtils.logDebug(TAG, " url  " + url)
-            downloadTask.execute(url)
-        }
-
-        private fun getDirectionsUrl(org: LatLng, dest: LatLng): String {
+    private fun getDirectionsUrl(org: LatLng, dest: LatLng): String {
 
 //        var origin = LatLng(startLat, startLong)//startLatLng
 //        var dest = LatLng(endLat, endLong)//endLatLng
 //        val waypointssss = "waypoints=" + "6.140432,-75.185903"
 //        val waypointssss = "waypoints=" + "23.0225,72.5714"
-            val waypointssss = "waypoints=" + "via:22.7349%2C72.4402"
-            startcitylatlng = dest.latitude.toString()
-            endcitylatlng = dest.longitude.toString()
+        val waypointssss = "waypoints=" + "via:22.7349%2C72.4402"
+        startcitylatlng = dest.latitude.toString()
+        endcitylatlng = dest.longitude.toString()
 
-            val str_origin = "origin=" + org.latitude + "," + org.longitude
-            val str_dest = "destination=" + dest.latitude + "," + dest.longitude
+        val str_origin = "origin=" + org.latitude + "," + org.longitude
+        val str_dest = "destination=" + dest.latitude + "," + dest.longitude
 
 
-            val key = "key=" + getString(R.string.google_maps_key)
+        val key = "key=" + getString(R.string.google_maps_key)
 
 //        "via:22.1723%2C71.6636%7Cvia:23.686720%2C73.383644"\
 
 //        val parameters = "$str_origin&$str_dest&$waypointssss&$key"
-            val parameters = "$str_origin&$str_dest&$key"
+        val parameters = "$str_origin&$str_dest&$key"
 
 
-            val startPoint = Location("locationA")
-            startPoint.latitude = org.latitude
-            startPoint.longitude = org.longitude
+        val startPoint = Location("locationA")
+        startPoint.latitude = org.latitude
+        startPoint.longitude = org.longitude
 
-            val endPoint = Location("locationA")
-            endPoint.latitude = dest.latitude
-            endPoint.longitude = dest.longitude
+        val endPoint = Location("locationA")
+        endPoint.latitude = dest.latitude
+        endPoint.longitude = dest.longitude
 
 
-            return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
+        return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
 
-        }
+    }
 
-        override fun onConnectionFailed(p0: ConnectionResult) {
+    override fun onConnectionFailed(p0: ConnectionResult) {
 
-        }
+    }
 
-        override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
-            if (response?.body()?.code == false) {
-                var listLatLong: BaseRoutLatLng =
-                    Gson().fromJson(response?.body()?.data.toString(), BaseRoutLatLng::class.java)
+    override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
+        if (response?.body()?.code == false) {
+            var listLatLong: BaseRoutLatLng =
+                Gson().fromJson(response?.body()?.data.toString(), BaseRoutLatLng::class.java)
 
-                Log.d("##myresponse", listLatLong.listLatLng.toString())
+            listLatLong.listLatLng?.forEach {
+                val latitude = it.lat
+                val longitude = it.long
+                coordinates.add(LatLng(latitude, longitude))
+            }
 
-                coordinates.clear()
-                listLatLong.listLatLng?.forEach {
+            var orgn = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
+            var dest = LatLng(coordinates.get(coordinates.lastIndex).latitude, coordinates.get(coordinates.lastIndex).longitude)
+
+            var uri = "waypoints="
+            var k: Int = 1
+            var count: Int = 0
+            var size: Int = listLatLong.listLatLng!!.size / 22
+            listLatLong.listLatLng?.forEach {
+                if (k == 1) {
+                    count++
                     val latitude = it.lat
                     val longitude = it.long
-                    coordinates.add(LatLng(latitude, longitude))
-                }
-
-                var orgn = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
-                var dest = LatLng(
-                    coordinates.get(coordinates.lastIndex).latitude,
-                    coordinates.get(coordinates.lastIndex).longitude
-                )
-
-
-                var uri = "waypoints="
-                var k: Int = 1
-                var count: Int = 0
-                var size: Int = listLatLong.listLatLng!!.size / 22
-                listLatLong.listLatLng?.forEach {
-                    if (k == 1) {
-                        count++
-                        val latitude = it.lat
-                        val longitude = it.long
 //                    uri = uri + latitude + "," + longitude + "|"
-                        uri = uri + latitude + "," + longitude
-                        Log.d("##mylatlong", "lat--" + latitude + "long--" + longitude)
-                    }
-                    if (size == k) {
-                        k = 1
-                    }
-                    k++
+                    uri = uri + latitude + "," + longitude
+                    Log.d("##mylatlong", "lat--" + latitude + "long--" + longitude)
                 }
-                myWaypoint = uri
-                AppUtils.logDebug(TAG, "Last Char " + uri)
-                AppUtils.logDebug(TAG, "Last Char " + uri.dropLast(1))
-//            drawRoute(uri.dropLast(1))
-                drawRoute(orgn, dest)
+                if (size == k) {
+                    k = 1
+                }
+                k++
             }
+            myWaypoint = uri
+            AppUtils.logDebug(TAG, "Last Char " + uri)
+            AppUtils.logDebug(TAG, "Last Char " + uri.dropLast(1))
+//            drawRoute(uri.dropLast(1))
+            drawRoute(orgn, dest)
         }
+    }
 
-        override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-            AppUtils.logError(TAG, "Error " + t.message)
-            Toast.makeText(this, "Sorry No routesFound", Toast.LENGTH_LONG).show()
-        }
+    override fun onResume() {
+        getExpense()
+        super.onResume()
+    }
+
+    override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+        AppUtils.logError(TAG, "Error " + t.message)
+        Toast.makeText(this, "Sorry No routesFound", Toast.LENGTH_LONG).show()
+    }
 
     override fun onItemClick(position: Int, v: View?) {
         AppUtils.logDebug(TAG, "Item click Call")

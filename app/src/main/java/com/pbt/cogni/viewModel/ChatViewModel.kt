@@ -258,13 +258,14 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
 
             override fun onChildChanged(dataSnapshot: DataSnapshot?, p1: String??) {
 
-                AppUtils.logWarning(TAG, " 213  " + dataSnapshot!!.getValue())
                 val map = dataSnapshot!!.value as Map<*, *>
-                if (!map.get("id").toString().equals(userId!!.get())) {
-                    isTyping!!.set("Typing...")
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        isTyping!!.set("")
-                    }, 2000)
+                if(map.get("id")!= null) {
+                    if (!map.get("id").toString().equals(userId!!.get())) {
+                        isTyping!!.set("Typing...")
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            isTyping!!.set("")
+                        }, 2000)
+                    }
                 }
             }
 

@@ -38,6 +38,7 @@ class AppConstant {
         var CONST_STATUS_APPROVED="Approved"
 
         const val SHARED_PREF_NAME = "Cogni"
+        const val SHARED_PREF_TOKEN = "CogniToken"
 
         //Preference
         var PREF_USER = "user"

@@ -11,6 +11,7 @@ import com.pbt.cogni.R
 import com.pbt.cogni.databinding.ItemExpenseBinding
 import com.pbt.cogni.model.Expense
 import com.pbt.cogni.util.ClickListener
+import com.pbt.cogni.util.Config.BASE_NETWORK_IMAGE
 
 
 class AdapterExpense(
@@ -37,10 +38,9 @@ class AdapterExpense(
             listener.onItemClick(position, it)
         }
     }
-
 }
 
 @BindingAdapter("android:src")
 fun setImageUrl(view: ImageView, url: String?) {
-    Glide.with(view.context).load(url).placeholder(R.drawable.backgroundimage).into(view)
+    Glide.with(view.context).load(BASE_NETWORK_IMAGE+url).placeholder(R.drawable.backgroundimage).into(view)
 }

@@ -60,13 +60,20 @@ interface ApiInterface {
     ): retrofit2.Call<HttpResponse>
 
     @Multipart
-    @POST("api/request")
+    @POST("api/addExpense")
     fun addExpense(
         @Part("routeid") id: RequestBody,
         @Part("price") price: RequestBody,
-        @Part("descrition") descrition: RequestBody,
+        @Part("description") descrition: RequestBody,
         @Part("expenseType") expenseType: RequestBody,
         @Part("expenseTypeId") expenseTypeId: RequestBody,
+        @Part("createdBy") createdBy: RequestBody,
         @Part image: MultipartBody.Part
         ): retrofit2.Call<HttpResponse>
+
+    @FormUrlEncoded
+    @POST("api/getExpense")
+    fun getExpense(
+        @Field("routeid") roleId: String,
+    ): retrofit2.Call<HttpResponse>
 }

@@ -14,56 +14,77 @@ class MyPreferencesHelper {
         var preferences: SharedPreferences? = null
 
         fun openPref(context: Context) {
-           MyPreferencesHelper.preferences =
+            preferences =
                 context.getSharedPreferences(AppConstant.SHARED_PREF_NAME, Context.MODE_PRIVATE)
         }
 
+        fun openTokenPref(context: Context) {
+            preferences =
+                context.getSharedPreferences(AppConstant.SHARED_PREF_TOKEN, Context.MODE_PRIVATE)
+        }
+
         fun setStringValue(context: Context, key: String?, value: String?) {
-           MyPreferencesHelper.openPref(context)
-            val editor: SharedPreferences.Editor =
-               MyPreferencesHelper.preferences!!.edit()
+            openPref(context)
+            val editor: SharedPreferences.Editor = preferences!!.edit()
             editor.putString(key, value)
             editor.commit()
-           MyPreferencesHelper.preferences = null
+            preferences = null
+        }
+
+        fun setStringTokenValue(context: Context, key: String?, value: String?) {
+            openTokenPref(context)
+            val editor: SharedPreferences.Editor = preferences!!.edit()
+            editor.putString(key, value)
+            editor.commit()
+            preferences = null
         }
 
         fun setIntValue(context: Context, key: String?, value: Int) {
-           MyPreferencesHelper.openPref(context)
+            openPref(context)
             val editor: SharedPreferences.Editor =
-               MyPreferencesHelper.preferences!!.edit()
+                preferences!!.edit()
             editor.putInt(key, value)
             editor.commit()
-           MyPreferencesHelper.preferences = null
+            preferences = null
         }
 
         fun getStringValue(context: Context, key: String?, defvalue: String?): String? {
-           MyPreferencesHelper.openPref(context)
+            openPref(context)
             val result: String? =
-               MyPreferencesHelper.preferences?.getString(key, defvalue)
-           MyPreferencesHelper.preferences = null
+                preferences?.getString(key, defvalue)
+            preferences = null
+            return result
+        }
+        fun getStringTokenValue(context: Context, key: String?, defvalue: String?): String? {
+            openTokenPref(context)
+            val result: String? =
+                preferences?.getString(key, defvalue)
+            preferences = null
             return result
         }
 
         fun getintValue(context: Context, key: String?, defvalue: Int): Int? {
-           MyPreferencesHelper.openPref(context)
-            val result: Int? = MyPreferencesHelper.preferences?.getInt(key, defvalue)
-           MyPreferencesHelper.preferences = null
+            openPref(context)
+            val result: Int? = preferences?.getInt(key, defvalue)
+            preferences = null
             return result
         }
 
         fun clearPref(context: Context) {
-           MyPreferencesHelper.openPref(context)
+            openPref(context)
             val editor: SharedPreferences.Editor? =
-               MyPreferencesHelper.preferences?.edit()
+                preferences?.edit()
             editor?.clear()
             editor?.commit()
         }
 
         fun getUser(context: Context): UserDetailsData? {
-            MyPreferencesHelper.openPref(context)
-            val user: UserDetailsData? = Gson().fromJson(MyPreferencesHelper.preferences?.getString(PREF_USER, ""),
-                UserDetailsData::class.java)
-            MyPreferencesHelper.preferences = null
+            openPref(context)
+            val user: UserDetailsData? = Gson().fromJson(
+                preferences?.getString(PREF_USER, ""),
+                UserDetailsData::class.java
+            )
+            preferences = null
             return user
         }
     }

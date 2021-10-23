@@ -339,7 +339,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     //new Token genrated
     override fun onNewToken(token: String) {
-        MyPreferencesHelper.setStringValue(this, AppConstant.PREF_TOKEN, token)
+        MyPreferencesHelper.setStringTokenValue(this, AppConstant.PREF_TOKEN, token)
         sendRegistrationToServer(token)
     }
 

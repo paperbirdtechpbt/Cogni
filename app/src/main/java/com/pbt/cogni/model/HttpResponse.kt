@@ -9,3 +9,4 @@ data class HttpResponse(
     @SerializedName("msg")  val message: String,
     @SerializedName("data") val data: JsonObject
 )
+
