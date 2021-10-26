@@ -41,7 +41,7 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
 
     var listType: ObservableField<List<String>>? = null
     var description: ObservableField<String>? = null
-    var ammount: ObservableField<Int>? = null
+    var ammount: ObservableField<String>? = null
     var expenseType: ObservableField<String>? = null
     var selectedImage: ObservableField<String>? = null
     var imageUri: ObservableField<Uri>? = null
@@ -49,7 +49,7 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
 
     init {
         description = ObservableField("")
-        ammount = ObservableField(0)
+        ammount = ObservableField("")
         expenseType = ObservableField("")
         imageUri = ObservableField()
         selectedImage = ObservableField(context.resources.getString(R.string.choose_image))

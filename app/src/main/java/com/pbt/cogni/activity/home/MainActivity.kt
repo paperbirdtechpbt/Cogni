@@ -6,11 +6,12 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.fragment.app.FragmentTransaction
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pbt.cogni.R
 import com.pbt.cogni.fragment.Chat.UserChatListFragment
@@ -28,13 +29,30 @@ class MainActivity : AppCompatActivity() {
     lateinit var audioVideoFragement: AudioVideoFragement
     lateinit var viewRouteFragement: ViewRouteFragement
     lateinit var profileFragement: ProfileFragment
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
+    lateinit var locationrequest: LocationRequest
+
+    var lat: Double = 1.0
+    var long: Double = 1.0
+
+    companion object {
+        var instance: MainActivity? = null
+            get() = instance
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
+
+        val broadcastIntent = Intent()
+        broadcastIntent.action = "restartservice"
+        broadcastIntent.setClass(this, MyLocationService::class.java)
+        this.sendBroadcast(broadcastIntent)
 
 
        val overlaypermission= MyPreferencesHelper.getStringValue(this,PREFF_OVERYLAY_PERMISSION,null)
@@ -44,6 +62,11 @@ class MainActivity : AppCompatActivity() {
 
         }
         getSupportActionBar()?.setTitle("Analyst Routes List ")
+
+//        service().getLatlong()
+//        startService(Intent(this,service::class.java))
+
+
 
         if (savedInstanceState == null) {
             if (chechpermission()) {
@@ -71,7 +94,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.chat -> {
 
                     getSupportActionBar()?.setTitle("Chats")
-
                     supportActionBar?.show()
 
 
@@ -109,6 +131,18 @@ class MainActivity : AppCompatActivity() {
             }
             true }
     }
+
+//    override fun onDestroy() {
+//
+//        Log.d("####ondestroy","on Destroy In MainActivity")
+//        val broadcastIntent = Intent()
+//        broadcastIntent.action = "restartservice"
+//        broadcastIntent.setClass(this, MyLocationService::class.java)
+//        this.sendBroadcast(broadcastIntent)
+//        super.onDestroy()
+//    }
+
+
     private fun chechpermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
                 android.Manifest.permission.READ_CONTACTS

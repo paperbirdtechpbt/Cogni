@@ -97,7 +97,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_maps)
+
+        markerPoints.clear()
 
         floatButton = findViewById(R.id.floating_action_button)
 
