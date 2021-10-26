@@ -5,18 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            android:drawableLeft="@drawable/ic_back"
-            android:layout_margin="@dimen/_10sdp"
-            android:drawableTint="@color/black"
-            android:background="@android:color/transparent"
-            />
-
-
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -24,34 +12,11 @@
         android:layout_height="match_parent"
         tools:context=".activity.MapsActivity" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_action_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        app:backgroundTint="@color/white"
-        app:tint="@color/purple_700"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_navigation" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingAddExpense"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
-        android:layout_margin="16dp"
-        android:tint="@android:color/white"
-        app:backgroundTint="@color/purple_700"
-        app:srcCompat="@drawable/ic_add_expense"
-        app:tint="@color/white" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/_250sdp"
         android:id="@+id/bottomSheet"
+        android:visibility="gone"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:layout_constraintBottom_toBottomOf="@+id/map"
         android:background="@drawable/shape_bottom_sheet"
@@ -60,7 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
 
         <ImageView
             android:layout_width="@dimen/_25sdp"
@@ -75,7 +39,164 @@
             android:layout_height="match_parent"
             />
         </LinearLayout>
+
     </FrameLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom">
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_back"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:drawableTint="@color/black"
+            android:background="@android:color/transparent"
+            />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingAddExpense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/floating_action_button"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="top|right"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="30dp"
+            android:visibility="gone"
+            android:layout_marginBottom="10dp"
+            android:tint="@android:color/white"
+            app:backgroundTint="@color/purple_700"
+            app:srcCompat="@drawable/ic_add_expense"
+            app:tint="@color/white" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_below="@+id/btnBack"
+            android:background="#B2FBF9F9">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_5sdp">
+
+                <TextView
+                    android:id="@+id/txtLine"
+                    android:layout_width="1dp"
+                    android:layout_height="20dp"
+                    android:layout_below="@+id/greenicon"
+                    android:layout_alignStart="@+id/greenicon"
+                    android:layout_alignEnd="@+id/greenicon"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/shap_dotted"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:id="@+id/redicon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_below="@+id/txtLine"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:background="@drawable/circle_green"
+                    android:backgroundTint="#F30303"
+                    android:drawableTint="#fff" />
+
+
+                <TextView
+                    android:id="@+id/destination"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/redicon"
+                    android:layout_alignBottom="@+id/redicon"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="7dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_toEndOf="@+id/txtLine"
+                    android:fontFamily="@font/droidsans"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_above="@+id/destination"
+                    android:layout_below="@+id/origin"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="2dp"
+                    android:layout_toEndOf="@+id/txtLine"
+                    android:background="@drawable/shape_line" />
+
+                <TextView
+                    android:id="@+id/origin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/greenicon"
+                    android:layout_alignBottom="@+id/greenicon"
+                    android:layout_marginStart="7dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_toEndOf="@+id/txtLine"
+                    android:fontFamily="@font/droidsans"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/greenicon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/circle_green" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnStartTrip"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:background="@drawable/bg_button"
+           android:drawableTint="@color/white"
+            android:drawableLeft="@drawable/ic_right_movement"
+            android:paddingStart="@dimen/_20sdp"
+            android:text="Start Routes"
+            android:textColor="@color/white"
+            app:layout_anchorGravity="bottom" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom|right"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="88dp"
+            android:tint="@android:color/white"
+            app:backgroundTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_navigation"
+            app:tint="@color/purple_700" />
+
+    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

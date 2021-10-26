@@ -68,6 +68,7 @@ dependencies {
     implementation "com.android.support:multidex:2.0.1"
     implementation 'com.google.firebase:firebase-messaging-ktx:22.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'com.ncorti:slidetoact:0.9.0'
 
 
     testImplementation 'junit:junit:4.13.2'

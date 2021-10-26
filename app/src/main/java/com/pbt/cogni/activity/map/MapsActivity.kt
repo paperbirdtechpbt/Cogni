@@ -87,10 +87,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-markerPoints.clear()
+
+        markerPoints.clear()
         coordinates.clear()
 
         floatButton = findViewById(R.id.floating_action_button)
+
 
         from(bottomSheet).apply {
             peekHeight = 80
@@ -106,10 +108,7 @@ markerPoints.clear()
             var uri = "$myWaypoint"
             val navigation = Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse(
-                    "google.navigation:q=" + "$startcitylatlng,$endcitylatlng" + "&" + uri
-                )
-            )
+                Uri.parse("google.navigation:q=" + "$startcitylatlng,$endcitylatlng" + "&" + uri))
             navigation.setPackage("com.google.android.apps.maps")
             startActivity(navigation)
 
@@ -129,17 +128,18 @@ markerPoints.clear()
         startAddress = intent.getStringExtra(CONST_TO_ADDRESS)
         endAddress = intent.getStringExtra(CONST_FROM_ADDRESS)
 
+        origin.text = startAddress
+        destination.text = endAddress
+
         if (intent?.getStringExtra(CONST_STATUS).equals(CONST_STATUS_APPROVED)) {
             startLat = intent.getDoubleExtra(CONST_TO_ORIGIN_LAT, 00.00)
             startLong = intent.getDoubleExtra(CONST_TO_ORIGIN_LONG, 00.00)
             endLat = intent.getDoubleExtra(CONST_TO_DESTINATION_LAT, 00.00)
             endLong = intent.getDoubleExtra(CONST_TO_DESTINATION_LONG, 00.00)
             routeId = intent.getIntExtra(CONST_ROUTE_ID, 0).toString()
-
             getWayPoint()
             AppUtils.logDebug(TAG, " Routes Id " + routeId)
         }
-
 
     }
 
@@ -153,10 +153,20 @@ markerPoints.clear()
         call?.enqueue(object : retrofit2.Callback<HttpResponse> {
             override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
 
-                var listLatLong: BaseExpense = Gson().fromJson(response?.body()?.data.toString(), BaseExpense::class.java)
-                recyclerViewExpense?.layoutManager = LinearLayoutManager(applicationContext)
-                var listAdapter = AdapterExpense(listLatLong.listExpense, this@MapsActivity)
-                recyclerViewExpense.adapter = listAdapter
+                try {
+                    var listLatLong: BaseExpense =
+                        Gson().fromJson(response?.body()?.data.toString(), BaseExpense::class.java)
+                    recyclerViewExpense?.layoutManager = LinearLayoutManager(applicationContext)
+                    var listAdapter = AdapterExpense(listLatLong.listExpense, this@MapsActivity)
+                    recyclerViewExpense.adapter = listAdapter
+                    floatingAddExpense.visibility = View.VISIBLE
+                    if (!listLatLong.listExpense.isNullOrEmpty()) {
+                        toStartStopRoutes()
+                        bottomSheet.visibility = View.VISIBLE
+                    }
+                }catch (e : Exception){
+                    AppUtils.logError(TAG,"Network Error : "+e.message)
+                }
 
             }
 
@@ -164,6 +174,24 @@ markerPoints.clear()
                 AppUtils.logError(TAG, " server Error: " + t.message)
             }
 
+        })
+    }
+
+    fun toStartStopRoutes() {
+
+        val apiclient = ApiClient.getClient()
+        val apiInterface = apiclient?.create(ApiInterface::class.java)
+        val call = apiInterface?.getExpense(routeId)
+
+        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
+            override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
+                btnStartTrip.visibility = View.GONE
+                floatingAddExpense.visibility = View.VISIBLE
+//                bottomSheet.visibility = View.VISIBLE
+            }
+            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+                AppUtils.logError(TAG, " server Error: " + t.message)
+            }
         })
     }
 
