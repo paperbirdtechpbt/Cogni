@@ -210,61 +210,64 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         return super.dispatchTouchEvent(event)
     }
 
-    public fun getWayPoint() {
-        ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
-    }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
 
-    }
+        public fun getWayPoint() {
+            ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
+        }
 
-    private fun drawRoute(org: LatLng, dest: LatLng) {
-        val url: String = getDirectionsUrl(org, dest)
 
-        val downloadTask = DownloadTask()
-        AppUtils.logDebug(TAG, " url  " + url)
-        downloadTask.execute(url)
-    }
+        override fun onMapReady(googleMap: GoogleMap) {
+            mMap = googleMap
 
-    private fun getDirectionsUrl(org: LatLng, dest: LatLng): String {
+        }
+
+        private fun drawRoute(org: LatLng, dest: LatLng) {
+            val url: String = getDirectionsUrl(org, dest)
+
+            val downloadTask = DownloadTask()
+            AppUtils.logDebug(TAG, " url  " + url)
+            downloadTask.execute(url)
+        }
+
+        private fun getDirectionsUrl(org: LatLng, dest: LatLng): String {
 
 //        var origin = LatLng(startLat, startLong)//startLatLng
 //        var dest = LatLng(endLat, endLong)//endLatLng
 //        val waypointssss = "waypoints=" + "6.140432,-75.185903"
 //        val waypointssss = "waypoints=" + "23.0225,72.5714"
-        val waypointssss = "waypoints=" + "via:22.7349%2C72.4402"
-        startcitylatlng = dest.latitude.toString()
-        endcitylatlng = dest.longitude.toString()
+            val waypointssss = "waypoints=" + "via:22.7349%2C72.4402"
+            startcitylatlng = dest.latitude.toString()
+            endcitylatlng = dest.longitude.toString()
 
-        val str_origin = "origin=" + org.latitude + "," + org.longitude
-        val str_dest = "destination=" + dest.latitude + "," + dest.longitude
+            val str_origin = "origin=" + org.latitude + "," + org.longitude
+            val str_dest = "destination=" + dest.latitude + "," + dest.longitude
 
 
-        val key = "key=" + getString(R.string.google_maps_key)
+            val key = "key=" + getString(R.string.google_maps_key)
 
 //        "via:22.1723%2C71.6636%7Cvia:23.686720%2C73.383644"\
 
 //        val parameters = "$str_origin&$str_dest&$waypointssss&$key"
-        val parameters = "$str_origin&$str_dest&$key"
+            val parameters = "$str_origin&$str_dest&$key"
 
 
-        val startPoint = Location("locationA")
-        startPoint.latitude = org.latitude
-        startPoint.longitude = org.longitude
+            val startPoint = Location("locationA")
+            startPoint.latitude = org.latitude
+            startPoint.longitude = org.longitude
 
-        val endPoint = Location("locationA")
-        endPoint.latitude = dest.latitude
-        endPoint.longitude = dest.longitude
+            val endPoint = Location("locationA")
+            endPoint.latitude = dest.latitude
+            endPoint.longitude = dest.longitude
 
 
-        return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
+            return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
 
-    }
+        }
 
-    override fun onConnectionFailed(p0: ConnectionResult) {
+        override fun onConnectionFailed(p0: ConnectionResult) {
 
-    }
+        }
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
         if (response?.body()?.code == false) {

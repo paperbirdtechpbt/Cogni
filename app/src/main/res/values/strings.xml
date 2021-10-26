@@ -258,4 +258,8 @@
     <string name="logout">Logout</string>
 
 
+    <string name="startlocation">Start Location</string>
+    <string name="endlocation">End Location</string>
+    <string name="moviefragment">Movie Fragment</string>
+
 </resources>
