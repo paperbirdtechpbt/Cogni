@@ -34,6 +34,13 @@ interface ApiInterface {
     fun getWayPoint(@Field("routId") routId: String): Call<HttpResponse>
 
     @FormUrlEncoded
+    @POST("api/updateLatLng")
+    fun postLatLng(
+        @Field("lat") lat: String,
+        @Field("lng") lng: String,
+        @Field("id") id: String): Call<HttpResponse>
+
+    @FormUrlEncoded
     @POST("api/Analyst")
     fun getAnalystList(
         @Field("companyId") companyid: String,

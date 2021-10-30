@@ -6,6 +6,7 @@ import android.content.Intent
 import com.google.android.gms.location.LocationResult
 import java.lang.StringBuilder
 import android.os.Build
+import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 
@@ -24,8 +25,17 @@ class MyLocationService:BroadcastReceiver() {
 
             Log.d("####buildverion 0","Broadcast revieved in mylocation service versino 0")
 
-            context!!.startForegroundService(Intent(context, service::class.java))
-            context!!.startService(Intent(context, service::class.java))
+//            context!!.startForegroundService(Intent(context, service::class.java))
+            val handler = Handler()
+
+            val timedTask: Runnable = object : Runnable {
+                override fun run() {
+                    context!!.startService(Intent(context, service::class.java))
+
+                    handler.postDelayed(this, 60000) }
+            }
+            handler.post(timedTask)
+
         }
 
 

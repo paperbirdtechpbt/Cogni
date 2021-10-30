@@ -255,5 +255,9 @@
     <string name="startlocation">Start Location</string>
     <string name="endlocation">End Location</string>
     <string name="moviefragment">Movie Fragment</string>
+    <string name="Test">Tasks</string>
+    <string name="current">Current</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="finish">Finish</string>
 
 </resources>

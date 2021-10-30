@@ -28,14 +28,6 @@ import com.pbt.cogni.Parse.DirectionsJSONParser
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
-import com.pbt.cogni.activity.MapsActivity.Companion.coordinates
-import com.pbt.cogni.activity.MapsActivity.Companion.endLat
-import com.pbt.cogni.activity.MapsActivity.Companion.endLong
-import com.pbt.cogni.activity.MapsActivity.Companion.mMap
-import com.pbt.cogni.activity.MapsActivity.Companion.mPolyline
-import com.pbt.cogni.activity.MapsActivity.Companion.markerPoints
-import com.pbt.cogni.activity.MapsActivity.Companion.startLat
-import com.pbt.cogni.activity.MapsActivity.Companion.startLong
 import com.pbt.cogni.activity.expense.ExpenseActivity
 import com.pbt.cogni.activity.map.AdapterExpense
 import com.pbt.cogni.model.BaseRoutLatLng
@@ -79,6 +71,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
     private var myWaypoint: String? = ""
 
     companion object {
+        var list = ArrayList<Expense>()
         val options = MarkerOptions()
         var markerPoints = ArrayList<Any>()
         var mMap: GoogleMap? = null
@@ -132,7 +125,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         }
 
 
-        var list = ArrayList<Expense>()
+
         var toll = Expense(
             10,
             "Toll tax receipt",
@@ -226,7 +219,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             downloadTask.execute(url)
         }
 
-        private fun getDirectionsUrl(org: LatLng, dest: LatLng): String {
+         fun getDirectionsUrl(org: LatLng, dest: LatLng): String {
 
 //        var origin = LatLng(startLat, startLong)//startLatLng
 //        var dest = LatLng(endLat, endLong)//endLatLng
@@ -240,21 +233,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             val str_dest = "destination=" + dest.latitude + "," + dest.longitude
 
 
-            val key = "key=" + getString(R.string.google_maps_key)
+//            val key = "key=" + getString(R.string.google_maps_key)
+             val key="key=AIzaSyA6j9juIKElTL81OCvMyTEY7C-p4lIA0_U"
 
 //        "via:22.1723%2C71.6636%7Cvia:23.686720%2C73.383644"\
 
 //        val parameters = "$str_origin&$str_dest&$waypointssss&$key"
             val parameters = "$str_origin&$str_dest&$key"
 
-
-            val startPoint = Location("locationA")
-            startPoint.latitude = org.latitude
-            startPoint.longitude = org.longitude
-
-            val endPoint = Location("locationA")
-            endPoint.latitude = dest.latitude
-            endPoint.longitude = dest.longitude
 
 
             return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
@@ -321,7 +307,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         AppUtils.logDebug(TAG, "Item click Call")
     }
 
-    private class DownloadTask : AsyncTask<String?, Void?, String>() {
+     class DownloadTask : AsyncTask<String?, Void?, String>() {
 
         override fun doInBackground(vararg url: String?): String {
 
@@ -421,14 +407,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             }
 
             private fun setMarkerPoints(start: LatLng) {
+
                 markerPoints.add(start)
-                MapsActivity.options.position(start)
-                MapsActivity.options.icon(
+                options.position(start)
+                options.icon(
                     BitmapDescriptorFactory.defaultMarker(
                         BitmapDescriptorFactory.HUE_RED
                     )
                 )
-                mMap?.addMarker(MapsActivity.options)
+                mMap?.addMarker(options)
             }
         }
     }
