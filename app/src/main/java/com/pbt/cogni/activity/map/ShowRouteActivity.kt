@@ -1,5 +1,6 @@
 package com.pbt.cogni.activity.map
 
+import android.content.Intent
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
@@ -23,7 +24,6 @@ import com.pbt.cogni.R
 import com.pbt.cogni.activity.viewRoute.MyRoutesDataClass
 import com.pbt.cogni.activity.map.ShowRouteActivity.Companion.mMap
 import com.pbt.cogni.activity.map.ShowRouteActivity.Companion.mPolyline
-import com.pbt.cogni.util.AppConstant.VEW_ROUT
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStream
@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLngBounds
 
 
+
 class ShowRouteActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailedListener {
 
     companion object {
@@ -42,6 +43,8 @@ class ShowRouteActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionF
         var mPolyline: Polyline? = null
         var startpoint: LatLng? = null
         var lastpoint: LatLng? = null
+        var routView:MyRoutesDataClass?=null
+
     }
 
 
@@ -54,19 +57,27 @@ class ShowRouteActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionF
         mapFragment.getMapAsync(this)
 
 
-        var routView =
-            Gson().fromJson(intent.extras?.getString(VEW_ROUT), MyRoutesDataClass::class.java)
 
-        Log.e("##Intent", " Lat Long " + routView.startLatLong)
 
-        val route = routView.origin + " To " + routView.destination
+
+        if(intent.extras!=null){
+            routView =intent.getParcelableExtra<MyRoutesDataClass>("user")
+        }
+//        var routView =Gson().fromJson(intent.extras?.getString(VEW_ROUT), MyRoutesDataClass::class.java)
+
+
+        Log.e("##Intent", " Lat Long " + routView?.startLatLong)
+
+        val route = routView?.origin + " To " + routView?.destination
         supportActionBar?.setTitle(route)
         getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
 
-        startpoint = routView.startLatLong
-        lastpoint = routView.endLatLong
 
-        val url: String = getDirectionsUrl(routView.startLatLong, routView.endLatLong)
+        startpoint = routView?.startLatLong
+        lastpoint = routView?.endLatLong
+
+        val url: String = getDirectionsUrl(routView!!.startLatLong, routView!!.endLatLong)
+//        val url: String = getDirectionsUrl(startlat,endlat)
 
 
         val downloadTask = DownloadTask()

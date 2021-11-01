@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_line">
+
+        <RelativeLayout
+            android:id="@+id/llImageCapture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignTop="@+id/profile_image"
+            android:layout_alignBottom="@+id/profile_image"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_toStartOf="@+id/txtEdit"
+            android:layout_toEndOf="@+id/profile_image"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtExpensetype"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:fontFamily="@font/droidsans"
+                android:textStyle="bold"
+                android:textSize="@dimen/_10sdp"
+                android:textColor="@color/black"
+                android:text="@{expense.expenseType}" />
+
+            <TextView
+                android:id="@+id/txtDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtExpensetype"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:fontFamily="@font/droidsans"
+                android:textSize="@dimen/_9sdp"
+                android:text="@{expense.description}" />
+<!--            ₹-->
+            <TextView
+                android:id="@+id/txtPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:fontFamily="@font/droidsans"
+                android:text="@{`₹ `+ expense.amount}" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txtEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:background="@drawable/ic_right_arrow"
+            android:backgroundTint="@color/purple_700" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profile_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:src="@drawable/ic_profile"
+            app:cardCornerRadius="10dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@{expense.image}" />
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+    <data>
+
+        <variable
+            name="expense"
+            type="com.pbt.cogni.model.Expense" />
+    </data>
+
+</layout>

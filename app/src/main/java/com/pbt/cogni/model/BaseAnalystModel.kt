@@ -1,5 +1,6 @@
 package com.pbt.cogni.model
 
 data class BaseAnalystModel(
-    val result: List<AnalystModel>
+    val result: List<Users>
+
 )

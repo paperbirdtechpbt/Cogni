@@ -3,37 +3,96 @@ package com.pbt.cogni.activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.pbt.cogni.R
+import com.pbt.cogni.WebService.ApiClient
+import com.pbt.cogni.WebService.ApiInterface
 import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.activity.login.LoginActivity
-import com.pbt.cogni.util.AppConstant.PREF_IS_LOGIN
-import com.pbt.cogni.util.AppConstant.PREF_TOKEN
-import com.pbt.cogni.util.AppConstant.PREF_USER
+import com.pbt.cogni.model.HttpResponse
+import com.pbt.cogni.model.UserDetailsData
+import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
+import com.pbt.cogni.util.AppConstant.Companion.PREF_TOKEN
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
+import retrofit2.Call
+import retrofit2.Response
 
 class SplashActivity : AppCompatActivity() {
+
+    var token: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
 
+        AppUtils.logDebug(
+            "SplashACtivity",
+            "Check login tokem ==>> " + MyPreferencesHelper.getStringValue(
+                this@SplashActivity,
+                PREF_TOKEN,
+                ""
+            )
+        )
+
+        AppUtils.logDebug(
+            "SplashACtivity",
+            "Check login tokem ==>> " + MyPreferencesHelper.getStringValue(
+                this@SplashActivity,
+                PREF_IS_LOGIN,
+                ""
+            )
+        )
+
+
         Handler().postDelayed({
 
-            AppUtils.logDebug("SplashACtivity","Check login Preff ==>> "+MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_USER, ""))
-            AppUtils.logDebug("SplashACtivity","Check login tokem ==>> "+MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_TOKEN, ""))
 
-            val intent : Intent;
-            if (MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("") || MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("false"))
+
+            token = MyPreferencesHelper.getStringValue(applicationContext, PREF_TOKEN, "")
+
+
+            val intent: Intent
+            if (MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("") || MyPreferencesHelper.getStringValue(this@SplashActivity, PREF_IS_LOGIN, "").equals("false")) {
                 intent = Intent(this, LoginActivity::class.java)
-            else {
-                intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                if (token != "")
+                    callAPi()
+                else
+                    AppUtils.logDebug("##Splash","token empty : "+token)
+            }
+        }, 100)
+    }
+
+    fun callAPi() {
+
+        val userdataDetails: UserDetailsData? = MyPreferencesHelper.getUser(this)
+
+        Log.e("##id", userdataDetails?.id + "\n" + token)
+
+        val apiclient = ApiClient.clientUpdateToken()
+        val apiInterface = apiclient?.create(ApiInterface::class.java)
+        val call = apiInterface?.updateToken(userdataDetails!!.id, token!!)
+
+        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
+            override fun onResponse(
+                call: Call<HttpResponse>,
+                response: Response<HttpResponse>
+            ) {
+                Log.e("##apiSuccess", response.body()?.code.toString())
+                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                finish()
             }
 
-            startActivity(intent)
-            finish()
-        }, 500)
+            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+                AppUtils.logError("##Splash"," server Error: "+t.message)
+            }
+
+        })
     }
 }
 //hello test

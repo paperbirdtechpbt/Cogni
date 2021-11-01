@@ -1,7 +1,7 @@
 package com.pbt.cogni.fragment.audioVideoCall
 
 import android.content.Context
-import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,20 +9,29 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
-import com.pbt.cogni.activity.call.CallActivity
+import com.pbt.cogni.activity.map.Resultt
+import com.pbt.cogni.fragment.audioVideoCall.AudioVideoViewModel.Companion.myResult
+import com.pbt.cogni.fragment.audioVideoCall.AudioVideoViewModel.Companion.result
+import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.repository.AnalystRepo
-import com.pbt.cogni.repository.AnalystRepository
-import com.pbt.cogni.util.AppConstant
-import com.pbt.cogni.util.AppConstant.KEY_CALL
-import com.pbt.cogni.util.AppConstant.ROOM_ID
+import com.pbt.cogni.util.MyPreferencesHelper
 
-class AudioVideCallAdapter (
-
-    var list: ArrayList<AnalystRepo>,
+class AudioVideCallAdapter(
     var context: Context?,
 
-    ) :
+    var callbacks: (Int, View,Resultt,String) -> Unit
+
+) :
     RecyclerView.Adapter<AudioVideCallAdapter.ViewHolder>() {
+    companion object{
+       var callerName:String?=null
+
+    }
+    private var countrylist: HttpResponse? = null
+
+    fun setCountryList(countrylist: HttpResponse) {
+        this.countrylist = countrylist
+    }
 
 
     override fun onCreateViewHolder(
@@ -35,40 +44,41 @@ class AudioVideCallAdapter (
     }
 
     override fun onBindViewHolder(holder: AudioVideCallAdapter.ViewHolder, position: Int) {
-        holder.bind(list.get(position)!!)
+         callerName=  myResult?.mydata?.get(position)?.Firstname +""+ myResult?.mydata?.get(position)?.LastName
+        val sendername=MyPreferencesHelper.getUser(context!!)?.FirstName+" "+MyPreferencesHelper.getUser(context!!)?.FirstName
+        Log.d("##sendername", callerName)
 
+        holder.txtAnalyst.text =callerName
+        holder.txtAnalystnumber.text = myResult?.mydata?.get(position)?.Mobile
         holder.rlVideoCall.setOnClickListener {
-            val intent = Intent(context, CallActivity::class.java)
-            intent.putExtra(AppConstant.KEY_CALL, true);
-            intent.putExtra(ROOM_ID,list.get(position).roomId);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context?.startActivity(intent)
+                callbacks.invoke(holder.adapterPosition,it, myResult?.mydata?.get(position)!!
+                ,sendername)
         }
-
         holder.rlVoiceCall.setOnClickListener {
-            val intent = Intent(context, CallActivity::class.java)
-            intent.putExtra(KEY_CALL, false);
-            intent.putExtra("name",list.get(position).analysisName)
-            intent.putExtra(ROOM_ID,list.get(position).roomId);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context?.startActivity(intent)
+                callbacks.invoke(holder.adapterPosition,it, myResult?.mydata?.get(position)!!,sendername)
         }
 
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        if (countrylist == null) {
+            return 0
+            Log.e("##countrylist", "countrylist is empty")
+        } else {
+
+            Log.e("##countrylist", "countrylist----$countrylist")
+            Log.e("##countrylist", "reulttttt----$result")
+            return countrylist?.data!!.size()
+
+        }
     }
 
     class ViewHolder(binding: View) : RecyclerView.ViewHolder(binding) {
         val txtAnalyst = binding.findViewById<TextView>(R.id.txtAnalyst)
+        val txtAnalystnumber = binding.findViewById<TextView>(R.id.txtAnalystnumber)
         val rlVideoCall = binding.findViewById<RelativeLayout>(R.id.rlVideoCall)
         val rlVoiceCall = binding.findViewById<RelativeLayout>(R.id.rlVoiceCall)
-
-        fun bind(blog: AnalystRepo) {
-            txtAnalyst.text = blog.analysisName
-        }
-
+        val layout=binding.findViewById<RelativeLayout>(R.id.relativelayout)
     }
 
 }

@@ -2,27 +2,21 @@ package com.pbt.cogni.activity.call
 
 import android.os.Bundle
 import com.pbt.cogni.R
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.ContentValues.TAG
-import android.content.pm.PackageManager
+
+import android.app.NotificationManager
 import android.media.AudioManager
+import android.media.Ringtone
+import android.media.RingtoneManager
 import android.net.Uri
-import android.opengl.Visibility
-import android.os.Build
 import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
-import com.pbt.cogni.util.AppConstant.ROOM_ID
+import com.pbt.cogni.util.AppConstant.Companion.ROOM_ID
 import org.appspot.apprtc.AppRTCClient
 import org.appspot.apprtc.AppRTCClient.*
 import org.appspot.apprtc.PeerConnectionClient
@@ -45,6 +39,20 @@ import org.webrtc.VideoSink
 import java.lang.StringBuilder
 import java.security.SecureRandom
 import java.util.ArrayList
+import android.view.WindowManager
+import com.pbt.cogni.fcm.MyFirebaseMessagingService
+import com.pbt.cogni.fcm.MyFirebaseMessagingService.Companion.sendernamee
+import com.pbt.cogni.fcm.MyFirebaseMessagingService.Companion.sendernumberr
+import com.pbt.cogni.fragment.audioVideoCall.AudioVideCallAdapter.Companion.callerName
+import com.pbt.cogni.util.AppConstant.Companion.CALL
+import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_MOBILE_NUMBER
+import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_NAME
+import com.pbt.cogni.util.AppUtils
+import kotlinx.android.synthetic.main.activity_call.*
+import kotlinx.android.synthetic.main.activity_call.txtTimerVoiceCall
+import kotlinx.android.synthetic.main.activity_call_activity.*
+import android.media.MediaPlayer
+import android.os.Build
 
 
 class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents {
@@ -65,11 +73,16 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var callStartedTimeMs: Long = 0
     private var micEnabled = true
     private var isSwappedFeeds = false
-    val PERMISSIONS_REQUEST_READ_CONTACTS = 100
-    var timerTextView: TextView? = null
+  private  var timerTextView: TextView? = null
+    private var check:Boolean=false
+    private var mp: MediaPlayer?=null
+    private var ringtone:Ringtone?=null
+    private var autodisconnect=false
+
 
 
     // Control buttons for limited UI
+
     private var button_speker: TextView? = null
     private var disconnectButton: TextView? = null
     private var cameraSwitchButton: TextView? = null
@@ -77,64 +90,153 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var toggleMuteButton: TextView? = null
     private var videoCallEnable = false
     private var isSpeker = true
-
+   var handler=Handler()
+    var postmilli:Long?=null
+var currentMilli:Long?=null
     var roomId: String? = ""
+    var textView: TextView? = null
 
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+//    @RequiresApi(Build.VERSION_CODES.P)
     public override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call_activity)
+
+        cancleNotification()
+
+//        autodisconnect.setl
+        textView = findViewById(R.id.txtUsernameVoiceCall)
+        layout_callername.setText(sendernamee)
+        layout_callernumber.setText(sendernumberr)
+
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                    or WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         supportActionBar?.hide()
 
         Log.d("##CHan", "oncreate")
 
-        videoCallEnable = intent.extras!!.getBoolean("Call")
-
+        videoCallEnable = intent.extras!!.getBoolean(CALL)
         roomId = intent.extras?.getString(ROOM_ID)
-        name = intent.extras?.getString("name")
-        Log.d("##CHeckName", "----" + name + "---" + videoCallEnable.toString())
+        name = intent.extras?.getString(CONST_SENDER_NAME)
+        sendername = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
+        postmilli=intent.extras?.getLong("currentmilli")
 
-        if (videoCallEnable != true) {
-            Log.d("##CHeckName", "InVoic Call")
+    Log.d("##diconnet",postmilli.toString())
+      currentMilli=System.currentTimeMillis()
 
+        if (intent?.extras?.getString("notification") != null) {
+
+//            MyFirebaseMessagingService().setautoCancle()
+            setAutoDisconnect(true)
+
+            incomingCallLayout.visibility = View.VISIBLE
+            layout_callername.setText(sendernamee)
+            layout_callernumber.setText(sendernumberr)
+            textView?.setText(sendernamee)
+        }
+        else{
+
+            setAutoDisconnect(false)
+            playOutGoingRing()
+            StartCallProcess()
         }
 
-//        Log.e("##CAll ","Check is video call  "+)
+    btn_rejectCall.setOnClickListener{
+        disconnect()
+            finish()
+
+        }
+    disconnectButton?.setOnClickListener{
+        if (check) { onCallHangUp() }
+    else{ finish() }
+}
+        btnAcceptCall.setOnClickListener {
+            check=true
+            incomingCallLayout.visibility= View.GONE
+            txtTimerVoiceCall.setText("Connecting")
+            textView?.setText(sendernamee)
+            MyFirebaseMessagingService().stopSound()
+
+            StartCallProcess()
+        }
+    }
+
+    private fun playOutGoingRing() {
+        val sound: Uri =
+            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.tringtringtring)
+
+        ringtone = RingtoneManager.getRingtone(applicationContext, sound)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ringtone?.setLooping(true)
+        }
+        ringtone?.play()
+        textView?.setText("$callerName")
+    }
+
+    private fun setAutoDisconnect(boolean:Boolean) {
+        val timer:Long
+
+        if (boolean){
+            if (postmilli.toString()=="0"){
+                postmilli=29000
+                Log.d("##diconnect","postmilli---"+postmilli.toString())
+                timer=postmilli!!
+            }
+            else{
+                val mytimer=currentMilli!!-postmilli!!
+                val timerrr:Long=30000-mytimer
+                timer=timerrr
+            }
+        }
+        else{ timer=30000 }
+        if (!autodisconnect){
+            handler.postDelayed({
+                ringtone?.stop()
+                finish()
+            }, timer)
+        }
+    }
+
+    private fun StartCallProcess() {
+
+        layout_callername.setText(sendernamee)
+        layout_callernumber.setText(sendernumberr)
+
         iceConnected = false
         signalingParameters = null
 
-        // Create UI controls.
         pipRenderer = findViewById(R.id.pip_video_view)
         fullscreenRenderer = findViewById(R.id.fullscreen_video_view)
         disconnectButton = findViewById(R.id.button_call_disconnect)
         cameraSwitchButton = findViewById(R.id.button_call_switch_camera)
         toggleMuteButton = findViewById(R.id.button_call_toggle_mic)
         button_speker = findViewById(R.id.button_speker)
+        toggleMuteButton?.visibility = View.VISIBLE
+
         if (!videoCallEnable) {
-
-            Log.d("##CHance","-----")
+            Log.d("##CHance", "-----")
             val imageview = findViewById<ImageView>(R.id.voicebackgroundumage)
-           imageview.setVisibility(View.VISIBLE)
+            imageview.setVisibility(View.VISIBLE)
 
-            val textView=findViewById<TextView>(R.id.txtUsernameVoiceCall)
-            textView.setText(name)
             cameraSwitchButton?.setVisibility(View.GONE)
             button_speker?.setVisibility(View.VISIBLE)
-            pipRenderer?.visibility=View.GONE
-            fullscreenRenderer?.visibility= View.GONE
-        }
+            pipRenderer?.visibility = View.GONE
+            toggleMuteButton?.visibility = View.VISIBLE
+            fullscreenRenderer?.visibility = View.GONE
 
-        // Add buttons click events.
-        disconnectButton?.setOnClickListener(OnClickListener { onCallHangUp() })
-        cameraSwitchButton?.setOnClickListener(OnClickListener { onCameraSwitch() })
-        toggleMuteButton?.setOnClickListener(OnClickListener {
+        }
+        if (videoCallEnable != true) { AppUtils.logDebug(TAG, "InVoic Call") }
+
+        cameraSwitchButton?.setOnClickListener({ onCameraSwitch() })
+        toggleMuteButton?.setOnClickListener{
             val enabled = onToggleMic()
             Log.e("##Call", "Toggle : $enabled")
             if (enabled) toggleMuteButton?.setBackground(getDrawable(R.drawable.ic_mic_on)) else toggleMuteButton?.setBackground(
-                getDrawable(R.drawable.ic_mic_off)
-            )
-            //
+                getDrawable(R.drawable.ic_mic_off))
+
             if (enabled) {
                 if (videoCallEnable) {
                     Log.e("##Call", " Toggel Click Time $videoCallEnable")
@@ -145,14 +247,16 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
                 }
             }
             toggleMuteButton?.setAlpha(if (enabled) 1.0f else 0.3f)
-        })
+        }
 
         // Swap feeds on pip view click.
-        pipRenderer?.setOnClickListener(OnClickListener { setSwappedFeeds(!isSwappedFeeds) })
+        pipRenderer?.setOnClickListener { setSwappedFeeds(!isSwappedFeeds) }
+        disconnectButton?.setOnClickListener{
+            onCallHangUp()
+        }
         button_speker?.setOnClickListener(OnClickListener {
-            if (button_speker?.getVisibility() == View.VISIBLE) {
-            } else {
-            }
+            if (button_speker?.getVisibility() == View.VISIBLE) { Log.d(TAG,"") }
+            else { Log.d(TAG,"") }
             if (!isSpeker) {
                 setHeadsetOn()
                 isSpeker = true
@@ -160,8 +264,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
             } else {
                 setSpeakerOn()
                 isSpeker = false
-                button_speker?.setBackground(getDrawable(R.drawable.ic_speker_off))
-            }
+                button_speker?.setBackground(getDrawable(R.drawable.ic_speker_off)) }
         })
         remoteRenderers.add(remoteProxyRenderer)
 
@@ -192,7 +295,15 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     }
 
 
+    fun cancleNotification() {
+        val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
+        MyFirebaseMessagingService().stopSound()
+    }
+
+
     private fun setSpeakerOn() {
+        mp?.start()
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         audioManager!!.isSpeakerphoneOn = true
         audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
@@ -204,7 +315,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         audioManager!!.mode = AudioManager.MODE_IN_COMMUNICATION
     }
 
-    // Create a random string
+
     private fun randomString(length: Int, characterSet: String): String {
         val sb = StringBuilder() //consider using StringBuffer if needed
         for (i in 0 until length) {
@@ -214,7 +325,6 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         return sb.toString()
     }
 
-    // Join video call with randomly generated roomId
     private fun connectVideoCall(roomId: String) {
 
         Log.e("##Call", "RoomOID : " + roomId)
@@ -243,10 +353,8 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
             null
         )
 
-        // Create connection client. Use the standard WebSocketRTCClient.
-        // DirectRTCClient could be used for point-to-point connection
         appRtcClient = WebSocketRTCClient(this)
-        // Create connection parameters.
+
         roomConnectionParameters = RoomConnectionParameters(
             roomUri.toString(),
             roomId,
@@ -280,7 +388,7 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private fun startCall() {
         if (appRtcClient == null) {
             Log.e(TAG, "AppRTC client is not allocated for a call.")
-            Log.d("##CallCOnected","On swapped feeds")
+            Log.d("##CallCOnected", "On swapped feeds")
             return
         }
         callStartedTimeMs = System.currentTimeMillis()
@@ -288,33 +396,37 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         // Start room connection.
         logAndToast(getString(R.string.connecting_to, roomConnectionParameters!!.roomUrl))
         appRtcClient!!.connectToRoom(roomConnectionParameters)
-        Log.d("##CallCOnected","On swapped feeds")
+        Log.d("##CallCOnected", "On swapped feeds")
     }
 
-    @UiThread
+//    @UiThread
     private fun callConnected() {
 
-        var startTime: Long = 0
-        var timerHandler = Handler()
+    handler.removeCallbacksAndMessages(null)
+    ringtone?.stop()
 
-        var timerRunnable: Runnable = object : Runnable {
+        var startTime: Long = 0
+        val timerHandler = Handler()
+
+        val timerRunnable: Runnable = object : Runnable {
             override fun run() {
                 val millis = System.currentTimeMillis() - startTime
                 var seconds = (millis / 1000).toInt()
                 var minutes = seconds / 60
-                var hours=minutes / 60
+                val hours = minutes / 60
                 seconds = seconds % 60
                 minutes = minutes % 60
-                timerTextView!!.text = String.format("%02d:%02d:%02d",hours, minutes, seconds)
+                timerTextView!!.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
                 timerHandler.postDelayed(this, 500)
-            }}
+            }
+        }
 
         timerTextView = findViewById(R.id.txtTimerVoiceCall)
         startTime = System.currentTimeMillis()
         timerHandler.postDelayed(timerRunnable, 0)
-        Toast.makeText(this,"Call Connected",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Call Connected", Toast.LENGTH_SHORT).show()
 
-        val delta = System.currentTimeMillis() - callStartedTimeMs
+    val delta = System.currentTimeMillis() - callStartedTimeMs
         Log.i(TAG, "Call connected: delay=" + delta + "ms")
         if (peerConnectionClient == null || isError) {
             Log.w(TAG, "Call is connected in closed or error state")
@@ -323,11 +435,11 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         // Enable statistics callback.
         peerConnectionClient!!.enableStatsEvents(true, STAT_CALLBACK_PERIOD)
         setSwappedFeeds(true /* isSwappedFeeds */)
-        Log.d("##CallCOnected","On VoiceCAll COnnected")
+        Log.d("##CallCOnected", "On VoiceCAll COnnected")
     }
 
-    // Disconnect from remote resources, dispose of local resources, and exit.
     private fun disconnect() {
+        ringtone?.stop()
 
         activityRunning = false
         remoteProxyRenderer.setTarget(null)
@@ -355,36 +467,30 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         }
         setHeadsetOn()
         finish()
-        Log.d("##CallCOnected","On disconnect")
+        Log.d("##CallCOnected", "On disconnect")
     }
 
     private fun disconnectWithErrorMessage(errorMessage: String) {
         if (!activityRunning) {
             Log.e(TAG, "Critical error: $errorMessage")
             disconnect()
-        } else {
-            AlertDialog.Builder(this)
-                .setTitle(getText(R.string.channel_error_title))
-                .setMessage(errorMessage)
-                .setCancelable(false)
-                .setNeutralButton(
-                    R.string.ok
-                ) { dialog, id ->
-                    dialog.cancel()
-                    disconnect()
-                }
-                .create()
-                .show()
+        }
+
+        else {
+            txtTimerVoiceCall.setText("Call Ended")
+            Handler().postDelayed({
+                finish()
+            }, 1500)
+
         }
     }
 
-    // Log |msg| and Toast about it.
     private fun logAndToast(msg: String) {
         Log.d(TAG, msg)
         if (logToast != null) {
             logToast!!.cancel()
         }
-//       Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
 
     }
 
@@ -433,7 +539,6 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
             }
         }
 
-        // Front facing camera not found, try something else
         Logging.d(TAG, "Looking for other cameras.")
         for (deviceName in deviceNames) {
             if (!enumerator.isFrontFacing(deviceName)) {
@@ -454,12 +559,9 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         remoteProxyRenderer.setTarget(if (isSwappedFeeds) pipRenderer else fullscreenRenderer)
         fullscreenRenderer!!.setMirror(isSwappedFeeds)
         pipRenderer!!.setMirror(!isSwappedFeeds)
-        Log.d("##CallCOnected","On swapped feeds")
+        Log.d("##CallCOnected", "On swapped feeds")
     }
 
-    // -----Implementation of AppRTCClient.AppRTCSignalingEvents ---------------
-    // All callbacks are invoked from websocket signaling looper thread and
-    // are routed to UI thread.
     private fun onConnectedToRoomInternal(params: SignalingParameters) {
         val delta = System.currentTimeMillis() - callStartedTimeMs
         signalingParameters = params
@@ -473,19 +575,17 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         )
         if (signalingParameters!!.initiator) {
             logAndToast("Creating OFFER...")
-            // Create offer. Offer SDP will be sent to answering client in
-            // PeerConnectionEvents.onLocalDescription event.
+
             peerConnectionClient!!.createOffer()
         } else {
             if (params.offerSdp != null) {
                 peerConnectionClient!!.setRemoteDescription(params.offerSdp)
                 logAndToast("Creating ANSWER...")
-                // Create answer. Answer SDP will be sent to offering client in
-                // PeerConnectionEvents.onLocalDescription event.
+
                 peerConnectionClient!!.createAnswer()
             }
             if (params.iceCandidates != null) {
-                // Add remote ICE candidates from room.
+
                 for (iceCandidate in params.iceCandidates) {
                     peerConnectionClient!!.addRemoteIceCandidate(iceCandidate)
                 }
@@ -510,8 +610,6 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
 
             if (!signalingParameters!!.initiator) {
                 logAndToast("Creating ANSWER...")
-                // Create answer. Answer SDP will be sent to offering client in
-                // PeerConnectionEvents.onLocalDescription event.
                 peerConnectionClient!!.createAnswer()
             }
         })
@@ -548,10 +646,6 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         reportError(description)
     }
 
-    // -----Implementation of PeerConnectionClient.PeerConnectionEvents.---------
-    // Send local peer connection SDP and ICE candidates to remote party.
-    // All callbacks are invoked from peer connection client looper thread and
-    // are routed to UI thread.
     override fun onLocalDescription(sdp: SessionDescription) {
         val delta = System.currentTimeMillis() - callStartedTimeMs
         runOnUiThread {
@@ -684,6 +778,8 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
         private const val APPRTC_URL = "https://appr.tc"
         private const val UPPER_ALPHA_DIGITS = "ACEFGHJKLMNPQRUVWXY123456789"
         var name: String? = ""
+        var sendername: String? = ""
         private const val STAT_CALLBACK_PERIOD = 1000
     }
 }
+

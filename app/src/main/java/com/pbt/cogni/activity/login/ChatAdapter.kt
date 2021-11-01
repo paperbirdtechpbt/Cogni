@@ -7,12 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
+import com.pbt.cogni.model.Message
 import kotlinx.android.synthetic.main.row_my_message.view.*
 
 class ChatAdapter(val context: Context, val data: ArrayList<Message>, val loggedUId: String) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
-
-
 
     override fun onCreateViewHolder(p0: ViewGroup, type: Int): ViewHolder {
         return if (type == 1) {

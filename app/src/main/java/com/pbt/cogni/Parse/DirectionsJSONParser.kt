@@ -1,6 +1,5 @@
 package com.pbt.cogni.Parse
 
-import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import org.json.JSONArray
 import org.json.JSONException
@@ -10,7 +9,7 @@ import java.util.HashMap
 
 class DirectionsJSONParser {
     fun parse(jObject: JSONObject): List<List<HashMap<String, String>>>? {
-        Log.d("methodss", jObject.toString())
+
         val routes: MutableList<List<HashMap<String, String>>> = ArrayList()
         var jRoutes: JSONArray? = null
         var jLegs: JSONArray? = null
@@ -20,6 +19,7 @@ class DirectionsJSONParser {
 
             for (i in 0 until jRoutes.length()) {
                 jLegs = (jRoutes[i] as JSONObject).getJSONArray("legs")
+
                 val path = ArrayList<HashMap<String, String>>()
 
                 for (j in 0 until jLegs.length()) {

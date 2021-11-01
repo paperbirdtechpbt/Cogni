@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/itemRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_3sdp"
+        android:layout_marginRight="@dimen/_3sdp"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="3dp"
+        app:cardMaxElevation="3dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp">
+
+
+            <TextView
+                android:id="@+id/btnVIewRoute"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:background="@android:color/transparent"
+                android:foreground="@drawable/ic__showroute"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/txtLine"
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:layout_below="@+id/greenicon"
+                android:layout_alignStart="@+id/greenicon"
+                android:layout_alignEnd="@+id/greenicon"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:background="@drawable/shap_dotted" />
+
+            <TextView
+                android:id="@+id/redicon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_below="@+id/txtLine"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:background="@drawable/circle_green"
+                android:backgroundTint="#F30303"
+                android:drawableTint="#fff" />
+
+
+            <TextView
+                android:id="@+id/destination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/redicon"
+                android:layout_alignBottom="@+id/redicon"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="1dp"
+                android:layout_toStartOf="@+id/btnVIewRoute"
+                android:layout_toEndOf="@+id/txtLine"
+                android:fontFamily="@font/droidsans"
+                android:layout_centerHorizontal="true"
+                android:text="@{routes.endLocation}"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_above="@+id/destination"
+                android:layout_below="@+id/origin"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/shape_line"
+                android:layout_toStartOf="@+id/btnVIewRoute"
+                android:layout_toEndOf="@+id/txtLine" />
+
+            <TextView
+                android:id="@+id/origin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/greenicon"
+                android:layout_alignBottom="@+id/greenicon"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="1dp"
+                android:layout_toStartOf="@+id/btnVIewRoute"
+                android:layout_toEndOf="@+id/txtLine"
+                android:fontFamily="@font/droidsans"
+                android:text="@{routes.startLocation}"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/greenicon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/circle_green" />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <data>
+
+        <variable
+            name="routes"
+            type="com.pbt.cogni.model.Routes" />
+    </data>
+
+</layout>

@@ -1,18 +1,28 @@
-package com.pbt.cogni.util
+ package com.pbt.cogni.util
 
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.Context
+import android.database.Cursor
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
+import androidx.loader.content.CursorLoader
 import com.pbt.cogni.BuildConfig
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
 
-class AppUtils {
+ class AppUtils {
     companion object {
 
         public fun isNetworkConnected(context: Context): Boolean {
@@ -91,8 +101,35 @@ class AppUtils {
             return SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date().getTime())
         }
 
+        fun getRandomString(length: Int) : String {
+            val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+            return (1..length)
+                .map { allowedChars.random() }
+                .joinToString("")
+        }
 
+        fun paramRequestBody(param :  String) : RequestBody {
+            val parameter: RequestBody = param.toRequestBody("multipart/form-data".toMediaTypeOrNull());
+            return  parameter
+        }
+        fun paramRequestBodyImage(param :  Uri,context: Context) : MultipartBody.Part {
 
+            val file = File(getRealPathFromURI(param,context)!!)
+            val requestFile: RequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+            val body: MultipartBody.Part = MultipartBody.Part.createFormData("image", file.name, requestFile)
+            return  body
+        }
+
+        fun getRealPathFromURI(contentUri: Uri,context: Context): String? {
+            val proj = arrayOf(MediaStore.Images.Media.DATA)
+            val loader = CursorLoader(context, contentUri, proj, null, null, null)
+            val cursor: Cursor? = loader.loadInBackground()
+            val column_index: Int = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            cursor.moveToFirst()
+            val result: String = cursor!!.getString(column_index)
+            cursor.close()
+            return result
+        }
     }
 
 

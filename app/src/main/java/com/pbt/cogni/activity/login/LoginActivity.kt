@@ -11,13 +11,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.home.MainActivity
+import com.pbt.cogni.callback.LoginListener
+
 import com.pbt.cogni.databinding.ActivityLoginBinding
-import com.pbt.cogni.util.AppConstant.PREF_IS_LOGIN
-import com.pbt.cogni.util.AppConstant.PREF_USER
+import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
+import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
+import com.pbt.cogni.viewModel.LoginViewModel
 import es.dmoral.toasty.Toasty
-
 
 class LoginActivity : AppCompatActivity(), LoginListener {
 
@@ -27,7 +29,6 @@ class LoginActivity : AppCompatActivity(), LoginListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         viewModel = ViewModelProvider(
             this,
@@ -35,14 +36,13 @@ class LoginActivity : AppCompatActivity(), LoginListener {
         ).get(LoginViewModel::class.java)
 
         binding?.viewModel = viewModel
-
         viewModel!!.loginListener = this
 
         initObservables()
-
     }
 
     private fun initObservables() {
+
         viewModel?.userLogin?.observe(this, Observer { response ->
             if (response?.code == false) {
                 MyPreferencesHelper.setStringValue(this,PREF_USER,Gson().toJson(response.data))

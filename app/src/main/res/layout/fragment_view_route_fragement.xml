@@ -4,19 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-    tools:context=".activity.ViewRouteFragement">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    >
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerviewViewRouteFragment"
+        android:id="@+id/recyclerRoutes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/myroutes" />
+        tools:listitem="@layout/item_routes" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
