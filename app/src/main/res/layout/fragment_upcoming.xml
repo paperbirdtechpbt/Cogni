@@ -9,7 +9,33 @@
  <androidx.recyclerview.widget.RecyclerView
      android:layout_width="match_parent"
      android:layout_height="match_parent"
-     android:id="@+id/upcoming_recyclerview"
+     android:id="@+id/recyclerviewUpcoming"
      />
+
+ <RelativeLayout
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:id="@+id/rlNoData"
+     android:visibility="gone">
+
+  <ImageView
+      android:layout_width="@dimen/_150sdp"
+      android:layout_height="@dimen/_150sdp"
+   android:layout_centerHorizontal="true"
+      android:background="@drawable/no_data"
+      android:layout_centerVertical="true"
+      android:id="@+id/imgNoData"/>
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/imgNoData"
+      android:text="No data Available"
+      android:fontFamily="@font/droidsans"
+      android:layout_centerHorizontal="true"
+      android:layout_marginTop="@dimen/_10sdp"
+      android:id="@+id/txtNoData"/>
+
+ </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

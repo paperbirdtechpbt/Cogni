@@ -95,6 +95,7 @@ class ViewRouteFragement : Fragment(), RoutesViewRecyclerViewItemClick {
 
 
     override fun onRecyclerViewItemClick(view: View, routes: Routes) {
+
         val intent = Intent(activity, MapsActivity::class.java)
             intent.putExtra(CONST_TO_ADDRESS, routes.StartLocation)
             intent.putExtra(CONST_FROM_ADDRESS, routes.EndLocation)
@@ -107,6 +108,6 @@ class ViewRouteFragement : Fragment(), RoutesViewRecyclerViewItemClick {
             intent.putExtra(CONST_ROUTE_ID, routes.MSTRouteId)
             intent.putExtra(CONST_ASSIGN_ID, routes.assignId)
 
-        startActivity(intent)
+            startActivity(intent)
     }
 }

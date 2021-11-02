@@ -27,11 +27,13 @@ import com.pbt.cogni.activity.MapsActivity
 import com.pbt.cogni.activity.MapsActivity.Companion.list
 import com.pbt.cogni.activity.TabLayout.TabLayoutFragment
 import com.pbt.cogni.activity.map.AdapterExpense
+import com.pbt.cogni.model.BaseExpense
 
 import com.pbt.cogni.model.BaseRoutLatLng
 import com.pbt.cogni.model.Expense
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.ClickListener
+import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.fragment_finish_maps.*
 import kotlinx.android.synthetic.main.fragment_finish_maps.view.*
 import kotlinx.android.synthetic.main.fragment_tab_layout.*
@@ -73,7 +75,7 @@ class FinishMapsFragment : Fragment() , Callback<HttpResponse>, OnConnectionFail
         val view:View= inflater.inflate(R.layout.fragment_finish_maps, container, false)
 
         getWayPoint()
-        addListData()
+//        addListData()
 
        recyclerview = view.findViewById(R.id.finish_recyclerview)
         recyclerview?.layoutManager = LinearLayoutManager(context)
@@ -81,7 +83,7 @@ class FinishMapsFragment : Fragment() , Callback<HttpResponse>, OnConnectionFail
         recyclerview?.adapter = listAdapter
 
         if(param3.isNullOrEmpty()){
-            view.finish_totalmoney.visibility=View.VISIBLE
+//            view.finish_totalmoney.visibility=View.VISIBLE
             recyclerview?.visibility=View.VISIBLE
             view.origin.setText("Startlocation   "+"Ahmedabad")
             view.destination.setText("Endlocation     "+"Nadiad")
@@ -95,41 +97,16 @@ class FinishMapsFragment : Fragment() , Callback<HttpResponse>, OnConnectionFail
 
     private fun addListData() {
 
-//        @SerializedName("Id")  val id: Int,
-//        @SerializedName("ExpenseType")  val expenseType: String,
-//        @SerializedName("Price") val amount: String,
-//        @SerializedName("Image") val image: String,
-//        @SerializedName("Description") val description: String,
-//        @SerializedName("ExpenseTypeId") val ExpenseTypeId: String,
-//        @SerializedName("Routeid") val Routeid: String,
-//        @SerializedName("CreatedOn") val CreatedOn: String,
-//        @SerializedName("CreatedBy") val CreatedBy: String,
-//
-//        list.clear()
-//        list.add(  Expense(
-//            10,
-//            "Toll tax receipt",
-//            "500",
-//            "https://www.consumercomplaints.in/thumb.php?complaints=2186655&src=51870105.jpg&wmax=900&hmax=900&quality=85&nocrop=1",
-//            "this ahemedabad toll text reciept"
-//        ))
-//        list.add(  Expense(
-//            10,
-//            "petrol",
-//            "500",
-//            "https://images.financialexpress.com/2018/05/petrol-30-may-2018.jpg",
-//            "Indian Oil petrol pump gota"
-//        ))
-//
-//      var toll=  Expense(10, "Lunch", "500",
-//          "https://www.moneyunder30.com/images/2017/01/save_receipt.jpeg",
-//            " Dominos pizza"
-//        )
-//        for (i in 0 until 3 ){
-//            list.add(toll)
-//        }
+//        var listLatLong: BaseExpense =
+//            Gson().fromJson(response?.body()?.data.toString(), BaseExpense::class.java)
+//        recyclerViewExpense?.layoutManager = LinearLayoutManager(applicationContext)
+//        var listAdapter = AdapterExpense(listLatLong.listExpense, this@MapsActivity)
+//        recyclerViewExpense.adapter = listAdapter
 
     }
+
+
+
 
     private fun getWayPoint() {
         Log.d("##inmethod","ingetwaypoint")

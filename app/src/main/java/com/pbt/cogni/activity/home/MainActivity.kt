@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
 
             }
             supportFragmentManager.beginTransaction()
-                .replace(R.id.framelayout, ViewRouteFragement()).commit()
+                .replace(R.id.framelayout, TabLayoutFragment()).commit()
             bottomNavigation = findViewById(R.id.bottom_navigation)
             bottomNavigation?.getMenu()?.get(0)?.setChecked(true)
         }
@@ -124,8 +124,6 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
                     getSupportActionBar()?.setTitle("Audio Video ")
 
                     supportActionBar?.show()
-
-
                     audioVideoFragement = AudioVideoFragement()
                     supportFragmentManager
                         .beginTransaction()
@@ -133,17 +131,17 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .commit()
                 }
-                R.id.viewroute -> {
-                    getSupportActionBar()?.setTitle("Analyst Routes List ")
-                    supportActionBar?.show()
-
-                    viewRouteFragement = ViewRouteFragement()
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.framelayout, viewRouteFragement)
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .commit()
-                }
+//                R.id.viewroute -> {
+//                    getSupportActionBar()?.setTitle("Analyst Routes List ")
+//                    supportActionBar?.show()
+//
+//                    viewRouteFragement = ViewRouteFragement()
+//                    supportFragmentManager
+//                        .beginTransaction()
+//                        .replace(R.id.framelayout, viewRouteFragement)
+//                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                        .commit()
+//                }
                 R.id.test -> {
 
                     getSupportActionBar()?.setTitle("Analyst Routes List ")
@@ -202,17 +200,8 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
 
 
             if (it != null) {
-
                 lat = it.latitude
                 long = it.longitude
-                Toast.makeText(this, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
-                Log.d("##asdd", "${it.latitude} ${it.longitude}")
-
-                Toast.makeText(
-                    applicationContext,
-                    "${it.latitude} ${it.longitude}",
-                    Toast.LENGTH_SHORT
-                ).show()
 
             } else {
                 Toast.makeText(this, "Please Enable Location", Toast.LENGTH_SHORT).show()

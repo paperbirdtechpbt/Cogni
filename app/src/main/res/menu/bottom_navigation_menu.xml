@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+<!--    <item-->
+<!--        android:id="@+id/viewroute"-->
+<!--        android:icon="@drawable/viewroute"-->
+<!--        android:iconTint="@color/white"-->
+<!--        android:title="@string/ViewRoute" />-->
     <item
-        android:id="@+id/viewroute"
-        android:icon="@drawable/viewroute"
-        android:title="@string/ViewRoute" />
+        android:id="@+id/test"
+        android:icon="@drawable/iconlistt"
+        android:iconTint="@color/white"
+        android:title="Routes" />
+
     <item
         android:id="@+id/audiovideo"
         android:icon="@drawable/videocallicon"
+        android:iconTint="@color/white"
         android:title="@string/VideoAudio" />
     <item
         android:id="@+id/chat"
         android:icon="@drawable/bubblechat"
+        android:iconTint="@color/white"
         android:title="@string/Chat" />
 
     <item
         android:id="@+id/profile"
         android:icon="@drawable/profileprofile"
+        android:iconTint="@color/white"
         android:title="@string/profile" />
-    <item
-        android:id="@+id/test"
-        android:icon="@drawable/iconlistt"
-        android:title="@string/Test" />
+
 
 </menu>

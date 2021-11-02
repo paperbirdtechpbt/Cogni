@@ -63,17 +63,12 @@ class ProgressRequestBody(file: File, content_type: String?, listener: UploadCal
 
     private class ProgressUpdater(private val mUploaded: Long, private val mTotal: Long): Runnable {
         override fun run() {
-//            mListener?.onProgressUpdate((100 * mUploaded / mTotal));
+            ProgressRequestBody.mListener?.onProgressUpdate((100 * mUploaded / mTotal).toInt())
         }
-
-//        override fun run() {
-//            AppUtils.logDebug("ProgressREquestBody","percent ==>> "+(100 * mUploaded / mTotal).toInt())
-//            mListener?.onProgressUpdate((100 * mUploaded / mTotal).toInt())
-//        }
     }
 
     companion object {
-//        private var mListener: UploadCallbacks? = null
+        private var mListener: UploadCallbacks? = null
         private const val DEFAULT_BUFFER_SIZE = 2048
     }
 }

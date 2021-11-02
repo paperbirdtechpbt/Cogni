@@ -9,10 +9,6 @@
     app:layout_constraintHorizontal_chainStyle="packed"
     tools:context=".fragment.Finish.FinishMapsFragment">
 
-
-
-
-
     <TextView
         android:id="@+id/finish_totalmoney"
         android:layout_width="wrap_content"
@@ -23,34 +19,6 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/finish_recyclerview" />
-
-
-<!--    <RelativeLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:id="@+id/rlCurrentNoData"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/finish_recyclerview"-->
-<!--        android:visibility="visible">-->
-
-<!--        <ImageView-->
-<!--            android:layout_width="@dimen/_150sdp"-->
-<!--            android:layout_height="@dimen/_150sdp"-->
-<!--            android:layout_centerHorizontal="true"-->
-<!--            android:background="@drawable/no_data"-->
-<!--            android:layout_centerVertical="true"-->
-<!--            android:id="@+id/imgNoData"/>-->
-
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_below="@+id/imgNoData"-->
-<!--            android:text="No data Available"-->
-<!--            android:fontFamily="@font/droidsans"-->
-<!--            android:layout_centerHorizontal="true"-->
-<!--            android:layout_marginTop="@dimen/_10sdp"-->
-<!--            android:id="@+id/txtNoData"/>-->
-
-<!--    </RelativeLayout>-->
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -159,11 +127,6 @@
 
         </RelativeLayout>
 
-
-
     </LinearLayout>
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

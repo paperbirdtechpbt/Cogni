@@ -6,27 +6,40 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
+import com.pbt.cogni.activity.MapsActivity
 import com.pbt.cogni.activity.TabLayout.TabLayoutFragment
 import com.pbt.cogni.fragment.Current.CurrentFragment
+import com.pbt.cogni.fragment.Current.CurrentTripViewModel
 import com.pbt.cogni.model.Users
 import com.pbt.cogni.util.RecyclerviewClickLisetner
 import kotlinx.android.synthetic.main.fragment_upcoming.*
 
 import com.pbt.cogni.fragment.Finish.FinishMapsFragment
+import com.pbt.cogni.fragment.ViewRoute.AdapterViewRouteList
+import com.pbt.cogni.model.Routes
+import com.pbt.cogni.util.AppConstant
+import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.RoutesViewRecyclerViewItemClick
+import kotlinx.android.synthetic.main.fragment_current.*
 
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 
-class UpcomingFragment : Fragment() {
+class UpcomingFragment : Fragment(), RoutesViewRecyclerViewItemClick {
+
     private var param1: String? = null
     private var param2: String? = null
-    var upcomingeventes=ArrayList<UpcomingEvents>()
+
+    lateinit var listAdapter: AdapterViewRouteList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,74 +49,44 @@ class UpcomingFragment : Fragment() {
         }
     }
 
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view:View= inflater.inflate(R.layout.fragment_upcoming, container, false)
-
-        addData(upcomingeventes)
-
-        val recyclerView=view.findViewById<RecyclerView>(R.id.upcoming_recyclerview)
-        recyclerView?.layoutManager = LinearLayoutManager(context)
-        val listAdapter = AdapterUpcomingList(upcomingeventes,{list->
-
-            val fragment = FinishMapsFragment()
-            val args = Bundle()
-            args.putString("start",list.startlocation)
-            args.putString("endddddd",list.endlocation)
-            args.putString("tabbbbbbb","2")
-
-            fragment.setArguments(args)
-
-           sendDataForTabLayoutChane()
-
-            var fragmentTransaction: FragmentTransaction
-
-            val  fragmentManager = requireActivity().supportFragmentManager
-            fragmentTransaction = fragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frameLayout_tab, fragment)
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.commit()
-
-            val intent=Intent(requireContext(),TabLayoutFragment::class.java)
-            intent.putExtra("tablayout","channge")
-
-        })
-        recyclerView?.adapter = listAdapter
-
+        initViewModel();
         return  view
     }
 
-    private fun addData(upcomingeventes: ArrayList<UpcomingEvents>) {
+    private fun initViewModel() {
+        val viewmodel: UpCommingTripViewModel = ViewModelProvider(this).get(UpCommingTripViewModel::class.java)
 
-        upcomingeventes.add(UpcomingEvents("01-11-21","AHmedabad","Pune"))
-        upcomingeventes.add(UpcomingEvents("02-11-21","Botad","Rajkot"))
-        upcomingeventes.add(UpcomingEvents("02-11-21","Botad","Rajkot"))
-        upcomingeventes.add(UpcomingEvents("03-11-21","Updaipur","Bhavngar"))
-        upcomingeventes.add(UpcomingEvents("04-11-21","Bhavnagr","Pune"))
-        upcomingeventes.add(UpcomingEvents("04-11-21","Bhavnagr","Pune"))
-        upcomingeventes.add(UpcomingEvents("05-11-21","Botad","Pune"))
-        upcomingeventes.add(UpcomingEvents("06-11-21","Delhi","Pune"))
-        upcomingeventes.add(UpcomingEvents("04-11-21","Bhavnagr","Pune"))
+        viewmodel.onRouteListRequest(requireContext())
+
+        viewmodel?.routesList.observe(viewLifecycleOwner, Observer { routes ->
+            recyclerviewUpcoming?.layoutManager = LinearLayoutManager(requireContext())
+            listAdapter = AdapterViewRouteList(routes, this)
+            recyclerviewUpcoming?.adapter = listAdapter
+
+            if(routes.isNullOrEmpty()) {
+                rlNoData.visibility =  View.VISIBLE
+            }
+        })
     }
 
-    private fun sendDataForTabLayoutChane() {
-        val fragment = TabLayoutFragment()
-        val args = Bundle()
-        args.putString("tabchange","2")
-        fragment.setArguments(args)
+    override fun onRecyclerViewItemClick(view: View, routes: Routes) {
+
+        val intent = Intent(activity, MapsActivity::class.java)
+        intent.putExtra(AppConstant.CONST_TO_ADDRESS, routes.StartLocation)
+        intent.putExtra(AppConstant.CONST_FROM_ADDRESS, routes.EndLocation)
+        intent.putExtra(AppConstant.CONST_STATUS, routes.status)
+        intent.putExtra(AppConstant.CONST_TO_ORIGIN_LAT, routes.startLat.toDouble())
+        intent.putExtra(AppConstant.CONST_TO_ORIGIN_LONG, routes.startLong.toDouble())
+        intent.putExtra(AppConstant.CONST_TO_DESTINATION_LAT, routes.endLat.toDouble())
+        intent.putExtra(AppConstant.CONST_TO_DESTINATION_LONG, routes.endLong.toDouble())
+        intent.putExtra(AppConstant.CONST_ROUTE_ID, routes.MSTRouteId)
+        intent.putExtra(AppConstant.CONST_ASSIGN_ID, routes.assignId)
+
+        startActivity(intent)
     }
-
-
-//    companion object {
-//
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            UpcomingFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
 
 
 }

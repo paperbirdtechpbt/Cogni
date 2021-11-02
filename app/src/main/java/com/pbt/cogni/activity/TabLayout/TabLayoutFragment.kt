@@ -55,7 +55,7 @@ class TabLayoutFragment : Fragment() {
         tabLayout = view.findViewById(R.id.tablayout_home)
         frameLayout = view.findViewById(R.id.frameLayout_tab)
 
-       fragment = CurrentFragment()
+       fragment = UpcomingFragment()
       val  fragmentManager = requireActivity().supportFragmentManager
        fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction?.replace(R.id.frameLayout_tab, fragment!!)
@@ -68,8 +68,8 @@ class TabLayoutFragment : Fragment() {
                 tab?.getIcon()?.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN)
 
                when (tab?.position) {
-                    0 -> fragment = CurrentFragment()
-                    1 -> fragment = UpcomingFragment()
+                    0 -> fragment = UpcomingFragment()
+                    1 -> fragment = CurrentFragment()
                     2 -> fragment = FinishMapsFragment()
 
                 }

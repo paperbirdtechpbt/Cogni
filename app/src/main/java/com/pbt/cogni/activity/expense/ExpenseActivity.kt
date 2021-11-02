@@ -1,10 +1,12 @@
 package com.pbt.cogni.activity.expense
 
 import android.Manifest
+import android.R.attr.data
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.pbt.cogni.R
-import com.pbt.cogni.activity.MapsActivity
 import com.pbt.cogni.callback.PermissionCallBack
 import com.pbt.cogni.databinding.ActivityExpenseBinding
 import com.pbt.cogni.util.AppConstant
@@ -76,6 +77,9 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         AppUtils.logDebug(TAG,"Camera Result ${result.resultCode}")
         if (result.resultCode == Activity.RESULT_OK) {
+
+            val selectedImageUri: Uri? = result.data?.data
+
             val data: Intent? = result.data
             val imageBitmap = data?.extras?.get("data") as Bitmap
 //            img_caputredimage.setImageBitmap(imageBitmap)

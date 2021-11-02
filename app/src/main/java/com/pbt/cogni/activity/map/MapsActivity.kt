@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
@@ -43,6 +44,7 @@ import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_ORIGIN_LONG
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.ClickListener
 import com.pbt.cogni.util.Config.BASE_GOOGLE_MAP_ROUTES
+import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_maps.*
 import org.json.JSONObject
 import retrofit2.Call
@@ -95,7 +97,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         markerPoints.clear()
         coordinates.clear()
 
-//        floatButton = findViewById(R.id.floating_action_button)
+        floatButton = findViewById(R.id.floating_action_button)
 
 
         from(bottomSheet).apply {
@@ -116,7 +118,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             )
             navigation.setPackage("com.google.android.apps.maps")
             startActivity(navigation)
-
         }
 
         floatingAddExpense?.setOnClickListener {
@@ -151,10 +152,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         status = intent.getStringExtra(CONST_STATUS)
         assignId = intent.getStringExtra(CONST_ASSIGN_ID)
 
+        AppUtils.logDebug(TAG, "routes status : " + status);
+
         if (status.equals(CONST_START_TRIP)) {
             floatingAddExpense.visibility = View.VISIBLE
             getExpense()
             btnStartTrip.visibility = View.GONE
+        }else if(status.equals(CONST_STOP_TRIP)){
+            btnStartTrip.visibility = View.GONE
+            btnEndTrip.visibility = View.GONE
         }
         getWayPoint()
 
@@ -181,6 +187,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                         bottomSheet.visibility = View.VISIBLE
                         imgNoData.visibility = View.GONE
                         txtNoData.visibility = View.GONE
+                        floatingAddExpense.visibility = View.VISIBLE
                     }
                 } catch (e: Exception) {
                     AppUtils.logError(TAG, "Network Error : " + e.message)
@@ -206,8 +213,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                 AppUtils.logDebug(TAG, "Status Response : " + response.body())
                 btnStartTrip.visibility = View.GONE
                 bottomSheet.visibility = View.VISIBLE
-            }
+                floatingAddExpense.visibility = View.VISIBLE
 
+                if(CONST_STOP_TRIP.equals(status)){
+                    finish()
+                    Toasty.success(this@MapsActivity, "Trip Finished Successfully", Toasty.LENGTH_SHORT).show()
+                }
+            }
             override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
                 AppUtils.logError(TAG, " server Error: " + t.message)
             }
@@ -230,7 +242,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
     }
 
     fun getWayPoint() {
-        AppUtils.logDebug(TAG, "routes ID : " + routeId);
+
         ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
     }
 
@@ -299,6 +311,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                 coordinates.add(LatLng(latitude, longitude))
             }
 
+            if (!coordinates.isEmpty()){
+
             var orgn = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
             var dest = LatLng(
                 coordinates.get(coordinates.lastIndex).latitude,
@@ -314,9 +328,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                     count++
                     val latitude = it.lat
                     val longitude = it.long
-//                    uri = uri + latitude + "," + longitude + "|"
                     uri = uri + latitude + "," + longitude
-                    Log.d("##mylatlong", "lat--" + latitude + "long--" + longitude)
                 }
                 if (size == k) {
                     k = 1
@@ -324,10 +336,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                 k++
             }
             myWaypoint = uri
-            AppUtils.logDebug(TAG, "Last Char " + uri)
-            AppUtils.logDebug(TAG, "Last Char " + uri.dropLast(1))
-//            drawRoute(uri.dropLast(1))
             drawRoute(orgn, dest)
+        }
         }
     }
 
@@ -455,5 +465,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             }
         }
     }
-
 }

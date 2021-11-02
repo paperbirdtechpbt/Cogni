@@ -63,13 +63,8 @@ class AudioVideCallAdapter(
     override fun getItemCount(): Int {
         if (countrylist == null) {
             return 0
-            Log.e("##countrylist", "countrylist is empty")
         } else {
-
-            Log.e("##countrylist", "countrylist----$countrylist")
-            Log.e("##countrylist", "reulttttt----$result")
             return countrylist?.data!!.size()
-
         }
     }
 
