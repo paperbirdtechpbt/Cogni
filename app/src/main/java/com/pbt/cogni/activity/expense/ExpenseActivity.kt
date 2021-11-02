@@ -1,10 +1,12 @@
 package com.pbt.cogni.activity.expense
 
 import android.Manifest
+import android.R.attr
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +21,27 @@ import com.pbt.cogni.databinding.ActivityExpenseBinding
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.viewModel.AddExpenseViewModel
 import kotlinx.android.synthetic.main.activity_image_capture.*
+import okhttp3.MediaType
+
+import okhttp3.RequestBody
+import android.widget.Toast
+import com.pbt.cogni.WebService.ApiClient
+import com.pbt.cogni.WebService.ApiInterface
+import okhttp3.MultipartBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.pbt.cogni.model.HttpResponse
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import android.R.attr.data
+import android.database.Cursor
+import android.util.Log
+import android.R.attr.data
+
+
+
 
 
 class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
@@ -56,12 +79,14 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
         when (requestCode) {
             MY_CAMERA_PERMISSION_CODE -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-
+//                    requestUploadSurvey()
                 }
                 return
             }
         }
     }
+
+
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -75,9 +100,25 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
             val imageBitmap = data?.extras?.get("data") as Bitmap
 //            img_caputredimage.setImageBitmap(imageBitmap)
 //            val pic =data?.getParcelableExtra<Bitmap>("data")
+            val selectedImageUri: Uri = data.getData() as Uri
+//            val selectedImageUri: Uri = data.extras?.get("data") as Uri
+            var  path:String = getPathFromURI(selectedImageUri)
+            Log.d("###imagepather",path)
 
             viewModel!!.getImageUri(applicationContext, imageBitmap)
         }
+    }
+
+    private fun getPathFromURI(contentUri: Uri?): String {
+        var res: String? = null
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor? = contentResolver.query(contentUri!!, proj, null, null, null)
+        if (cursor!!.moveToFirst()) {
+            val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            res = cursor.getString(column_index)
+        }
+        cursor.close()
+        return res!!
     }
 
     override fun isGranted(isGranted: Boolean) {

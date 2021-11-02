@@ -109,7 +109,7 @@ class FinishMapsFragment : Fragment() , Callback<HttpResponse>, OnConnectionFail
             "Indian Oil petrol pump gota"
         ))
 
-      var toll=  Expense(10, "Lunch", "500",
+      val toll=  Expense(10, "Lunch", "500",
           "https://www.moneyunder30.com/images/2017/01/save_receipt.jpeg",
             " Dominos pizza"
         )
@@ -132,16 +132,16 @@ class FinishMapsFragment : Fragment() , Callback<HttpResponse>, OnConnectionFail
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
         Log.d("##myresponse", response.isSuccessful.toString())
-        if (response?.body()?.code == false) {
-            var listLatLong: BaseRoutLatLng =
-                Gson().fromJson(response?.body()?.data.toString(), BaseRoutLatLng::class.java)
+        if (response.body()?.code == false) {
+            val listLatLong: BaseRoutLatLng =
+                Gson().fromJson(response.body()?.data.toString(), BaseRoutLatLng::class.java)
 
             Log.d("##myresponse", listLatLong.listLatLng.toString())
 
 
             coordinates.clear()
             markerPoints.clear()
-            listLatLong.listLatLng?.forEach {
+            listLatLong.listLatLng.forEach {
                 val latitude = it.lat
                 val longitude = it.long
                 coordinates.add(LatLng(latitude, longitude))

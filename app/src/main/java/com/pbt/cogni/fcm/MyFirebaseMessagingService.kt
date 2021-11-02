@@ -63,9 +63,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+
 //
             try {
 
+                Log.d(TAG, "Message data payload: ${remoteMessage.data.get("image")}")
 
 //                val fullScreenIntent = Intent(this, CallActivity::class.java)
 //                val fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
@@ -101,7 +103,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
                 if (obj.getJSONObject(CONST_DATA).has(CONST_PAYLOAD)) {
                     val payload: JSONObject = obj.getJSONObject(CONST_DATA).getJSONObject(CONST_PAYLOAD)
-
+Log.d(TAG,payload.toString())
                     mobilenumber = payload.getString(CONST_MESSAGE)
                     Log.d("##Mynumber", mobilenumber.toString())
 //                    val intent = Intent(this, CallActivity::class.java)
@@ -135,7 +137,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                             remoteMessage
                         )
                     }
-                }
+                    else if (remoteMessage.data.get("image")!=null){
+                        val image=remoteMessage.data.get("image")
+                        sendImageNotification()
+
+
+                    }                }
                 //---------------------------i-m-p-o-r-t-a-n-t------------------------------------//
 
             } catch (e: Exception) {
@@ -160,6 +167,40 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         remoteMessage.notification?.let {
 
         }
+
+    }
+
+    private fun sendImageNotification() {
+
+        val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_message)
+        notificationLayout.setTextViewText(R.id.imageSenderName, sendernamee)
+
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic__chat_profile)
+            .setContentTitle(sendernamee)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCustomContentView(notificationLayout)
+            .setTimeoutAfter(3000)
+
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val name = "channelname"
+                val description =" getString(R.string.channel_description)"
+                val importance = IMPORTANCE_HIGH
+                val channel = NotificationChannel(CHANNEL_ID, name, importance)
+                channel.description = description
+                channel.setShowBadge(true)
+                channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.createNotificationChannel(channel)
+            }
+
+            val buildNotification = notificationBuilder.build()
+            val mNotifyMgr = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            mNotifyMgr.notify(1,  buildNotification)
+
+
 
     }
 

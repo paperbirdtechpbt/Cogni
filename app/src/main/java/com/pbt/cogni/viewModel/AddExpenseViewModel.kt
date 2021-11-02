@@ -20,24 +20,17 @@ import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.AppUtils.Companion.paramRequestBody
 import com.pbt.cogni.util.AppUtils.Companion.paramRequestBodyImage
-import com.squareup.okhttp.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.Part
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 
 class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity),
     Callback<HttpResponse> {
 
     private val context = activity
-    private val CAMERA_REQUEST = 1888
+//    private val CAMERA_REQUEST = 1888
 
     var listType: ObservableField<List<String>>? = null
     var description: ObservableField<String>? = null
@@ -64,7 +57,7 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
             paramRequestBody(expenseType?.get()!!),
             paramRequestBody("10"),
             paramRequestBodyImage(imageUri?.get()!!,context)
-        ).enqueue(this)
+       ,  ).enqueue(this)
     }
 
     fun captureImage(view: View) {

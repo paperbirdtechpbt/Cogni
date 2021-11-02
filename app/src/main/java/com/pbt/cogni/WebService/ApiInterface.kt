@@ -74,6 +74,12 @@ interface ApiInterface {
         @Part("descrition") descrition: RequestBody,
         @Part("expenseType") expenseType: RequestBody,
         @Part("expenseTypeId") expenseTypeId: RequestBody,
-        @Part image: MultipartBody.Part
-        ): retrofit2.Call<HttpResponse>
+        @Part image: MultipartBody.Part,
+    ): retrofit2.Call<HttpResponse>
+
+    @Multipart
+    @POST("api/request")
+    fun addExpenseee(
+  @Part image:MultipartBody.Part
+    ): retrofit2.Call<HttpResponse>
 }

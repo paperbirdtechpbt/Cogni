@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.pbt.cogni" >
-
+    package="com.pbt.cogni">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -39,8 +38,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Cogni"
-        tools:ignore="GoogleAppIndexingWarning" >
+   android:requestLegacyExternalStorage="true"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".activity.Test.ImageUploadUri"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.Test.UploadMulitpartImage"
+            android:exported="true">
+
+        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -52,7 +65,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
 
         <activity
             android:name=".activity.expense.ExpenseActivity"
@@ -90,12 +102,8 @@
         <activity
             android:name=".activity.SplashActivity"
             android:exported="true"
-            android:theme="@style/AppTheme.NoActionBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme.NoActionBar">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.call.CallActivity"
@@ -105,15 +113,16 @@
             android:launchMode="singleTask"
             android:taskAffinity="" />
 
-        <receiver android:name=".fcm.ButtonReceiver" >
-            <intent-filter android:priority="999" >
+        <receiver android:name=".fcm.ButtonReceiver">
+            <intent-filter android:priority="999">
                 <action android:name="com.example.cancel" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".activity.home.MyLocationService"
-            android:process=":remote"/>
+        <receiver
+            android:name=".activity.home.MyLocationService"
+            android:process=":remote" />
 
-        <service android:name=".fcm.MyFirebaseMessagingService" >
+        <service android:name=".fcm.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />

@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
 
         setContentView(R.layout.activity_main)
 
-        fetchlocation()
+//        fetchlocation()
 
         val overlaypermission =
             MyPreferencesHelper.getStringValue(this, PREFF_OVERYLAY_PERMISSION, null)
