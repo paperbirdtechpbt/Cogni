@@ -5,4 +5,4 @@ import com.pbt.cogni.model.Routes
 
 data class BaseRoutes (
     @SerializedName("result")
-    var listRoutes : List<Routes>)
+    var listRoutes : ArrayList<Routes>)

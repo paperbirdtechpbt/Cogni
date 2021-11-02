@@ -9,9 +9,10 @@ data class Routes(
     @SerializedName("EndCity") val EndCity: String,
     @SerializedName("EndLocation") val EndLocation: String,
     @SerializedName("Id")  val Id: Int,
+    @SerializedName("assignId") val assignId: String,
     @SerializedName("MSTCompanyId") val MSTCompanyId: Int,
     @SerializedName("MSTRequestTypeId") val MSTRequestTypeId: Int,
-    @SerializedName("MSTRouteId") val MSTRouteId: Int,
+    @SerializedName("MSTRouteId") val MSTRouteId: String,
     @SerializedName("MSTStatusID") val MSTStatusID: Int,
     @SerializedName("Name") val Name: String,
     @SerializedName("RequestAutoID") val RequestAutoID: String,
@@ -24,5 +25,7 @@ data class Routes(
     @SerializedName("StartLong") val startLong: String,
     @SerializedName("EndLat") val endLat: String,
     @SerializedName("EndLong") val endLong: String,
-    @SerializedName("statusName") val statusName: String
+    @SerializedName("clientCompanyName") val clientCompanyName: String,
+    @SerializedName("statusName") val statusName: String,
+    @SerializedName("Status") val status: String
 )

@@ -20,7 +20,6 @@ import com.pbt.cogni.databinding.ActivityExpenseBinding
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.viewModel.AddExpenseViewModel
-import kotlinx.android.synthetic.main.activity_image_capture.*
 
 
 class ExpenseActivity : AppCompatActivity(),PermissionCallBack {

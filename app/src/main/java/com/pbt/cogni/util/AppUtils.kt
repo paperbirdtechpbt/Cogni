@@ -2,11 +2,16 @@
 
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
+import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import androidx.loader.content.CursorLoader
@@ -17,20 +22,25 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
 
  class AppUtils {
+
     companion object {
+
+
+
+        val DEBUG: Boolean = BuildConfig.DEBUG
 
         public fun isNetworkConnected(context: Context): Boolean {
             val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             return cm.activeNetworkInfo != null
         }
 
-        val DEBUG: Boolean = BuildConfig.DEBUG
         fun isEmailValid(email: String): Boolean {
             val expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$"
             val pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE)
@@ -53,8 +63,7 @@ import java.util.regex.Pattern
                 Log.w("##" + tag, message)
         }
 
-
-        public fun isAppIsInBackground(context: Context): Boolean {
+        fun isAppIsInBackground(context: Context): Boolean {
             var isInBackground = true
             val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
@@ -112,6 +121,7 @@ import java.util.regex.Pattern
             val parameter: RequestBody = param.toRequestBody("multipart/form-data".toMediaTypeOrNull());
             return  parameter
         }
+
         fun paramRequestBodyImage(param :  Uri,context: Context) : MultipartBody.Part {
 
             val file = File(getRealPathFromURI(param,context)!!)
@@ -130,8 +140,16 @@ import java.util.regex.Pattern
             cursor.close()
             return result
         }
+
+        fun checkIsimage(extenstion : String): String ? {
+            if (extenstion.equals("jpg") || extenstion.equals("jpeg") || extenstion.equals("png") || extenstion.equals("webp"))
+                return "image"
+            else if (extenstion == "text")
+                return "text"
+            else
+                return "doc"
+        }
+
     }
-
-
 
 }
