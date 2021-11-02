@@ -1,34 +1,16 @@
 package com.pbt.cogni.activity.Test
 
-import android.R.attr
-import android.app.Activity
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.pbt.cogni.R
 import kotlinx.android.synthetic.main.activity_image_upload_uri.*
-import androidx.core.app.ActivityCompat.startActivityForResult
-
 import android.content.Intent
 import android.provider.MediaStore
-import android.graphics.BitmapFactory
-
-import android.database.Cursor
 import android.net.Uri
 import android.util.Log
-import android.view.View
-import android.widget.ImageView
-import com.pbt.cogni.util.AppUtils.Companion.getRealPathFromURI
 import java.io.File
-import androidx.core.app.ActivityCompat.startActivityForResult
-
-import androidx.core.content.FileProvider
-
-import android.os.Environment
-import android.R.attr.data
-
 import android.graphics.Bitmap
-import android.R.attr.data
-import android.R.attr.data
 import android.app.AlertDialog
 import android.content.Context
 import android.provider.MediaStore.Images
@@ -47,13 +29,13 @@ class ImageUploadUri : AppCompatActivity() {
 //            val i = Intent(
 //                Intent.ACTION_PICK,
 //                MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-////
+////780-=+
 ////            val i = Intent("android.media.action.IMAGE_CAPTURE")
 //
 //            startActivityForResult(i, RESULT_LOAD_IMAGE)
 //
 //        }
-
+//hgh
         imageuri.setOnClickListener{
             openDialog()
             val m_intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -88,7 +70,7 @@ class ImageUploadUri : AppCompatActivity() {
     }
 
 
-    fun getRealPathFromURIII(uri: Uri?): String? {
+    fun getRealPathFromURIII(uri: Uri?): String {
         var path = ""
         if (contentResolver != null) {
             val cursor = contentResolver.query(uri!!, null, null, null, null)
