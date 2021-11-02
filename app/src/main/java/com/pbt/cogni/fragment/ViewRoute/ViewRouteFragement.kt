@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.MapsActivity
 import com.pbt.cogni.model.Routes
+import com.pbt.cogni.util.AppConstant.Companion.CONST_ASSIGN_ID
+import com.pbt.cogni.util.AppConstant.Companion.CONST_ASSIGN_TRIP
 import com.pbt.cogni.util.AppConstant.Companion.CONST_FROM_ADDRESS
 import com.pbt.cogni.util.AppConstant.Companion.CONST_ROUTE_ID
 import com.pbt.cogni.util.AppConstant.Companion.CONST_STATUS
@@ -96,14 +98,15 @@ class ViewRouteFragement : Fragment(), RoutesViewRecyclerViewItemClick {
         val intent = Intent(activity, MapsActivity::class.java)
             intent.putExtra(CONST_TO_ADDRESS, routes.StartLocation)
             intent.putExtra(CONST_FROM_ADDRESS, routes.EndLocation)
-        if (routes.statusName.equals(CONST_STATUS_APPROVED)) {
+            intent.putExtra(CONST_STATUS, routes.status)
+
             intent.putExtra(CONST_TO_ORIGIN_LAT, routes.startLat.toDouble())
             intent.putExtra(CONST_TO_ORIGIN_LONG, routes.startLong.toDouble())
             intent.putExtra(CONST_TO_DESTINATION_LAT, routes.endLat.toDouble())
             intent.putExtra(CONST_TO_DESTINATION_LONG, routes.endLong.toDouble())
             intent.putExtra(CONST_ROUTE_ID, routes.MSTRouteId)
-            intent.putExtra(CONST_STATUS, routes.statusName)
-        }
+            intent.putExtra(CONST_ASSIGN_ID, routes.assignId)
+
         startActivity(intent)
     }
 }

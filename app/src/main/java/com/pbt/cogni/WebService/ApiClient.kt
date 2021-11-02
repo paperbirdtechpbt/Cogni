@@ -1,5 +1,6 @@
 package com.pbt.cogni.WebService
 
+import com.pbt.cogni.viewModel.AnalystViewModelFactory
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -9,12 +10,13 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object  ApiClient {
+
     private lateinit var interceptor: HttpLoggingInterceptor
     private lateinit var okHttpClient: OkHttpClient
     private var retrofit: Retrofit? = null
 
 
-    val client: Retrofit
+    val client : Retrofit
         get() {
             interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -59,16 +61,18 @@ object  ApiClient {
             .build()
         return retrofit
     }
-//    fun clientUpdateToken(): Retrofit? {
-//        val interceptor = HttpLoggingInterceptor()
-//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-//        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
-//
-//        retrofit = Retrofit.Builder()
-//            .baseUrl("http://cogni.paperbirdtech.com/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .client(client)
-//            .build()
-//        return retrofit
-//    }
+
+   public fun clientUploadClient(): Retrofit? {
+
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+        retrofit = Retrofit.Builder()
+            .baseUrl("http://cogni.paperbirdtech.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+        return retrofit
+    }
 }

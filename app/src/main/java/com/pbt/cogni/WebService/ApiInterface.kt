@@ -1,5 +1,6 @@
 package com.pbt.cogni.WebService
 
+import com.google.gson.JsonObject
 import com.pbt.cogni.model.HttpResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -7,6 +8,7 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiInterface {
+
     @FormUrlEncoded
     @POST("index.php/GoogleMap/GetNearest")
     fun sentOriginDest(
@@ -69,11 +71,25 @@ interface ApiInterface {
         @Part("expenseTypeId") expenseTypeId: RequestBody,
         @Part("createdBy") createdBy: RequestBody,
         @Part image: MultipartBody.Part
-        ): retrofit2.Call<HttpResponse>
+    ): retrofit2.Call<HttpResponse>
 
     @FormUrlEncoded
     @POST("api/getExpense")
     fun getExpense(
         @Field("routeid") roleId: String,
     ): retrofit2.Call<HttpResponse>
+
+    @FormUrlEncoded
+    @POST("api/assignRequestList")
+    fun assignRequestList(
+        @Field("id") id: String,
+    ): retrofit2.Call<HttpResponse>
+
+    @Multipart
+    @POST("api/uploadImage")
+    fun uploadImage(@Part file: MultipartBody.Part): retrofit2.Call<JsonObject>
+
+    @FormUrlEncoded
+    @POST("api/updateTrip")
+    fun updateTripStatus(@Field("id") id: String, @Field("status") status: String): retrofit2.Call<HttpResponse>
 }

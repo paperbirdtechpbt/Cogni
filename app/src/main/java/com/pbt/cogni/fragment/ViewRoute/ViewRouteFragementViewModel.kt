@@ -21,6 +21,7 @@ import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.viewModel.LoginViewModel
+import com.squareup.okhttp.Route
 import kotlinx.coroutines.Job
 import retrofit2.Call
 import retrofit2.Callback
@@ -41,18 +42,16 @@ class ViewRouteFragementViewModel:ViewModel(), Callback<HttpResponse> {
 
 
     fun onRouteListRequest(context: Context) {
-        ApiClient.client.create(ApiInterface::class.java).getRoutes(MyPreferencesHelper.getUser(context)!!.companyId,
-            MyPreferencesHelper.getUser(context)!!.RoleId,
-            MyPreferencesHelper.getUser(context)!!.UserName).enqueue(this)
+        ApiClient.client.create(ApiInterface::class.java).assignRequestList(MyPreferencesHelper.getUser(context)!!.id).enqueue(this)
     }
 
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
-
         if(response?.body()?.code == false){
+            AppUtils.logDebug(TAG,  " Response : " +response?.body())
            var baseList :  BaseRoutes =  Gson().fromJson(response?.body()?.data.toString(),BaseRoutes::class.java)
             routesList.value = baseList.listRoutes
-            AppUtils.logDebug(TAG,  " Response : " + Gson().toJson(baseList.listRoutes))
+
         }
     }
 

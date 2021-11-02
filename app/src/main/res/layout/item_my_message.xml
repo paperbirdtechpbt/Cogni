@@ -11,64 +11,216 @@
         app:cmv_arrowGravity="start"
         app:cmv_arrowMargin="8dp"
         app:cmv_arrowPosition="right"
-        app:cmv_backgroundColor="#DCF8C6"
-        app:cmv_backgroundColorPressed="#DCF8C6"
+        app:cmv_backgroundColor="#E1F8D1"
+        app:cmv_backgroundColorPressed="#E1F8D1"
         app:cmv_contentPadding="10dp"
         app:cmv_cornerRadius="12dp"
         app:cmv_showArrow="true">
+
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-<!--            <TextView-->
-<!--                android:id="@+id/text"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-<!--                android:textColor="#000" />-->
 
-<!--            <TextView-->
-<!--                android:id="@+id/timestamp"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:gravity="right"-->
-<!--                android:paddingStart="@dimen/_5sdp"-->
-<!--                android:textColor="#605F5F"-->
-<!--                android:layout_marginTop="@dimen/_1sdp"-->
-<!--                android:textSize="8sp" />-->
-
-            <TextView
-                android:id="@+id/text"
+            <!--       chat text message content-->
+            <LinearLayout
+                android:id="@+id/llChatTextMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:maxWidth="@dimen/_200sdp"
-                android:textColor="#000" />
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-            <TextView
-                android:id="@+id/timestamp"
+
+                <TextView
+                    android:id="@+id/text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/image"
+                    android:layout_alignParentStart="true"
+                    android:maxWidth="@dimen/_200sdp"
+
+                    android:textColor="#000" />
+
+                <TextView
+                    android:id="@+id/timestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_toStartOf="@+id/txtTextStauts"
+                    android:textColor="#605F5F"
+                    android:textAlignment="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_centerVertical="true"
+                    android:textSize="8sp" />
+
+                <TextView
+                    android:id="@+id/txtTextStauts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_1sdp"
+                    android:layout_toEndOf="@+id/text"
+                    android:gravity="bottom"
+                    android:textColor="#605F5F"
+                    android:textSize="8sp"
+                    android:background="@drawable/ic_not_deliverd"
+                    />
+            </LinearLayout>
+            <!--    chat file content-->
+            <LinearLayout
+                android:id="@+id/llDocs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_1sdp"
-                android:layout_toEndOf="@+id/text"
-                android:layout_below="@+id/text"
-                android:gravity="bottom"
-                android:textColor="#605F5F"
-                android:textSize="8sp" />
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <TextView
+                <RelativeLayout
+                    android:layout_width="@dimen/_180sdp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_button"
+                    android:backgroundTint="#CFEBBA"
+                    android:padding="@dimen/_2sdp">
+
+                    <ImageView
+                        android:id="@+id/imgDocs"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_file"
+                        android:backgroundTint="@color/greay" />
+
+                    <ImageView
+                        android:id="@+id/imgDownload"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:background="@drawable/ic_download"
+                        android:backgroundTint="@color/greay" />
+
+                    <TextView
+                        android:id="@+id/txtFileName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@+id/imgDownload"
+                        android:layout_toEndOf="@+id/imgDocs"
+                        android:textColor="@color/greay" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/txtFileType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:text="png"
+                        android:textColor="@color/greay"
+                        android:textSize="8sp" />
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/txtTimeStamp"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentEnd="true"-->
+<!--                        android:gravity="end"-->
+<!--                        android:textColor="@color/greay"-->
+<!--                        android:textSize="8sp" />-->
+
+                    <TextView
+                        android:id="@+id/txtTimeStamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toStartOf="@+id/txtFileStatus"
+                        android:textColor="#605F5F"
+                        android:textAlignment="center"
+                        android:layout_centerVertical="true"
+                        android:textSize="8sp" />
+
+                    <TextView
+                        android:id="@+id/txtFileStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:gravity="end"
+                        android:background="@drawable/ic_not_deliverd"
+                        />
+                </RelativeLayout>
+
+            </LinearLayout>
+            <!--chat image message content-->
+            <LinearLayout
+                android:id="@+id/llImageMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:background="@drawable/ic_not_deliverd"
-                android:layout_below="@+id/text"
-                android:id="@+id/txtMsgStatus"/>
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_button"
+                    android:backgroundTint="#F7F7F7"
+                    android:padding="@dimen/_2sdp">
+
+                    <ImageView
+                        android:id="@+id/imgMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_2sdp">
+
+                    <TextView
+                        android:id="@+id/txtFileTypeImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:textColor="#605F5F"
+                        android:textSize="8sp" />
+
+                    <TextView
+                        android:id="@+id/txtImageTimeStamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toStartOf="@+id/txtMsgStatus"
+                        android:textColor="#605F5F"
+                        android:textAlignment="center"
+                        android:layout_centerVertical="true"
+                        android:textSize="8sp"
+                       />
+
+                    <TextView
+                        android:id="@+id/txtMsgStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:gravity="end"
+                        android:background="@drawable/ic_not_deliverd"
+                        />
+                </RelativeLayout>
+
+            </LinearLayout>
 
 
         </LinearLayout>
+
 
     </me.himanshusoni.chatmessageview.ChatMessageView>
 

@@ -1,14 +1,28 @@
 package com.pbt.cogni.viewModel
 
+import android.Manifest
+import android.app.Activity
 import android.app.Application
+import android.app.Dialog
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcel
+import android.provider.MediaStore
 import android.view.View
+import android.view.Window
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.firebase.client.ChildEventListener
@@ -20,18 +34,30 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
-import com.pbt.cogni.model.Chat
+import com.google.gson.JsonObject
+import com.pbt.cogni.R
+import com.pbt.cogni.WebService.ApiClient
+import com.pbt.cogni.WebService.ApiInterface
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
+import com.pbt.cogni.activity.chat.upload.ProgressRequestBody
+import com.pbt.cogni.callback.PermissionCallBack
+import com.pbt.cogni.model.Chat
 import com.pbt.cogni.util.AppConstant.Companion.MESSAGES
 import com.pbt.cogni.util.AppConstant.Companion.TYPING
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.Config.BASE_FIREBASE_URL
+import okhttp3.MultipartBody
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ChatViewModel(app: Application) : AndroidViewModel(app) {
+class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBody.UploadCallbacks{
 
     val context = app
 
@@ -51,7 +77,10 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
     var mAdapter: ChatAdapter? = null
     var isTyping: ObservableField<String>? = null
     var reciverName: ObservableField<String>? = null
-
+    var permissionIsGranted: PermissionCallBack? = null
+    var selectedImage: ObservableField<String>? = null
+    var imageUri: ObservableField<Uri>? = null
+    var isVisiBled: ObservableField<Boolean> ? = null
 
     init {
         reciverName = ObservableField("")
@@ -60,13 +89,16 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
         chatID = ObservableField(0)
         userId = ObservableField(0)
         reciverId = ObservableField(0)
+        isVisiBled = ObservableField(false)
         isTyping = ObservableField("")
         chatRoomID = ObservableField("")
         room = ObservableField("")
         room1 = ObservableField("")
         data = MutableLiveData<ArrayList<Chat>>(ArrayList<Chat>())
-    }
+        selectedImage = ObservableField(context.resources.getString(R.string.choose_image))
+        imageUri = ObservableField()
 
+    }
 
     fun onMesageTextChanged(s: CharSequence, start: Int, befor: Int, count: Int) {
 
@@ -75,13 +107,11 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
                 var id = userId!!.get()!!.toInt()
                 var isTyping = s.toString()
             }
-
             FirebaseDatabase.getInstance().getReference(MESSAGES)
                 .child(chatRoomID!!.get().toString())
                 .child(TYPING).child(currentUser!!.get().toString()).setValue(type)
         }
     }
-
 
     fun initChat(context: Context, reciverID: Int, userID: Int,userName : String) {
 
@@ -98,12 +128,45 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
         setData(context)
     }
 
+    fun captureImage(view: View) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        )
+            permissionIsGranted!!.isGranted(false)
+        else
+            permissionIsGranted!!.isGranted(true)
+    }
+
+//    fun getImageUri(context: Context, bitmap: Bitmap?): Uri? {
+////        val bytes = ByteArrayOutputStream()
+////        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+////        val path: String = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null)
+////        var uri: Uri = Uri.parse(path)
+////        val fileName = "unknown"
+////        if (uri.getScheme().toString().compareTo("content") === 0) {
+////            val cursor = context.contentResolver.query(uri, null, null, null, null)
+////            if (cursor!!.moveToFirst()) {
+////                val column_index =
+////                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA) //Instead of "MediaStore.Images.Media.DATA" can be used "_data"
+////                var filePathUri = android.net.Uri.parse(cursor.getString(column_index))
+////                selectedImage?.set(filePathUri.getLastPathSegment().toString())
+////            }
+////
+////        } else if (uri.getScheme()?.compareTo("file") === 0) {
+////            selectedImage?.set(uri.getLastPathSegment().toString())
+////        } else {
+////            selectedImage?.set(fileName.toString() + "_" + uri.getLastPathSegment())
+////        }
+////        var uri: Uri? = AppUtils.bitmapToUriConverter(bitmap,context)
+////        imageUri?.set(uri)
+////        return uri;
+//    }
 
     fun setData(context: Context) {
 
-
-        listener =
-            reffChatRoomID?.child(MESSAGES)?.addValueEventListener(object : ValueEventListener {
+        listener = reffChatRoomID?.child(MESSAGES)?.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
 
                     AppUtils.logDebug(TAG, "ChatRoom ID Chage : " + snapshot.getValue())
@@ -131,8 +194,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
-
-
     }
 
     fun initChat(context: Context, chatRoomID: String) {
@@ -179,7 +240,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
 
             override fun onCancelled(error: DatabaseError) {
             }
-
         })
 
         chatReff!!.addChildEventListener(object : ChildEventListener {
@@ -251,7 +311,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
             }
         })
 
-
         Firebase(BASE_FIREBASE_URL + chatRoomID )!!.child(TYPING).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot?, p1: String??) {
             }
@@ -275,6 +334,12 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
         });
     }
 
+    fun sendImageToChat(view: View) {
+        if(imageUri?.get() != null){
+            uploadImage()
+        }
+    }
+
     fun sendMessage(view: View) {
 
         if (!AppUtils.isNetworkConnected(context)) {
@@ -286,17 +351,73 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
                 chat.sender = userId!!.get()
                 chat.timestamp = Date().time
                 chat.type = "text"
+                chat.fileName = ""
                 chat.text = message?.get()
                 chat.read = 0
                 Firebase(BASE_FIREBASE_URL).child(chatRoomID!!.get().toString()).push()
                     .setValue(chat)
                 message?.set("")
-
             }
         }
     }
 
+
+    fun uploadImage(){
+
+        var file : File  =  File(AppUtils.getRealPathFromURI(imageUri?.get()!!,context)!!)
+        var contentType : String  = "file";
+//        file: File, content_type: String?, listener: UploadCallbacks
+        val fileBody = ProgressRequestBody(file, contentType,this)
+        val filePart: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.getName(), fileBody)
+
+
+//        val requestFile: RequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+//        val body: MultipartBody.Part = MultipartBody.Part.createFormData("image", file.name, requestFile)
+
+
+        val apiclient = ApiClient.getClient()
+        val apiInterface = apiclient?.create(ApiInterface::class.java)
+        val request: Call<JsonObject>? = apiInterface?.uploadImage(filePart)
+        request?.enqueue(object : Callback<JsonObject?> {
+            override fun onResponse(call: Call<JsonObject?>?, response: Response<JsonObject?>) {
+                if (response.isSuccessful()) {
+//                    imageUri.set()
+                    AppUtils.logDebug(TAG,"Response ===>> "+response.body())
+                }
+            }
+
+            override fun onFailure(call: Call<JsonObject?>?, t: Throwable?) {
+                AppUtils.logError(TAG," Network Error  ===>> "+t!!.message)
+                /* we can also stop our progress update here, although I have not check if the onError is being called when the file could not be downloaded, so I will just use this as a backup plan just in case the onError did not get called. So I can stop the progress right here. */
+            }
+        })
+    }
+
     companion object {
         private const val TAG: String = "ChatViewModel"
+    }
+
+    override fun onProgressUpdate(percentage: Int) {
+       AppUtils.logDebug(TAG,"ProgressUpdate : "+percentage)
+    }
+
+    override fun onError() {
+        AppUtils.logError(TAG,"onError to File Upload : ")
+    }
+
+    override fun onFinish() {
+        AppUtils.logDebug(TAG,"onFinish Upload : ===>> ")
+    }
+
+    fun showDialog(activity: Context?,bitmap: Bitmap) {
+        val dialog = Dialog(activity!!)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_send_fiile)
+        val imagePreview = dialog.findViewById(R.id.btnSendMessage) as ImageView
+        imagePreview.setImageBitmap(bitmap)
+        val dialogButton: ImageView = dialog.findViewById(R.id.btnSendMessage)
+        dialogButton.setOnClickListener(View.OnClickListener { dialog.dismiss() })
+        dialog.show()
     }
 }
