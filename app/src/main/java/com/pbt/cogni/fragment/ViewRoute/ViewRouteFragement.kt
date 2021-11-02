@@ -1,4 +1,4 @@
-package com.pbt.cogni.fragment.ViewRoute
+ package com.pbt.cogni.fragment.ViewRoute
 
 import android.content.Intent
 import android.os.Bundle
