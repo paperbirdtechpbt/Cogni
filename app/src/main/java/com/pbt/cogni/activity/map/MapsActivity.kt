@@ -69,6 +69,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
     private var myWaypoint: String? = ""
 
     companion object {
+        var list = ArrayList<Expense>()
         val options = MarkerOptions()
         var markerPoints = ArrayList<Any>()
         var mMap: GoogleMap? = null

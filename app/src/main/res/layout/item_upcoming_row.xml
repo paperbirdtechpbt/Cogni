@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.cardview.widget.CardView
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="5dp"
+    android:id="@+id/item_upcoming_roww"
+    android:elevation="10dp"
+   android:layout_margin="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_5sdp">
+
+        <TextView
+            android:id="@+id/upcoming_txtDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+
+            android:padding="5dp"
+            android:text="Dates"
+            android:textSize="20dp" />
+
+
+        <TextView
+            android:id="@+id/txtLine"
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_below="@+id/greenicon"
+            android:layout_alignStart="@+id/greenicon"
+            android:layout_alignEnd="@+id/greenicon"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:background="@drawable/shap_dotted" />
+
+        <TextView
+            android:id="@+id/redicon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_below="@+id/txtLine"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:background="@drawable/circle_green"
+            android:backgroundTint="#F30303"
+            android:drawableTint="#fff" />
+
+
+        <TextView
+            android:id="@+id/upcoming_txtEndlocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/redicon"
+            android:layout_alignBottom="@+id/redicon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="1dp"
+            android:layout_toEndOf="@+id/txtLine"
+            android:fontFamily="@font/droidsans"
+            android:text="EndLocation:  "
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/upcoming_txtEndlocation"
+            android:layout_below="@+id/upcoming_txtstartlocation"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="2dp"
+            android:layout_toLeftOf="@id/upcoming_txtDate"
+            android:background="@drawable/shape_line" />
+
+        <TextView
+            android:id="@+id/upcoming_txtstartlocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/greenicon"
+            android:layout_alignBottom="@+id/greenicon"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="1dp"
+            android:layout_toEndOf="@+id/txtLine"
+            android:fontFamily="@font/droidsans"
+            android:text="StartLocation:   "
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/greenicon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:background="@drawable/circle_green" />
+
+    </RelativeLayout>
+    </androidx.cardview.widget.CardView>

@@ -1,5 +1,6 @@
 package com.pbt.cogni.activity.map
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -25,6 +26,7 @@ class AdapterExpense(
 
     override fun getItemCount() = listAnalystList.size
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         MyViewHolder(
             DataBindingUtil.inflate(
@@ -33,6 +35,7 @@ class AdapterExpense(
         )
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+
         holder.recyclerViewBinding.expense = listAnalystList[position]
         holder.recyclerViewBinding.root.setOnClickListener {
             listener.onItemClick(position, it)

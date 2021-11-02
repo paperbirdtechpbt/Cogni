@@ -19,7 +19,6 @@ import com.google.android.gms.location.LocationServices
 
 class service : Service() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
     lateinit var locationrequest: LocationRequest
 
     var lat: Double = 1.0
@@ -32,8 +31,16 @@ class service : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("####onbroadcastreviever","recived Broadcast")
 
-            getLatlong()
+//            getLatlong()
+        val handler = Handler()
 
+        val timedTask: Runnable = object : Runnable {
+            override fun run() {
+                fetchLocation()
+
+                handler.postDelayed(this, 60000) }
+        }
+        handler.post(timedTask)
         return START_STICKY
     }
 
@@ -43,13 +50,38 @@ class service : Service() {
         Log.d("####onbroadcastreviever","recived Broadcast")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.d("####oncreatesevice","in on Create Service class")
-           getLatlong()
+//           getLatlong()
+            val handler = Handler()
+
+            val timedTask: Runnable = object : Runnable {
+                override fun run() {
+                    fetchLocation()
+
+                    handler.postDelayed(this, 60000) }
+            }
+            handler.post(timedTask)
         }
         else{
             Log.d("####oncreatesevice","in on Create Service class")
-            getLatlong()
+            val handler = Handler()
+
+            val timedTask: Runnable = object : Runnable {
+                override fun run() {
+                    fetchLocation()
+
+                    handler.postDelayed(this, 60000) }
+            }
+            handler.post(timedTask)
+//            getLatlong()
         }
     }
+
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        Log.d("##latlng","Destoryed Service ")
+//        val broadcastIntent = Intent(this, MyLocationService::class.java)
+//        sendBroadcast(broadcastIntent)
+//    }
 
 
    private fun getLatlong() {
@@ -59,7 +91,7 @@ class service : Service() {
             override fun run() {
                 fetchLocation()
 
-                handler.postDelayed(this, 15000) }
+                handler.postDelayed(this, 60000) }
         }
         handler.post(timedTask)
     }
@@ -67,8 +99,8 @@ class service : Service() {
      private fun fetchLocation() {
         locationrequest = LocationRequest()
         locationrequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationrequest.interval = 15000
-        locationrequest.fastestInterval = 15000
+        locationrequest.interval = 45000
+        locationrequest.fastestInterval = 45000
         locationrequest.smallestDisplacement = 3F
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
