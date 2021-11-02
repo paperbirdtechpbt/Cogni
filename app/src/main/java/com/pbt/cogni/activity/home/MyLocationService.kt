@@ -18,12 +18,12 @@ class MyLocationService:BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.d("####onrecieve","Broadcast revieved in mylocation service")
+//        Log.d("####onrecieve","Broadcast revieved in mylocation service")
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            Log.d("####buildverion 0","Broadcast revieved in mylocation service versino 0")
+//            Log.d("####buildverion 0","Broadcast revieved in mylocation service versino 0")
 
 //            context!!.startForegroundService(Intent(context, service::class.java))
             val handler = Handler()
@@ -32,7 +32,7 @@ class MyLocationService:BroadcastReceiver() {
                 override fun run() {
                     context!!.startService(Intent(context, service::class.java))
 
-                    handler.postDelayed(this, 60000) }
+                    handler.postDelayed(this, 180000) }
             }
             handler.post(timedTask)
 

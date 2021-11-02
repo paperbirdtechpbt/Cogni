@@ -1,10 +1,8 @@
 package com.pbt.cogni.activity.chat.upload
-import okhttp3.RequestBody
 import android.os.Handler
 import android.os.Looper
-import com.pbt.cogni.util.AppUtils
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
 import okio.BufferedSink
 import java.io.File
 import java.io.FileInputStream
@@ -63,16 +61,19 @@ class ProgressRequestBody(file: File, content_type: String?, listener: UploadCal
         fun onFinish()
     }
 
-    private class ProgressUpdater(private val mUploaded: Long, private val mTotal: Long) :
-        Runnable {
+    private class ProgressUpdater(private val mUploaded: Long, private val mTotal: Long): Runnable {
         override fun run() {
-            AppUtils.logDebug("ProgressREquestBody","percent ==>> "+(100 * mUploaded / mTotal).toInt())
-            mListener?.onProgressUpdate((100 * mUploaded / mTotal).toInt())
+//            mListener?.onProgressUpdate((100 * mUploaded / mTotal));
         }
+
+//        override fun run() {
+//            AppUtils.logDebug("ProgressREquestBody","percent ==>> "+(100 * mUploaded / mTotal).toInt())
+//            mListener?.onProgressUpdate((100 * mUploaded / mTotal).toInt())
+//        }
     }
 
     companion object {
-        private var mListener: UploadCallbacks? = null
+//        private var mListener: UploadCallbacks? = null
         private const val DEFAULT_BUFFER_SIZE = 2048
     }
 }

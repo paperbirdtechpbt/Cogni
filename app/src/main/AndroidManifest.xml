@@ -61,10 +61,10 @@
 
         <activity
             android:name=".activity.expense.ExpenseActivity"
-            android:label="@string/addexpense" />
+            android:label="@string/addexpense"
         android:requestLegacyExternalStorage="true"
         tools:ignore="GoogleAppIndexingWarning"
-        >
+        />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -76,10 +76,6 @@
                 android:resource="@xml/file_path" />
         </provider>
 
-
-
-        <activity android:name="com.pbt.cogni.activity.expense.ExpenseActivity"
-            android:label="@string/addexpense"/>
         <activity
             android:name=".activity.chat.ChatActivity"
             android:screenOrientation="portrait"

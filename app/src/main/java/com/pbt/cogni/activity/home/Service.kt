@@ -29,7 +29,7 @@ class service : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("####onbroadcastreviever","recived Broadcast")
+//        Log.d("####onbroadcastreviever","recived Broadcast")
 
 //            getLatlong()
         val handler = Handler()
@@ -47,16 +47,13 @@ class service : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        Log.d("####onbroadcastreviever","recived Broadcast")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d("####oncreatesevice","in on Create Service class")
 //           getLatlong()
             val handler = Handler()
 
             val timedTask: Runnable = object : Runnable {
                 override fun run() {
                     fetchLocation()
-
                     handler.postDelayed(this, 60000) }
             }
             handler.post(timedTask)
@@ -117,7 +114,7 @@ class service : Service() {
         }
         fusedLocationProviderClient.requestLocationUpdates(locationrequest, getPendingIntent())
         val task = fusedLocationProviderClient.lastLocation
-        Log.d("task", task.toString())
+//        Log.d("task", task.toString())
 
         task.addOnSuccessListener {
 
@@ -125,14 +122,13 @@ class service : Service() {
 
                 lat = it.latitude
                 long = it.longitude
-                Toast.makeText(this, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
-                Log.d("##asdd","${it.latitude} ${it.longitude}")
+//                Toast.makeText(this, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
 
-                Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
 
             }
             else{
-                Toast.makeText(this, "Lat long is null", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "Lat long is null", Toast.LENGTH_SHORT).show()
             }
         }
     }

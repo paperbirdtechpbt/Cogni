@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import android.util.Log
 import android.view.Menu
@@ -201,11 +200,7 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
 
         task.addOnSuccessListener {
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
+
             if (it != null) {
 
                 lat = it.latitude
@@ -227,6 +222,12 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
     private fun getPendingIntent(): PendingIntent? {
 
         val intent = Intent(this, MyLocationService::class.java)
@@ -234,7 +235,6 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
         return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
     }
-
 
     private fun updateLatLongApi() {
         ApiClient.client.create(ApiInterface::class.java)
@@ -290,7 +290,7 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse> {
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
 
-        Toast.makeText(this, "ResponseSucessFull", Toast.LENGTH_LONG).show()
+//        Toast.makeText(this, "ResponseSucessFull", Toast.LENGTH_LONG).show()
     }
 
     override fun onFailure(call: Call<HttpResponse>, t: Throwable) {

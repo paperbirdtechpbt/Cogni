@@ -19,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
@@ -93,29 +94,40 @@ class FinishMapsFragment : Fragment() , Callback<HttpResponse>, OnConnectionFail
     }
 
     private fun addListData() {
-        list.clear()
-        list.add(  Expense(
-            10,
-            "Toll tax receipt",
-            "500",
-            "https://www.consumercomplaints.in/thumb.php?complaints=2186655&src=51870105.jpg&wmax=900&hmax=900&quality=85&nocrop=1",
-            "this ahemedabad toll text reciept"
-        ))
-        list.add(  Expense(
-            10,
-            "petrol",
-            "500",
-            "https://images.financialexpress.com/2018/05/petrol-30-may-2018.jpg",
-            "Indian Oil petrol pump gota"
-        ))
 
-      var toll=  Expense(10, "Lunch", "500",
-          "https://www.moneyunder30.com/images/2017/01/save_receipt.jpeg",
-            " Dominos pizza"
-        )
-        for (i in 0 until 3 ){
-            list.add(toll)
-        }
+//        @SerializedName("Id")  val id: Int,
+//        @SerializedName("ExpenseType")  val expenseType: String,
+//        @SerializedName("Price") val amount: String,
+//        @SerializedName("Image") val image: String,
+//        @SerializedName("Description") val description: String,
+//        @SerializedName("ExpenseTypeId") val ExpenseTypeId: String,
+//        @SerializedName("Routeid") val Routeid: String,
+//        @SerializedName("CreatedOn") val CreatedOn: String,
+//        @SerializedName("CreatedBy") val CreatedBy: String,
+//
+//        list.clear()
+//        list.add(  Expense(
+//            10,
+//            "Toll tax receipt",
+//            "500",
+//            "https://www.consumercomplaints.in/thumb.php?complaints=2186655&src=51870105.jpg&wmax=900&hmax=900&quality=85&nocrop=1",
+//            "this ahemedabad toll text reciept"
+//        ))
+//        list.add(  Expense(
+//            10,
+//            "petrol",
+//            "500",
+//            "https://images.financialexpress.com/2018/05/petrol-30-may-2018.jpg",
+//            "Indian Oil petrol pump gota"
+//        ))
+//
+//      var toll=  Expense(10, "Lunch", "500",
+//          "https://www.moneyunder30.com/images/2017/01/save_receipt.jpeg",
+//            " Dominos pizza"
+//        )
+//        for (i in 0 until 3 ){
+//            list.add(toll)
+//        }
 
     }
 

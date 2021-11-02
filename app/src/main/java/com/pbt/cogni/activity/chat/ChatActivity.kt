@@ -155,8 +155,8 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
     }
 
     fun selectImage(context: Activity) {
-//        val options = arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
-        val options = arrayOf<CharSequence>("Take Photo")
+        val options = arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
+//        val options = arrayOf<CharSequence>("Take Photo")
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         builder.setTitle("Choose your profile picture")
         builder.setItems(options, DialogInterface.OnClickListener { dialog, item ->
