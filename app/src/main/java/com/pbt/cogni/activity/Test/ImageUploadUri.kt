@@ -1,7 +1,6 @@
 package com.pbt.cogni.activity.Test
 
 
-import android.R.attr
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.pbt.cogni.R
@@ -11,22 +10,15 @@ import android.provider.MediaStore
 import android.net.Uri
 import android.util.Log
 import java.io.File
-import android.graphics.Bitmap
-import android.app.AlertDialog
-import android.content.Context
-import android.graphics.BitmapFactory
 import android.os.Environment
-import android.provider.MediaStore.Images
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.pbt.cogni.BuildConfig
-import java.io.ByteArrayOutputStream
 import android.provider.OpenableColumns
-
-import android.R.attr.data
-import android.app.Activity
 import android.database.Cursor
+import android.graphics.BitmapFactory
+import android.os.Build
+import android.widget.ImageView
 
 
 class ImageUploadUri : AppCompatActivity() {
@@ -60,7 +52,19 @@ class ImageUploadUri : AppCompatActivity() {
 //            startActivityForResult(m_intent, REQUEST_CAMERA_IMAGE)
 //        }
         imageuri.setOnClickListener{
-            onLaunchCamera()
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                onLaunchCamera()
+            }
+            else{
+//                val i = Intent(
+//                Intent.ACTION_PICK,
+//                MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+///
+            val i = Intent("android.media.action.IMAGE_CAPTURE")
+
+            startActivityForResult(i, REQUEST_CAMERA_IMAGE)
+            }
+
         }
 
     }
@@ -73,7 +77,8 @@ class ImageUploadUri : AppCompatActivity() {
 
         if (i == "*/*") {
              startActivityForResult(intent,GET_DOCUMENT)
-        } else{
+        }
+        else{
 
 
             photoFile = getPhotoFileUri(photoFileName)
@@ -110,7 +115,8 @@ class ImageUploadUri : AppCompatActivity() {
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+        if (requestCode == REQUEST_CAMERA_IMAGE) {
+            Log.d(APP_TAG,"in capurture image rewuest")
             if (resultCode == RESULT_OK) {
 
                 val takenImage = BitmapFactory.decodeFile(photoFile!!.absolutePath)
@@ -121,6 +127,8 @@ class ImageUploadUri : AppCompatActivity() {
             }
         }
         else{
+
+            Log.d(APP_TAG,"else")
             if (resultCode === RESULT_OK) {
                 // Get the Uri of the selected file
                 val uri: Uri = data?.getData()!!
