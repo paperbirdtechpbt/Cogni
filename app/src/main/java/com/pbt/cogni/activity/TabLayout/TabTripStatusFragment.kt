@@ -21,17 +21,22 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.tabs.TabLayout
 import com.pbt.cogni.R
+import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.fragment.Current.CurrentFragment
-import com.pbt.cogni.fragment.Finish.FinishMapsFragment
 import com.pbt.cogni.fragment.Upcoming.UpcomingFragment
+import com.pbt.cogni.fragment.finishTrip.FinishTripFragment
+import com.pbt.cogni.util.AppConstant
+import com.pbt.cogni.util.AppConstant.Companion.CONST_CHECK_STATUS
+import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.MyPreferencesHelper
 import kotlinx.android.synthetic.main.fragment_tab_layout.*
 
 
-class TabLayoutFragment : Fragment() {
+class TabTripStatusFragment : Fragment() {
     companion object{
         var tabLayout:TabLayout? = null
+        const val TAG = "TabTripStatusFragment"
     }
-
     var frameLayout: FrameLayout? = null
     var fragment: Fragment? = null
 
@@ -43,7 +48,6 @@ class TabLayoutFragment : Fragment() {
         googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,8 +74,7 @@ class TabLayoutFragment : Fragment() {
                when (tab?.position) {
                     0 -> fragment = UpcomingFragment()
                     1 -> fragment = CurrentFragment()
-                    2 -> fragment = FinishMapsFragment()
-
+                    2 -> fragment = FinishTripFragment()
                 }
                 val fm = requireActivity().supportFragmentManager
                 val ft = fm.beginTransaction()
@@ -90,8 +93,6 @@ class TabLayoutFragment : Fragment() {
             }
 
         })
-
-
         return view
     }
 
@@ -99,6 +100,21 @@ class TabLayoutFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+    }
+
+    override fun onResume() {
+        var checkStatus =  MyPreferencesHelper.getStringValue(requireContext(),AppConstant.CONST_CHECK_STATUS,"")
+        if(checkStatus?.isEmpty() == false){
+            AppUtils.logDebug(TAG," MainActivity Data is Not Empty "+checkStatus)
+            if(checkStatus.equals("3")){
+                AppUtils.logDebug(TAG," if status is  3  ")
+                tabLayout?.getTabAt(2)?.select();
+            }else if(checkStatus.equals("2")){
+                tabLayout?.getTabAt(1)?.select();
+            }
+            MyPreferencesHelper.setStringValue(requireContext(),CONST_CHECK_STATUS,"")
+        }
+        super.onResume()
     }
 
 

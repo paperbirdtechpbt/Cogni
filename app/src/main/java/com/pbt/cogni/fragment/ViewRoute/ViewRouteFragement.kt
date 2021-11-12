@@ -68,7 +68,10 @@ class ViewRouteFragement : Fragment(), RoutesViewRecyclerViewItemClick {
         val viewmodel: ViewRouteFragementViewModel =
             ViewModelProvider(this).get(ViewRouteFragementViewModel::class.java)
 
-        viewmodel.onRouteListRequest(requireContext())
+            viewmodel.onRouteListRequest(requireContext())
+
+
+
 
         viewmodel?.routesList.observe(viewLifecycleOwner, Observer { routes ->
             recyclerView?.layoutManager = LinearLayoutManager(requireContext())

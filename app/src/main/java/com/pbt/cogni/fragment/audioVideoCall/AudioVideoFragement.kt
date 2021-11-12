@@ -56,7 +56,7 @@ class AudioVideoFragement() : Fragment() {
     private fun initViewModel() {
         val viewmodel: AudioVideoViewModel =
             ViewModelProvider(this).get(AudioVideoViewModel::class.java)
-        viewmodel.getLiveDataObserver()?.observe(viewLifecycleOwner, Observer {
+        viewmodel.getLiveDataObserver().observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 audioVideCallAdapter?.setCountryList(it)
                 audioVideCallAdapter?.notifyDataSetChanged()

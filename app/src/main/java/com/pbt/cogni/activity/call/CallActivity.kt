@@ -42,7 +42,7 @@ import java.util.ArrayList
 import android.view.WindowManager
 import com.pbt.cogni.fcm.MyFirebaseMessagingService
 import com.pbt.cogni.fcm.MyFirebaseMessagingService.Companion.sendernamee
-import com.pbt.cogni.fcm.MyFirebaseMessagingService.Companion.sendernumberr
+import com.pbt.cogni.fcm.MyFirebaseMessagingService.Companion.payloadMessage
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideCallAdapter.Companion.callerName
 import com.pbt.cogni.util.AppConstant.Companion.CALL
 import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_MOBILE_NUMBER
@@ -108,7 +108,7 @@ var currentMilli:Long?=null
 //        autodisconnect.setl
         textView = findViewById(R.id.txtUsernameVoiceCall)
         layout_callername.setText(sendernamee)
-        layout_callernumber.setText(sendernumberr)
+        layout_callernumber.setText(payloadMessage)
 
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
@@ -133,7 +133,7 @@ var currentMilli:Long?=null
 
             incomingCallLayout.visibility = View.VISIBLE
             layout_callername.setText(sendernamee)
-            layout_callernumber.setText(sendernumberr)
+            layout_callernumber.setText(payloadMessage)
             textView?.setText(sendernamee)
         }
         else{
@@ -203,7 +203,7 @@ var currentMilli:Long?=null
     private fun StartCallProcess() {
 
         layout_callername.setText(sendernamee)
-        layout_callernumber.setText(sendernumberr)
+        layout_callernumber.setText(payloadMessage)
 
         iceConnected = false
         signalingParameters = null

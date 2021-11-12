@@ -3,6 +3,7 @@ package com.pbt.cogni.fragment.audioVideoCall
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
@@ -15,6 +16,7 @@ import com.pbt.cogni.activity.map.Resultt
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppConstant.Companion.CALL
 import com.pbt.cogni.util.AppConstant.Companion.CONST_SENDER_NAME
+import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import retrofit2.Call
 import retrofit2.Response
@@ -22,9 +24,11 @@ import retrofit2.Response
 class AudioVideoViewModel : ViewModel() {
      var liveDataList: MutableLiveData<HttpResponse>
 
+
      companion object {
         var result: ArrayList<Resultt>? = null
         var myResult: Data? = null
+         val TAG="AudioVideoViewModel"
     }
 
     init {
@@ -47,14 +51,21 @@ class AudioVideoViewModel : ViewModel() {
             ) {
                 liveDataList.postValue(response.body())
 
-                var httpResponse = response.body()
+                val httpResponse = response.body()
+                if (httpResponse?.data?.get("result")==null){
+                    AppUtils.logDebug(TAG,"Data Not Found or Result is Null")
+                    Toast.makeText(context,"No data Available",Toast.LENGTH_SHORT).show()
+                }
+                else{
 
-                myResult = Gson().fromJson(Gson().toJson(httpResponse?.data), Data::class.java)
-                result = Gson().fromJson(
-                    Gson().toJson(myResult?.mydata),
-                    ArrayList<Resultt>()::class.java
-                )
-                Log.d("####", "data-----${myResult?.mydata}" + "\n" + "result---${result}")
+                    myResult = Gson().fromJson(Gson().toJson(httpResponse?.data), Data::class.java)
+                    result = Gson().fromJson(
+                        Gson().toJson(myResult?.mydata),
+                        ArrayList<Resultt>()::class.java
+                    )
+                    Log.d("####", "data-----${myResult?.mydata}" + "\n" + "result---${result}")
+                }
+
 //             result = Gson().fromJson(Gson().toJson(myResult?.mydata), ArrayList<Resultt>()::class.java)
 
             }

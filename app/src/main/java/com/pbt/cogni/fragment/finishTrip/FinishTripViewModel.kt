@@ -1,6 +1,7 @@
 package com.pbt.cogni.fragment.finishTrip
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
@@ -36,15 +37,17 @@ class FinishTripViewModel : ViewModel(), Callback<HttpResponse> {
 
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
-        if (response?.body()?.code == false) {
-            AppUtils.logDebug(TAG, " Response : " + response?.body())
-            var baseList: BaseRoutes = Gson().fromJson(
-                response?.body()?.data.toString(),
+        if (response.body()?.code == false) {
+            AppUtils.logDebug(TAG, " Response : " + response.body())
+            val baseList: BaseRoutes = Gson().fromJson(
+                response.body()?.data.toString(),
                 BaseRoutes::class.java
             )
-            var curremtTripList = ArrayList<Routes>()
+
+
+            val curremtTripList = ArrayList<Routes>()
             baseList.listRoutes.forEach { routes ->
-                if (routes.status.equals(AppConstant.CONST_START_TRIP)) {
+                if (routes.status.equals(AppConstant.CONST_STOP_TRIP)) {
                     curremtTripList.add(routes)
                 }
             }

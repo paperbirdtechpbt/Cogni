@@ -62,7 +62,7 @@ class LoginViewModel(val activity: Application) : AndroidViewModel(activity),
         progressbar()
         userLogin?.value = response?.body()
 
-       AppUtils.logDebug(TAG, " Response : " + Gson().toJson(response?.body()))
+       AppUtils.logDebug(TAG, "Success Response : " + Gson().toJson(response?.body()))
     }
 
     fun progressbar() {
@@ -111,7 +111,7 @@ class LoginViewModel(val activity: Application) : AndroidViewModel(activity),
     }
 
     override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-        AppUtils.logError(TAG,  " Response : " + t?.message)
+        AppUtils.logError(TAG,  "Failure Response : " + t?.message)
     }
 
      fun onDoneClicked(view: View, actionId: Int, event: KeyEvent?): Boolean {

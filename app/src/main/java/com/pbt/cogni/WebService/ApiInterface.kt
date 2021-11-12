@@ -37,7 +37,7 @@ interface ApiInterface {
 
     @FormUrlEncoded
     @POST("api/updateLatLng")
-    fun postLatLng(
+      fun postLatLng(
         @Field("lat") lat: String,
         @Field("lng") lng: String,
         @Field("id") id: String): Call<HttpResponse>
@@ -70,7 +70,7 @@ interface ApiInterface {
 
     @Multipart
     @POST("api/addExpense")
-    fun addExpense(
+      fun addExpense(
         @Part("routeid") id: RequestBody,
         @Part("price") price: RequestBody,
         @Part("description") descrition: RequestBody,
@@ -82,21 +82,21 @@ interface ApiInterface {
 
     @FormUrlEncoded
     @POST("api/getExpense")
-    fun getExpense(
+     fun getExpense(
         @Field("routeid") roleId: String,
     ): retrofit2.Call<HttpResponse>
 
     @FormUrlEncoded
     @POST("api/assignRequestList")
-    fun assignRequestList(
+     fun assignRequestList(
         @Field("id") id: String,
     ): retrofit2.Call<HttpResponse>
 
     @Multipart
     @POST("api/uploadImage")
-    fun uploadImage(@Part file: MultipartBody.Part): retrofit2.Call<JsonObject>
+     fun uploadImage(@Part file: MultipartBody.Part): retrofit2.Call<JsonObject>
 
     @FormUrlEncoded
     @POST("api/updateTrip")
-    fun updateTripStatus(@Field("id") id: String, @Field("status") status: String): retrofit2.Call<HttpResponse>
+     fun updateTripStatus(@Field("id") id: String, @Field("status") status: String): retrofit2.Call<HttpResponse>
 }

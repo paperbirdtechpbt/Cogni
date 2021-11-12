@@ -2,32 +2,26 @@ package com.pbt.cogni.fragment.Upcoming
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.MapsActivity
-import com.pbt.cogni.activity.TabLayout.TabLayoutFragment
 import com.pbt.cogni.fragment.Current.CurrentFragment
-import com.pbt.cogni.fragment.Current.CurrentTripViewModel
-import com.pbt.cogni.model.Users
-import com.pbt.cogni.util.RecyclerviewClickLisetner
-import kotlinx.android.synthetic.main.fragment_upcoming.*
-
-import com.pbt.cogni.fragment.Finish.FinishMapsFragment
 import com.pbt.cogni.fragment.ViewRoute.AdapterViewRouteList
+import com.pbt.cogni.fragment.finishTrip.FinishTripFragment
 import com.pbt.cogni.model.Routes
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.RoutesViewRecyclerViewItemClick
-import kotlinx.android.synthetic.main.fragment_current.*
+import kotlinx.android.synthetic.main.fragment_upcoming.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 private const val ARG_PARAM1 = "param1"
@@ -40,6 +34,7 @@ class UpcomingFragment : Fragment(), RoutesViewRecyclerViewItemClick {
     private var param2: String? = null
 
     lateinit var listAdapter: AdapterViewRouteList
+    var viewmodel: UpCommingTripViewModel ? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,24 +45,35 @@ class UpcomingFragment : Fragment(), RoutesViewRecyclerViewItemClick {
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view:View= inflater.inflate(R.layout.fragment_upcoming, container, false)
-        initViewModel();
-        return  view
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val view: View = inflater.inflate(R.layout.fragment_upcoming, container, false)
+        initViewModel()
+        return view
     }
 
     private fun initViewModel() {
-        val viewmodel: UpCommingTripViewModel = ViewModelProvider(this).get(UpCommingTripViewModel::class.java)
+         viewmodel = ViewModelProvider(this).get(UpCommingTripViewModel::class.java)
 
-        viewmodel.onRouteListRequest(requireContext())
 
-        viewmodel?.routesList.observe(viewLifecycleOwner, Observer { routes ->
+    viewmodel?.onRouteListRequest(requireContext())
+
+
+
+        viewmodel?.routesList?.observe(viewLifecycleOwner, Observer { routes ->
             recyclerviewUpcoming?.layoutManager = LinearLayoutManager(requireContext())
             listAdapter = AdapterViewRouteList(routes, this)
             recyclerviewUpcoming?.adapter = listAdapter
 
+            AppUtils.logDebug(TAG,"Data REsponse : ")
+
             if(routes.isNullOrEmpty()) {
                 rlNoData.visibility =  View.VISIBLE
+            }else{
+                rlNoData.visibility =  View.GONE
             }
         })
     }
@@ -84,8 +90,21 @@ class UpcomingFragment : Fragment(), RoutesViewRecyclerViewItemClick {
         intent.putExtra(AppConstant.CONST_TO_DESTINATION_LONG, routes.endLong.toDouble())
         intent.putExtra(AppConstant.CONST_ROUTE_ID, routes.MSTRouteId)
         intent.putExtra(AppConstant.CONST_ASSIGN_ID, routes.assignId)
-
+        AppUtils.logDebug(TAG,"Assign id---${routes.assignId}")
         startActivity(intent)
+    }
+
+    companion object {
+        const val TAG = "UpcommingFragment"
+    }
+
+    override fun onResume() {
+
+
+    viewmodel?.onRouteListRequest(requireContext())
+
+
+        super.onResume()
     }
 
 

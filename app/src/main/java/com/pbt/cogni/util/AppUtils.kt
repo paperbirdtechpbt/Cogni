@@ -33,7 +33,6 @@ import java.util.regex.Pattern
     companion object {
 
 
-
         val DEBUG: Boolean = BuildConfig.DEBUG
 
         public fun isNetworkConnected(context: Context): Boolean {
@@ -110,27 +109,31 @@ import java.util.regex.Pattern
             return SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date().getTime())
         }
 
-        fun getRandomString(length: Int) : String {
+        fun getRandomString(length: Int): String {
             val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
             return (1..length)
                 .map { allowedChars.random() }
                 .joinToString("")
         }
 
-        fun paramRequestBody(param :  String) : RequestBody {
-            val parameter: RequestBody = param.toRequestBody("multipart/form-data".toMediaTypeOrNull());
-            return  parameter
+        fun paramRequestBody(param: String): RequestBody {
+            val parameter: RequestBody =
+                param.toRequestBody("multipart/form-data".toMediaTypeOrNull());
+            return parameter
         }
 
-        fun paramRequestBodyImage(param :  Uri,context: Context) : MultipartBody.Part {
+        fun paramRequestBodyImage(param: String, context: Context): MultipartBody.Part {
 
-            val file = File(getRealPathFromURI(param,context)!!)
-            val requestFile: RequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-            val body: MultipartBody.Part = MultipartBody.Part.createFormData("image", file.name, requestFile)
-            return  body
+            val file = File(param)
+            val requestFile: RequestBody =
+                file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+            val body: MultipartBody.Part =
+                MultipartBody.Part.createFormData("image", file.name, requestFile)
+            return body
         }
 
-        fun getRealPathFromURI(contentUri: Uri,context: Context): String? {
+        fun getRealPathFromURI(contentUri: Uri, context: Context): String? {
+//            val proj = arrayOf(MediaStore.Images.Media.DATA)
             val proj = arrayOf(MediaStore.Images.Media.DATA)
             val loader = CursorLoader(context, contentUri, proj, null, null, null)
             val cursor: Cursor? = loader.loadInBackground()
@@ -141,8 +144,11 @@ import java.util.regex.Pattern
             return result
         }
 
-        fun checkIsimage(extenstion : String): String ? {
-            if (extenstion.equals("jpg") || extenstion.equals("jpeg") || extenstion.equals("png") || extenstion.equals("webp"))
+        fun checkIsimage(extenstion: String): String? {
+            if (extenstion.equals("jpg") || extenstion.equals("jpeg") || extenstion.equals("png") || extenstion.equals(
+                    "webp"
+                )
+            )
                 return "image"
             else if (extenstion == "text")
                 return "text"
@@ -150,6 +156,15 @@ import java.util.regex.Pattern
                 return "doc"
         }
 
+
+        fun getPhotoFileUri(fileName: String, context: Context): File {
+            val mediaStorageDir =
+                File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "ImageCapture")
+
+            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
+            }
+            return File(mediaStorageDir.path + File.separator + fileName)
+        }
     }
 
 }

@@ -3,24 +3,23 @@ package com.pbt.cogni.activity.home
 import android.app.PendingIntent
 import android.app.Service
 import android.widget.Toast
-
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
-
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.pbt.cogni.util.AppUtils
 
 
 class service : Service() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationrequest: LocationRequest
-
+var TAG="Service"
     var lat: Double = 1.0
     var long: Double = 1.0
 
@@ -32,53 +31,53 @@ class service : Service() {
 //        Log.d("####onbroadcastreviever","recived Broadcast")
 
 //            getLatlong()
-        val handler = Handler()
-
-        val timedTask: Runnable = object : Runnable {
-            override fun run() {
-                fetchLocation()
-
-                handler.postDelayed(this, 60000) }
-        }
-        handler.post(timedTask)
+//        val handler = Handler()
+//
+//        val timedTask: Runnable = object : Runnable {
+//            override fun run() {
+//                fetchLocation()
+//                handler.postDelayed(this, 180000) }
+//        }
+//        handler.post(timedTask)
         return START_STICKY
     }
+
 
     override fun onCreate() {
         super.onCreate()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//           getLatlong()
-            val handler = Handler()
-
-            val timedTask: Runnable = object : Runnable {
-                override fun run() {
-                    fetchLocation()
-                    handler.postDelayed(this, 60000) }
-            }
-            handler.post(timedTask)
-        }
-        else{
-            Log.d("####oncreatesevice","in on Create Service class")
-            val handler = Handler()
-
-            val timedTask: Runnable = object : Runnable {
-                override fun run() {
-                    fetchLocation()
-
-                    handler.postDelayed(this, 60000) }
-            }
-            handler.post(timedTask)
-//            getLatlong()
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+////           getLatlong()
+//            val handler = Handler()
+//
+//            val timedTask: Runnable = object : Runnable {
+//                override fun run() {
+//
+//                    fetchLocation()
+//                    handler.postDelayed(this, 180000) }
+//            }
+//            handler.post(timedTask)
+//        }
+//        else{
+//            Log.d("####oncreatesevice","in on Create Service class")
+//            val handler = Handler()
+//
+//            val timedTask: Runnable = object : Runnable {
+//                override fun run() {
+//                    fetchLocation()
+//
+//                    handler.postDelayed(this, 180000) }
+//            }
+//            handler.post(timedTask)
+////            getLatlong()
+//        }
     }
 
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        Log.d("##latlng","Destoryed Service ")
-//        val broadcastIntent = Intent(this, MyLocationService::class.java)
-//        sendBroadcast(broadcastIntent)
-//    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+    }
 
 
    private fun getLatlong() {
@@ -96,8 +95,8 @@ class service : Service() {
      private fun fetchLocation() {
         locationrequest = LocationRequest()
         locationrequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationrequest.interval = 45000
-        locationrequest.fastestInterval = 45000
+        locationrequest.interval = 100000
+        locationrequest.fastestInterval = 100000
         locationrequest.smallestDisplacement = 3F
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -122,7 +121,7 @@ class service : Service() {
 
                 lat = it.latitude
                 long = it.longitude
-//                Toast.makeText(this, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
+               AppUtils.logDebug(TAG," In Service Class  lat->>>$lat  long-->>>>$long")
 
 //                Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
 

@@ -1,7 +1,6 @@
 package com.pbt.cogni.fragment.audioVideoCall
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.map.Resultt
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoViewModel.Companion.myResult
-import com.pbt.cogni.fragment.audioVideoCall.AudioVideoViewModel.Companion.result
 import com.pbt.cogni.model.HttpResponse
-import com.pbt.cogni.repository.AnalystRepo
 import com.pbt.cogni.util.MyPreferencesHelper
 
 class AudioVideCallAdapter(
@@ -46,10 +43,10 @@ class AudioVideCallAdapter(
     override fun onBindViewHolder(holder: AudioVideCallAdapter.ViewHolder, position: Int) {
          callerName=  myResult?.mydata?.get(position)?.Firstname +""+ myResult?.mydata?.get(position)?.LastName
         val sendername=MyPreferencesHelper.getUser(context!!)?.FirstName+" "+MyPreferencesHelper.getUser(context!!)?.FirstName
-        Log.d("##sendername", callerName)
+
 
         holder.txtAnalyst.text =callerName
-        holder.txtAnalystnumber.text = myResult?.mydata?.get(position)?.Mobile
+        holder.txtAnalystnumber.text = myResult?.mydata?.get(position)?.companyName
         holder.rlVideoCall.setOnClickListener {
                 callbacks.invoke(holder.adapterPosition,it, myResult?.mydata?.get(position)!!
                 ,sendername)

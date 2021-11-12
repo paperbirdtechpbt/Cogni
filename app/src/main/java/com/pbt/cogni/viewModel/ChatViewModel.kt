@@ -171,7 +171,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
                     AppUtils.logDebug(TAG, "ChatRoom ID Chage : " + snapshot.getValue())
 
-                    val map = snapshot!!.value as Map<*, *>
+                    val map = snapshot.value as Map<*, *>
                     if (map.containsKey(room!!.get().toString())) {
                         chatRoomID!!.set(room!!.get())
                     } else if (map.containsKey(room1!!.get().toString())) {
@@ -225,7 +225,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
                     val map = snapshot.value as Map<*, *>
                     if(map.get("user1") != null) {
-                        var obj = map.get("user1") as Map<*, *>
+                        val obj = map.get("user1") as Map<*, *>
                         if (obj.get("id") == userId!!.get()!!.toInt()) {
                             AppUtils.logDebug(TAG, "query Change Call ===>> " + obj.get("id"))
                             currentUser!!.set("user1")
@@ -266,10 +266,10 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
                         val mManager: NotificationManager =
                             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                        mManager.cancelAll();
+                        mManager.cancelAll()
                     } else {
 
-                        val map = dataSnapshot!!.value as Map<*, *>
+                        val map = dataSnapshot.value as Map<*, *>
                         if (!map.isEmpty()) {
                             try {
                                 val obj = JSONObject(map.get("user1").toString())
@@ -336,6 +336,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
     fun sendImageToChat(view: View) {
         if(imageUri?.get() != null){
+            AppUtils.logDebug(TAG,"ImageUri-------->>>>>>>>>>>$imageUri")
             uploadImage()
         }
     }
@@ -347,7 +348,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         } else {
 
             if (!message!!.get().toString().isEmpty()) {
-                var chat: Chat = Chat.createFromParcel(Parcel.obtain())
+                val chat: Chat = Chat.createFromParcel(Parcel.obtain())
                 chat.sender = userId!!.get()
                 chat.timestamp = Date().time
                 chat.type = "text"
@@ -362,10 +363,10 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
     }
 
 
-    fun uploadImage(){
+     fun uploadImage(){
+         var file : File  =  File(AppUtils.getRealPathFromURI(imageUri?.get()!!,context)!!)
 
-        var file : File  =  File(AppUtils.getRealPathFromURI(imageUri?.get()!!,context)!!)
-        var contentType : String  = "file";
+        var contentType : String  = "file"
 //        file: File, content_type: String?, listener: UploadCallbacks
         val fileBody = ProgressRequestBody(file, contentType,this)
         val filePart: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.getName(), fileBody)
@@ -373,7 +374,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
 //        val requestFile: RequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
 //        val body: MultipartBody.Part = MultipartBody.Part.createFormData("image", file.name, requestFile)
-
 
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)

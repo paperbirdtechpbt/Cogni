@@ -23,7 +23,7 @@
         >
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingBottom="@dimen/_10sdp"
             android:orientation="vertical">
 
@@ -39,8 +39,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewExpense"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/imgMove"
+            tools:itemCount="9"
+            android:layout_above="@+id/btnEndTrip"
             />
 
             <ImageView
@@ -60,22 +62,20 @@
                 android:fontFamily="@font/droidsans"
                 android:layout_below="@id/imgNoData"/>
 
-            <Button
+            <in.shadowfax.proswipebutton.ProSwipeButton
                 android:id="@+id/btnEndTrip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                android:background="@drawable/bg_button"
-                android:drawableLeft="@drawable/ic_right_movement"
-                android:drawableTint="@color/white"
                 android:paddingStart="@dimen/_20sdp"
-                android:text="@string/end_trip"
+                app:bg_color="@color/lowred"
+                android:visibility="gone"
+                android:drawableTint="@color/white"
+                app:btn_text="@string/end_trip"
                 android:textColor="@color/white"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="88dp"
+
 
                 />
 
@@ -217,6 +217,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="30dp"
+            android:visibility="gone"
             android:layout_marginBottom="88dp"
             android:tint="@android:color/white"
             app:backgroundTint="@color/white"
@@ -227,19 +228,28 @@
 
     </RelativeLayout>
 
-
-    <Button
+<!--    <in.shadowfax.proswipebutton.ProSwipeButton-->
+<!--        android:id="@+id/proswipebutton_main_error"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="8dp"-->
+<!--        app:arrow_color="#33FFFFFF"-->
+<!--        app:bg_color="@android:color/holo_blue_dark"-->
+<!--        app:btn_radius="2dp"-->
+<!--        app:btn_text="Place Order"-->
+<!--        app:text_color="@android:color/white"-->
+<!--        app:text_size="12sp" />-->
+    <in.shadowfax.proswipebutton.ProSwipeButton
         android:id="@+id/btnStartTrip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_20sdp"
         android:layout_marginEnd="@dimen/_20sdp"
         android:layout_marginBottom="@dimen/_10sdp"
-        android:background="@drawable/bg_button"
-        android:drawableLeft="@drawable/ic_right_movement"
+        app:bg_color="@color/purple_700"
         android:drawableTint="@color/white"
-        android:paddingStart="@dimen/_20sdp"
-        android:text="Start Routes"
+
+        app:btn_text="Start Routes"
         android:textColor="@color/white"
         app:layout_anchor="@+id/map"
         app:layout_anchorGravity="bottom|center" />

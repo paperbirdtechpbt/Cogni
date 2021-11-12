@@ -24,6 +24,7 @@
    android:layout_centerHorizontal="true"
       android:background="@drawable/no_data"
       android:layout_centerVertical="true"
+
       android:id="@+id/imgNoData"/>
 
   <TextView

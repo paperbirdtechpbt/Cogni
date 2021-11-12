@@ -255,7 +255,8 @@
                         android:hint="@string/please_enter_description"
                         android:paddingTop="@dimen/_10sdp"
                         android:text="@={addExpenseViewModel.description}"
-                        android:textColorHint="@color/lowBlue" />
+                        android:textColorHint="@color/lowBlue"
+                        android:textColor="@color/black"/>
 
                 </LinearLayout>
 
@@ -328,7 +329,8 @@
                         android:textColorHint="@color/lowBlue"
                         android:text="@={addExpenseViewModel.ammount}"
                         android:background="@drawable/bg_squar"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:textColor="@color/black"/>
 
                 </LinearLayout>
 

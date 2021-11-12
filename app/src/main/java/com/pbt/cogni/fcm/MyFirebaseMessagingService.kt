@@ -1,11 +1,14 @@
 package com.pbt.cogni.fcm
 
 import android.annotation.SuppressLint
+import android.app.*
 import android.app.ActivityManager.RunningAppProcessInfo
 import android.app.NotificationManager.IMPORTANCE_HIGH
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -21,27 +24,23 @@ import com.google.gson.Gson
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.call.CallActivity
 import com.pbt.cogni.activity.chat.ChatActivity
+import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.util.AppConstant
-import com.pbt.cogni.util.AppUtils
-import com.pbt.cogni.util.Config
-import com.pbt.cogni.util.MyPreferencesHelper
-import org.json.JSONObject
-import android.app.*
-import android.content.ContentResolver
-import android.app.PendingIntent
-import android.app.NotificationManager
-import android.media.Ringtone
 import com.pbt.cogni.util.AppConstant.Companion.CALL
+import com.pbt.cogni.util.AppConstant.Companion.CONST_ALERT
 import com.pbt.cogni.util.AppConstant.Companion.CONST_CHAT_MESSAGE
 import com.pbt.cogni.util.AppConstant.Companion.CONST_DATA
 import com.pbt.cogni.util.AppConstant.Companion.CONST_MESSAGE
 import com.pbt.cogni.util.AppConstant.Companion.CONST_NOTI_TITLE_INCOMMING_CALL
 import com.pbt.cogni.util.AppConstant.Companion.CONST_PAYLOAD
+import com.pbt.cogni.util.AppConstant.Companion.CONST_RISK_TYPE
 import com.pbt.cogni.util.AppConstant.Companion.CONST_TITLE
 import com.pbt.cogni.util.AppConstant.Companion.ROOM_ID
 import com.pbt.cogni.util.AppConstant.Companion.SMALL_ROOM_ID
-import android.app.NotificationChannel
-
+import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.Config
+import com.pbt.cogni.util.MyPreferencesHelper
+import org.json.JSONObject
 
 
 private const val CHANNEL_ID = "my_channel"
@@ -67,26 +66,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             try {
 
 
-//                val fullScreenIntent = Intent(this, CallActivity::class.java)
-//                val fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
-//                    fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-//
-//                val notificationBuilder =
-//                    NotificationCompat.Builder(this, CHANNEL_ID)
-////                        .setSmallIcon(R.drawable.notification_icon)
-//                        .setContentTitle("Incoming call")
-//                        .setContentText("(919) 555-1234")
-//                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                        .setCategory(NotificationCompat.CATEGORY_CALL)
-//
-////                 Use a full-screen intent only for the highest-priority alerts where you
-////                 have an associated activity that you would like to launch after the user
-////                 interacts with the notification. Also, if your app targets Android 10
-////                 or higher, you need to request the USE_FULL_SCREEN_INTENT permission in
-////                 order for the platform to invoke this notification.
-////                        .setFullScreenIntent(fullScreenPendingIntent, true)
-//
-//                val incomingCallNotification = notificationBuilder.build()
 
 //                this.runOnUiThread(Runnable // start actions in UI thread
 //                {
@@ -102,22 +81,28 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 if (obj.getJSONObject(CONST_DATA).has(CONST_PAYLOAD)) {
                     val payload: JSONObject = obj.getJSONObject(CONST_DATA).getJSONObject(CONST_PAYLOAD)
 
-                    mobilenumber = payload.getString(CONST_MESSAGE)
+                    mobilenumber = payload.optString(CONST_MESSAGE)
                     Log.d("##Mynumber", mobilenumber.toString())
 //                    val intent = Intent(this, CallActivity::class.java)
 //                    intent.putExtra("mobilenumber", mobilenumber)
 
                     sendernamee= payload.getString("senderName")
-                    sendernumberr=payload.getString(CONST_MESSAGE)
+                    if (payload.has(CONST_RISK_TYPE)){
+                        payloadMessage=payload.getString(CONST_RISK_TYPE)
+                    }
 
+                    payloadAlertMessage=payload.getString(CONST_MESSAGE)
+//                    payloadMessage=payload.getString(CONST_RISK_TYPE)
 
-                    if (payload.has(CONST_TITLE) && payload.getString(CONST_TITLE).equals(
+                    if (payload.has(CONST_TITLE) && payload.optString(CONST_TITLE).equals(
                             CONST_CHAT_MESSAGE)) {
 
                         if (AppUtils.isAppIsInBackground(this) && !ChatActivity.isChatVisible)
                             sendMessageToServer(payload)
 
-                        if (!ChatActivity.isChatVisible) {
+                        if (!ChatActivity.isChatVisible)
+                            {
+                                AppUtils.logDebug(TAG,"in chatvisible  ")
                             sendNotification(
                                 MyPreferencesHelper.getUser(this)!!.FirstName,
                                 payload.getString(CONST_MESSAGE)
@@ -125,7 +110,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         }
                     } else if (payload.has(CONST_TITLE) && payload.getString(CONST_TITLE)
                             .equals(CONST_NOTI_TITLE_INCOMMING_CALL)
-                    ) {
+                    ) {AppUtils.logDebug(TAG,"in Icoming Call ")
+
                         val boolean: Boolean = payload.getString("call").toBoolean()
                         Log.d("##checkboolenad",boolean.toString())
                         checkPhoneStatus(
@@ -135,7 +121,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                             remoteMessage
                         )
                     }
-                }
+                       else if(payload.has(CONST_TITLE)&& payload.getString(CONST_TITLE).equals(CONST_ALERT))
+                    {
+AppUtils.logDebug(TAG,"in Alert Notification")
+                            popUpMessage()
+
+
+
+
+
+                    }}
                 //---------------------------i-m-p-o-r-t-a-n-t------------------------------------//
 
             } catch (e: Exception) {
@@ -161,6 +156,56 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         }
 
+    }
+
+    @SuppressLint("RemoteViewLayout")
+    private fun popUpMessage() {
+
+        val sound: Uri =
+            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.alertringtone)
+        ringtone = RingtoneManager.getRingtone(applicationContext, sound)
+        ringtone?.play()
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+
+        val buttonIntent = Intent(this, ButtonReceiver::class.java)
+        buttonIntent.putExtra("notificationId", NOTIFICATION_ID)
+
+//        val btPendingIntent = PendingIntent.getBroadcast(this, 0, buttonIntent, 0)
+
+        val notificationLayout = RemoteViews(packageName, R.layout.item_incoming_message)
+        notificationLayout.setTextViewText(R.id.txt_senderName, payloadAlertMessage)
+        notificationLayout.setTextViewText(R.id.txt_riskType, payloadMessage)
+//        notificationLayout.setOnClickPendingIntent(R.id.txtanswer, pendingIntent)
+
+
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic__chat_profile)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCustomContentView(notificationLayout)
+            .setFullScreenIntent(pendingIntent,true)
+            .setVibrate(longArrayOf(300, 500, 1500,1600,1700))
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "channelname"
+            val description =" getString(R.string.channel_description)"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANNEL_ID, name, importance)
+            channel.description = description
+            channel.setShowBadge(true)
+            channel.setVibrationPattern(longArrayOf(300, 500, 1500,1600,1700))
+            channel.enableVibration(true)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val buildNotification = notificationBuilder.build()
+        val mNotifyMgr = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        mNotifyMgr.notify(1,  buildNotification)
     }
 
     private fun checkPhoneStatus(
@@ -247,7 +292,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setTimeoutAfter(28000)
             .setFullScreenIntent(pendingIntent,true)
 
-
 //         Since android Oreo notification channel is needed.
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -257,6 +301,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val channel = NotificationChannel(CHANNEL_ID, name, importance)
             channel.description = description
             channel.setShowBadge(true)
+            channel.setVibrationPattern(longArrayOf(300, 500, 1500,1600,1700))
+            channel.enableVibration(true)
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -426,7 +472,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
          var ringtone: Ringtone? = null
         var mobilenumber: String? = null
         var sendernamee=""
-        var sendernumberr=""
+        var payloadMessage=""
+        var payloadAlertMessage=""
         var notificationCurrentmili:Long=0
 
     }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageProfileNotification"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+         android:layout_margin="10dp"
+            android:src="@drawable/ic_alerticon" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageProfileNotification">
+
+<!--            <TextView-->
+<!--                android:id="@+id/txtanswer"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerInParent="true"-->
+<!--                android:layout_marginLeft="100dp"-->
+<!--                android:padding="4dp"-->
+<!--                android:text="Open"-->
+<!--                android:textColor="#237034"-->
+<!--                android:textSize="15sp"-->
+<!--                android:textStyle="bold" />-->
+
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txt_senderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/imageProfileNotification"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/imageProfileNotification"
+android:singleLine="true"
+            android:maxLines="1"
+            android:text="CallersName"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_riskType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/imageProfileNotification"
+            android:layout_marginLeft="20dp"
+
+            android:layout_marginBottom="2dp"
+            android:layout_toRightOf="@id/imageProfileNotification"
+            android:text="Risk"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+
+<!--        <TextView-->
+<!--            android:id="@+id/txt_Range"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignBottom="@id/imageProfileNotification"-->
+<!--            android:layout_alignParentRight="true"-->
+<!--            android:layout_marginRight="81dp"-->
+<!--            android:layout_marginBottom="1dp"-->
+<!--            android:text="Range"-->
+<!--            android:textSize="14sp"-->
+<!--            android:textStyle="normal" />-->
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

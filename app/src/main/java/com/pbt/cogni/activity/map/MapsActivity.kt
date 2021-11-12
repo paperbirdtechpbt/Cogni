@@ -1,12 +1,15 @@
 package com.pbt.cogni.activity
 
+import `in`.shadowfax.proswipebutton.ProSwipeButton
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
 import android.location.Location
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -31,6 +34,7 @@ import com.pbt.cogni.activity.expense.ExpenseActivity
 import com.pbt.cogni.activity.map.AdapterExpense
 import com.pbt.cogni.model.*
 import com.pbt.cogni.util.AppConstant.Companion.CONST_ASSIGN_ID
+import com.pbt.cogni.util.AppConstant.Companion.CONST_CHECK_STATUS
 import com.pbt.cogni.util.AppConstant.Companion.CONST_FROM_ADDRESS
 import com.pbt.cogni.util.AppConstant.Companion.CONST_ROUTE_ID
 import com.pbt.cogni.util.AppConstant.Companion.CONST_START_TRIP
@@ -44,8 +48,12 @@ import com.pbt.cogni.util.AppConstant.Companion.CONST_TO_ORIGIN_LONG
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.ClickListener
 import com.pbt.cogni.util.Config.BASE_GOOGLE_MAP_ROUTES
+import com.pbt.cogni.util.MyPreferencesHelper
 import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_maps.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -86,24 +94,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         var status: String = ""
         var assignId: String = ""
 
-        var floatButton: FloatingActionButton? = null;
+        var floatButton: FloatingActionButton? = null
 
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override  fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
         markerPoints.clear()
         coordinates.clear()
 
+           runOnUiThread {
+
+
+                   getExpense()
+
+           }
+
+
         floatButton = findViewById(R.id.floating_action_button)
+        bottomSheet.visibility=View.GONE
 
 
-        from(bottomSheet).apply {
-            peekHeight = 80
-            this.state = STATE_COLLAPSED
-        }
+
 
         btnBack?.setOnClickListener {
             onBackPressed()
@@ -125,15 +139,45 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             intent.putExtra(CONST_ROUTE_ID, routeId)
             startActivity(intent)
         }
-        btnStartTrip.setOnClickListener {
-            updateTripStus(CONST_START_TRIP)
-        }
 
-        btnEndTrip.setOnClickListener {
-            updateTripStus(CONST_STOP_TRIP)
-        }
 
-        getExpense()
+        btnStartTrip.setOnSwipeListener(object : ProSwipeButton.OnSwipeListener {
+            override fun onSwipeConfirm() {
+                // user has swiped the btn. Perform your async operation now
+                Handler().postDelayed(Runnable {
+
+                    btnStartTrip.showResultIcon(true) // false if task failed
+
+                     updateTripStus(CONST_START_TRIP)
+
+                }, 2000)
+            }
+        })
+
+//        btnStartTrip.setOnClickListener {
+//            updateTripStus(CONST_START_TRIP)
+//        }
+        btnEndTrip.setOnSwipeListener(object : ProSwipeButton.OnSwipeListener {
+            override fun onSwipeConfirm() {
+                // user has swiped the btn. Perform your async operation now
+                Handler().postDelayed(Runnable {
+
+                    btnStartTrip.showResultIcon(true) // false if task failed
+
+                        updateTripStus(CONST_STOP_TRIP)
+
+
+                }, 2000)
+            }
+        })
+
+//        btnEndTrip.setOnClickListener {
+//            updateTripStus(CONST_STOP_TRIP)
+//        }
+
+
+
+
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -151,23 +195,51 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         routeId = intent.getStringExtra(CONST_ROUTE_ID)
         status = intent.getStringExtra(CONST_STATUS)
         assignId = intent.getStringExtra(CONST_ASSIGN_ID)
+        if (status=="1"){
+            from(bottomSheet).apply {
+                peekHeight = 0
+                this.state = STATE_COLLAPSED
+            }
+        }
+        else{
+            from(bottomSheet).apply {
+            peekHeight = 80
+            this.state = STATE_COLLAPSED
 
-        AppUtils.logDebug(TAG, "routes status : " + status);
+        }}
+
+        AppUtils.logDebug(TAG, "routes status : " + status)
 
         if (status.equals(CONST_START_TRIP)) {
+            //in currnet trip fragment
             floatingAddExpense.visibility = View.VISIBLE
-            getExpense()
+            floating_action_button.visibility = View.VISIBLE
+
+
+                    getExpense()
+
+
+
+            btnEndTrip.visibility = View.VISIBLE
             btnStartTrip.visibility = View.GONE
-        }else if(status.equals(CONST_STOP_TRIP)){
+        }
+        else if(status.equals(CONST_STOP_TRIP)){
+            bottomSheet.visibility=View.GONE
             btnStartTrip.visibility = View.GONE
             btnEndTrip.visibility = View.GONE
         }
-        getWayPoint()
+
+    getWayPoint()
+
+
+
+
 
     }
 
-    fun getExpense() {
+       fun getExpense() {
 
+        AppUtils.logDebug(TAG, " routeId  : " + routeId)
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
         val call = apiInterface?.getExpense(routeId)
@@ -187,7 +259,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                         bottomSheet.visibility = View.VISIBLE
                         imgNoData.visibility = View.GONE
                         txtNoData.visibility = View.GONE
-                        floatingAddExpense.visibility = View.VISIBLE
+//                        floatingAddExpense.visibility = View.VISIBLE
                     }
                 } catch (e: Exception) {
                     AppUtils.logError(TAG, "Network Error : " + e.message)
@@ -202,7 +274,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         })
     }
 
-    fun updateTripStus(status: String) {
+     fun updateTripStus(status: String) {
 
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
@@ -210,14 +282,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
         call?.enqueue(object : retrofit2.Callback<HttpResponse> {
             override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
-                AppUtils.logDebug(TAG, "Status Response : " + response.body())
+                AppUtils.logDebug(TAG, "Status Response : " + response.body().toString())
                 btnStartTrip.visibility = View.GONE
                 bottomSheet.visibility = View.VISIBLE
-                floatingAddExpense.visibility = View.VISIBLE
+//                floatingAddExpense.visibility = View.VISIBLE
 
                 if(CONST_STOP_TRIP.equals(status)){
+                    MyPreferencesHelper.setStringValue(this@MapsActivity,CONST_CHECK_STATUS,status)
                     finish()
                     Toasty.success(this@MapsActivity, "Trip Finished Successfully", Toasty.LENGTH_SHORT).show()
+                }else if(CONST_START_TRIP.equals(status)){
+                    floating_action_button.visibility = View.VISIBLE
+                    MyPreferencesHelper.setStringValue(this@MapsActivity,CONST_CHECK_STATUS,status)
                 }
             }
             override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
@@ -241,9 +317,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         return super.dispatchTouchEvent(event)
     }
 
-    fun getWayPoint() {
+     fun getWayPoint() {
 
-        ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId!!).enqueue(this)
+        ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId).enqueue(this)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -301,17 +377,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
 
         if (response?.body()?.code == false) {
+            AppUtils.logError(TAG,"onresponse ${response.body()}")
 
-            var listLatLong: BaseRoutLatLng =
-                Gson().fromJson(response?.body()?.data.toString(), BaseRoutLatLng::class.java)
+            val listLatLong: BaseRoutLatLng =
+                Gson().fromJson(response.body()?.data.toString(), BaseRoutLatLng::class.java)
 
-            listLatLong.listLatLng?.forEach {
+            if (listLatLong.listLatLng.isNullOrEmpty()){
+                Toast.makeText(this,"No routes Found",Toast.LENGTH_LONG).show()
+            }
+            else{
+
+            listLatLong.listLatLng.forEach {
                 val latitude = it.lat
                 val longitude = it.long
                 coordinates.add(LatLng(latitude, longitude))
             }
 
             if (!coordinates.isEmpty()){
+
 
             var orgn = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
             var dest = LatLng(
@@ -322,8 +405,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             var uri = "waypoints="
             var k: Int = 1
             var count: Int = 0
-            var size: Int = listLatLong.listLatLng!!.size / 22
-            listLatLong.listLatLng?.forEach {
+            var size: Int = listLatLong.listLatLng.size / 22
+            listLatLong.listLatLng.forEach {
                 if (k == 1) {
                     count++
                     val latitude = it.lat
@@ -337,12 +420,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             }
             myWaypoint = uri
             drawRoute(orgn, dest)
-        }
+        }}
         }
     }
 
     override fun onResume() {
-        getExpense()
+
+
+             getExpense()
+
+
+
         super.onResume()
     }
 
@@ -400,7 +488,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         override fun onPostExecute(result: String) {
             super.onPostExecute(result)
             val parserTask = ParserTask()
-
             parserTask.execute(result)
         }
 
@@ -427,6 +514,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
 
                 for (i in result!!.indices) {
+                    AppUtils.logDebug(TAG,"result---$result")
 
                     lineOptions?.addAll(coordinates)
                     lineOptions?.width(9f)

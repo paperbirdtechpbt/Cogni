@@ -40,7 +40,7 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
     var ammount: ObservableField<String>? = null
     var expenseType: ObservableField<String>? = null
     var selectedImage: ObservableField<String>? = null
-    var imageUri: ObservableField<Uri>? = null
+    var imageUri: ObservableField<String>? = null
     var routeId: ObservableField<String>? = null
     lateinit var activityContext : Activity
     var permissionIsGranted: PermissionCallBack? = null
@@ -50,7 +50,7 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
         ammount = ObservableField("")
         expenseType = ObservableField("")
         routeId = ObservableField("")
-        imageUri = ObservableField()
+        imageUri = ObservableField("")
         selectedImage = ObservableField(context.resources.getString(R.string.choose_image))
         listType = ObservableField<List<String>>()
     }
@@ -62,7 +62,7 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
 //    createdBy:fd
 //    expenseTypeId:1
 
-    fun addExpense(view: View) {
+     fun addExpense(view: View) {
 //
 //        if(expenseType?.get()!!.equals(context.resources.getString(R.string.select_expense_type)))
 //            Toasty.warning(context,context.resources.getString(R.string.please_select_expense_type),Toasty.LENGTH_SHORT).show()
@@ -99,30 +99,31 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
         expenseType?.set(parent?.getSelectedItem().toString())
     }
 
-    fun getImageUri(context: Context, pic: Bitmap?): Uri {
-        val bytes = ByteArrayOutputStream()
-        pic?.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path: String =
-            MediaStore.Images.Media.insertImage(context.getContentResolver(), pic, "Title", null)
-        var uri: Uri = Uri.parse(path)
-        val fileName = "unknown"
-        if (uri.getScheme().toString().compareTo("content") === 0) {
-            val cursor = context.contentResolver.query(uri, null, null, null, null)
-            if (cursor!!.moveToFirst()) {
-                val column_index =
-                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA) //Instead of "MediaStore.Images.Media.DATA" can be used "_data"
-                var filePathUri = android.net.Uri.parse(cursor.getString(column_index))
-                selectedImage?.set(filePathUri.getLastPathSegment().toString())
-            }
 
-        } else if (uri.getScheme()?.compareTo("file") === 0) {
-            selectedImage?.set(uri.getLastPathSegment().toString())
-        } else {
-            selectedImage?.set(fileName.toString() + "_" + uri.getLastPathSegment())
-        }
-        imageUri?.set(uri)
-        return uri;
-    }
+//    fun getImageUri(context: Context, pic: Bitmap?): Uri {
+//        val bytes = ByteArrayOutputStream()
+//        pic?.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+//        val path: String =
+//            MediaStore.Images.Media.insertImage(context.getContentResolver(), pic, "Title", null)
+//        var uri: Uri = Uri.parse(path)
+//        val fileName = "unknown"
+//        if (uri.getScheme().toString().compareTo("content") === 0) {
+//            val cursor = context.contentResolver.query(uri, null, null, null, null)
+//            if (cursor!!.moveToFirst()) {
+//                val column_index =
+//                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA) //Instead of "MediaStore.Images.Media.DATA" can be used "_data"
+//                var filePathUri = android.net.Uri.parse(cursor.getString(column_index))
+//                selectedImage?.set(filePathUri.getLastPathSegment().toString())
+//            }
+//
+//        } else if (uri.getScheme()?.compareTo("file") === 0) {
+//            selectedImage?.set(uri.getLastPathSegment().toString())
+//        } else {
+//            selectedImage?.set(fileName.toString() + "_" + uri.getLastPathSegment())
+//        }
+//        imageUri?.set(uri.toString())
+//        return uri;
+//    }
 
     fun bindAdapter() {
         var list = ArrayList<String>()

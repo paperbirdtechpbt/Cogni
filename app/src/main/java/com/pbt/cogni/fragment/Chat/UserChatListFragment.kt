@@ -41,7 +41,7 @@ class UserChatListFragment : Fragment(),RecyclerviewClickLisetner {
 
         viewModel.getAnalyst(MyPreferencesHelper.getUser(requireActivity())!!.companyId,MyPreferencesHelper.getUser(requireActivity())!!.RoleId,MyPreferencesHelper.getUser(requireActivity())!!.UserName)
 
-        viewModel?.listAnalystList.observe(viewLifecycleOwner, Observer { analyst ->
+        viewModel.listAnalystList.observe(viewLifecycleOwner, Observer { analyst ->
             recyclerviewChatUserList.also {
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)

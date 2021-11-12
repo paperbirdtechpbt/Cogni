@@ -1,14 +1,15 @@
 package com.pbt.cogni.activity.expense
 
 import android.Manifest
-import android.R.attr.data
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
@@ -21,6 +22,9 @@ import com.pbt.cogni.databinding.ActivityExpenseBinding
 import com.pbt.cogni.util.AppConstant
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.viewModel.AddExpenseViewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.util.*
 
 
 class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
@@ -75,18 +79,38 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
     }
 
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        AppUtils.logDebug(TAG,"Camera Result ${result.resultCode}")
+        AppUtils.logDebug(TAG, "Camera Result ${result.resultCode}")
         if (result.resultCode == Activity.RESULT_OK) {
-
+//
             val selectedImageUri: Uri? = result.data?.data
 
             val data: Intent? = result.data
             val imageBitmap = data?.extras?.get("data") as Bitmap
-//            img_caputredimage.setImageBitmap(imageBitmap)
-//            val pic =data?.getParcelableExtra<Bitmap>("data")
 
-            viewModel!!.getImageUri(applicationContext, imageBitmap)
-        }
+
+            val root = Environment.getExternalStorageDirectory().toString()
+            val myDir = File("$root/req_images")
+
+            myDir.mkdirs()
+            val generator = Random()
+            var n = 10000
+            n = generator.nextInt(n)
+            val fname = "Image-$n.jpg"
+            val file = File(myDir, fname)
+            Log.i(TAG, "" + file)
+            if (file.exists()) file.delete()
+            try {
+                val out = FileOutputStream(file)
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                out.flush()
+                out.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            val filePath = Uri.parse("$root/req_images/"+fname).toString()
+            viewModel!!.selectedImage?.set(fname)
+            viewModel!!.imageUri?.set(filePath)
+            }
     }
 
     override fun isGranted(isGranted: Boolean) {

@@ -16,6 +16,7 @@ import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
 import com.pbt.cogni.util.AppConstant.Companion.PREF_TOKEN
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
+import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Response
 
@@ -47,11 +48,10 @@ class SplashActivity : AppCompatActivity() {
         )
 
 
-        Handler().postDelayed({
 
-
-
-            token = MyPreferencesHelper.getStringTokenValue(applicationContext, PREF_TOKEN, "")
+        runOnUiThread {
+            Handler().postDelayed({
+                token = MyPreferencesHelper.getStringTokenValue(applicationContext, PREF_TOKEN, "")
 
 
             val intent: Intent
@@ -61,12 +61,15 @@ class SplashActivity : AppCompatActivity() {
                 finish()
             } else {
                 if (token != "")
-                    callAPi()
+                    runBlocking {
+                        callAPi()
+                    }
+
                 else
                     AppUtils.logDebug("##Splash","token empty : "+token)
             }
-        }, 5000)
-    }
+        }, 3000)
+    }}
 
     fun callAPi() {
 

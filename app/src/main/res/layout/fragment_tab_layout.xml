@@ -8,7 +8,7 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.TabLayout.TabLayoutFragment">
+    tools:context=".activity.TabLayout.TabTripStatusFragment">
 
 
     <com.google.android.material.tabs.TabLayout
@@ -21,9 +21,9 @@
         app:tabTextAppearance="@style/AppTabTextAppearance"
         app:tabIndicatorColor="#000000"
 
-        app:tabIconTint="#D3C8C8"
+        app:tabIconTint="#939090"
         app:tabSelectedTextColor="@color/black"
-        app:tabTextColor="#D3C8C8"
+        app:tabTextColor="#FF939090"
         tools:layout_editor_absoluteX="0dp">
 
         <com.google.android.material.tabs.TabItem
