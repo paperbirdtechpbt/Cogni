@@ -58,6 +58,9 @@ class AppConstant {
         var STR_NO_INTERNET = "Please Connect To Internet !"
         var STR_INCOMMING_VOICE_CALL = "Incoming Voice Call"
 
+        //show iamge in chat
+        var IMAGE_URL="imageurl"
+
 
 
 }}

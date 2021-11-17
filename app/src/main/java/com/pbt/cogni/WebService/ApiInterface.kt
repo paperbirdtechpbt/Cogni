@@ -92,9 +92,13 @@ interface ApiInterface {
         @Field("id") id: String,
     ): retrofit2.Call<HttpResponse>
 
-    @Multipart
+//    @Multipart
+//    @POST("api/uploadImage")
+//     fun uploadImage(@Part file: MultipartBody.Part): retrofit2.Call<JsonObject>
+
+     @Multipart
     @POST("api/uploadImage")
-     fun uploadImage(@Part file: MultipartBody.Part): retrofit2.Call<JsonObject>
+     fun uploadImage(@Part file: MultipartBody.Part): retrofit2.Call<HttpResponse>
 
     @FormUrlEncoded
     @POST("api/updateTrip")

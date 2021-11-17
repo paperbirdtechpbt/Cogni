@@ -125,7 +125,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
 
         floatButton?.setOnClickListener {
-            var uri = "$myWaypoint"
+            val uri = "$myWaypoint"
             val navigation = Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse("google.navigation:q=" + "$startcitylatlng,$endcitylatlng" + "&" + uri)
@@ -137,9 +137,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         floatingAddExpense?.setOnClickListener {
             var intent = Intent(this, ExpenseActivity::class.java)
             intent.putExtra(CONST_ROUTE_ID, routeId)
+            intent.putExtra(CONST_ASSIGN_ID, assignId)
             startActivity(intent)
         }
-
 
         btnStartTrip.setOnSwipeListener(object : ProSwipeButton.OnSwipeListener {
             override fun onSwipeConfirm() {
@@ -174,11 +174,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 //        btnEndTrip.setOnClickListener {
 //            updateTripStus(CONST_STOP_TRIP)
 //        }
-
-
-
-
-
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
@@ -228,30 +223,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             btnStartTrip.visibility = View.GONE
             btnEndTrip.visibility = View.GONE
         }
-
-    getWayPoint()
-
-
-
-
-
+        getWayPoint()
     }
-
-       fun getExpense() {
-
-        AppUtils.logDebug(TAG, " routeId  : " + routeId)
+    fun getExpense() {
+           AppUtils.logDebug(TAG, " routeId  : " + routeId)
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
-        val call = apiInterface?.getExpense(routeId)
+        val call = apiInterface?.getExpense(assignId)
 
         call?.enqueue(object : retrofit2.Callback<HttpResponse> {
             override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
                 AppUtils.logDebug(TAG, " response  : " + response.body())
                 try {
-                    var listLatLong: BaseExpense =
-                        Gson().fromJson(response?.body()?.data.toString(), BaseExpense::class.java)
+                    val listLatLong: BaseExpense =
+                        Gson().fromJson(response.body()?.data.toString(), BaseExpense::class.java)
                     recyclerViewExpense?.layoutManager = LinearLayoutManager(applicationContext)
-                    var listAdapter = AdapterExpense(listLatLong.listExpense, this@MapsActivity)
+                    val listAdapter = AdapterExpense(listLatLong.listExpense, this@MapsActivity)
                     recyclerViewExpense.adapter = listAdapter
                     bottomSheet.visibility = View.VISIBLE
                     if (!listLatLong.listExpense.isNullOrEmpty()) {
@@ -264,17 +251,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                 } catch (e: Exception) {
                     AppUtils.logError(TAG, "Network Error : " + e.message)
                 }
-
             }
-
             override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
-                AppUtils.logError(TAG, " server Error: " + t.message)
-            }
+                AppUtils.logError(TAG, " server Error: " + t.message) }
+        }) }
 
-        })
-    }
-
-     fun updateTripStus(status: String) {
+    fun updateTripStus(status: String) {
 
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
@@ -321,10 +303,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
         ApiClient.client.create(ApiInterface::class.java).getWayPoint(routeId).enqueue(this)
     }
-
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
     }
 
     private fun drawRoute(org: LatLng, dest: LatLng) {
@@ -365,14 +345,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         endPoint.latitude = dest.latitude
         endPoint.longitude = dest.longitude
 
-
         return BASE_GOOGLE_MAP_ROUTES + "json?$parameters"
-
     }
 
-    override fun onConnectionFailed(p0: ConnectionResult) {
-
-    }
+    override fun onConnectionFailed(p0: ConnectionResult) {}
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
 
@@ -383,8 +359,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
                 Gson().fromJson(response.body()?.data.toString(), BaseRoutLatLng::class.java)
 
             if (listLatLong.listLatLng.isNullOrEmpty()){
-                Toast.makeText(this,"No routes Found",Toast.LENGTH_LONG).show()
-            }
+                Toast.makeText(this,"No routes Found",Toast.LENGTH_LONG).show() }
             else{
 
             listLatLong.listLatLng.forEach {
@@ -395,9 +370,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
             if (!coordinates.isEmpty()){
 
-
-            var orgn = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
-            var dest = LatLng(
+                val orgn = LatLng(coordinates.get(0).latitude, coordinates.get(0).longitude)
+            val dest = LatLng(
                 coordinates.get(coordinates.lastIndex).latitude,
                 coordinates.get(coordinates.lastIndex).longitude
             )
@@ -405,7 +379,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             var uri = "waypoints="
             var k: Int = 1
             var count: Int = 0
-            var size: Int = listLatLong.listLatLng.size / 22
+            val size: Int = listLatLong.listLatLng.size / 22
             listLatLong.listLatLng.forEach {
                 if (k == 1) {
                     count++
@@ -425,12 +399,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
     }
 
     override fun onResume() {
-
-
-             getExpense()
-
-
-
+        getExpense()
         super.onResume()
     }
 

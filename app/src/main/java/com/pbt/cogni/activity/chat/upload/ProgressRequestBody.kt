@@ -41,7 +41,8 @@ class ProgressRequestBody(file: File, content_type: String?, listener: UploadCal
             while (`in`.read(buffer).also { read = it } != -1) {
 
                 // update progress on UI thread
-                handler.post(ProgressUpdater(uploaded, fileLength))
+//              ProgressUpdater(uploaded, fileLength)
+                mListener?.onProgressUpdate((100 * uploaded / fileLength).toInt())
                 uploaded += read.toLong()
                 sink.write(buffer, 0, read)
             }
@@ -61,14 +62,8 @@ class ProgressRequestBody(file: File, content_type: String?, listener: UploadCal
         fun onFinish()
     }
 
-    private class ProgressUpdater(private val mUploaded: Long, private val mTotal: Long): Runnable {
-        override fun run() {
-            ProgressRequestBody.mListener?.onProgressUpdate((100 * mUploaded / mTotal).toInt())
-        }
-    }
 
     companion object {
-        private var mListener: UploadCallbacks? = null
         private const val DEFAULT_BUFFER_SIZE = 2048
     }
 }

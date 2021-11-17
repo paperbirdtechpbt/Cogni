@@ -16,25 +16,28 @@ import androidx.lifecycle.AndroidViewModel
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
+import com.pbt.cogni.activity.chat.upload.ProgressRequestBody
 import com.pbt.cogni.callback.PermissionCallBack
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppUtils.Companion.paramRequestBody
 import com.pbt.cogni.util.AppUtils.Companion.paramRequestBodyImage
 import com.pbt.cogni.util.MyPreferencesHelper
 import es.dmoral.toasty.Toasty
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 
 class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity),
     Callback<HttpResponse> {
 
     private val context = activity
-    private val CAMERA_REQUEST = 1888
-
-
     var listType: ObservableField<List<String>>? = null
     var description: ObservableField<String>? = null
     var ammount: ObservableField<String>? = null
@@ -42,6 +45,8 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
     var selectedImage: ObservableField<String>? = null
     var imageUri: ObservableField<String>? = null
     var routeId: ObservableField<String>? = null
+    var assignID: ObservableField<String>? = null
+
     lateinit var activityContext : Activity
     var permissionIsGranted: PermissionCallBack? = null
 
@@ -50,11 +55,11 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
         ammount = ObservableField("")
         expenseType = ObservableField("")
         routeId = ObservableField("")
+        assignID = ObservableField("")
         imageUri = ObservableField("")
         selectedImage = ObservableField(context.resources.getString(R.string.choose_image))
         listType = ObservableField<List<String>>()
     }
-
 //    expenseType:sd
 //    description:test
 //    price:2
@@ -72,16 +77,23 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
 ////            Toasty.warning(context,context )
 //        else if(ammount?.get().toString().isEmpty())
 //            Toasty.warning(context,context.resources.getString(R.string.please_enter_ammount),Toasty.LENGTH_SHORT).show()
+             val file = File(imageUri?.get()!!)
+         val requestFile: RequestBody =
+             file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+         val body: MultipartBody.Part =
+             MultipartBody.Part.createFormData("image", file.name, requestFile)
+
 
         ApiClient.client.create(ApiInterface::class.java).addExpense(
-            paramRequestBody(routeId?.get()!!),//routeid
+            paramRequestBody(assignID?.get()!!),//routeid
             paramRequestBody(ammount?.get()!!),//price
             paramRequestBody(description?.get()!!),//description
             paramRequestBody(expenseType?.get()!!),//expenseType
             paramRequestBody("10"),//expenseTypeId
-            paramRequestBody(MyPreferencesHelper.getUser(context)?.UserName!!),//createdBy
-            paramRequestBodyImage(imageUri?.get()!!, context)//image
-        ).enqueue(this)
+            paramRequestBody(MyPreferencesHelper.getUser(context)?.UserName!!),
+            body//createdBy
+//            paramRequestBodyImage(imageUri?.get()!!, context)//image
+                 ).enqueue(this)
     }
 
     fun captureImage(view: View) {
@@ -98,32 +110,6 @@ class AddExpenseViewModel(val activity: Application) : AndroidViewModel(activity
     fun onSelectItem(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         expenseType?.set(parent?.getSelectedItem().toString())
     }
-
-
-//    fun getImageUri(context: Context, pic: Bitmap?): Uri {
-//        val bytes = ByteArrayOutputStream()
-//        pic?.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-//        val path: String =
-//            MediaStore.Images.Media.insertImage(context.getContentResolver(), pic, "Title", null)
-//        var uri: Uri = Uri.parse(path)
-//        val fileName = "unknown"
-//        if (uri.getScheme().toString().compareTo("content") === 0) {
-//            val cursor = context.contentResolver.query(uri, null, null, null, null)
-//            if (cursor!!.moveToFirst()) {
-//                val column_index =
-//                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA) //Instead of "MediaStore.Images.Media.DATA" can be used "_data"
-//                var filePathUri = android.net.Uri.parse(cursor.getString(column_index))
-//                selectedImage?.set(filePathUri.getLastPathSegment().toString())
-//            }
-//
-//        } else if (uri.getScheme()?.compareTo("file") === 0) {
-//            selectedImage?.set(uri.getLastPathSegment().toString())
-//        } else {
-//            selectedImage?.set(fileName.toString() + "_" + uri.getLastPathSegment())
-//        }
-//        imageUri?.set(uri.toString())
-//        return uri;
-//    }
 
     fun bindAdapter() {
         var list = ArrayList<String>()

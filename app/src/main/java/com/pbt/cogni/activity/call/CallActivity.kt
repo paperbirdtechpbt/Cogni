@@ -79,8 +79,6 @@ class CallActivity : AppCompatActivity(), SignalingEvents, PeerConnectionEvents 
     private var ringtone:Ringtone?=null
     private var autodisconnect=false
 
-
-
     // Control buttons for limited UI
 
     private var button_speker: TextView? = null

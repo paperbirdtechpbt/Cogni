@@ -1,28 +1,21 @@
 package com.pbt.cogni.viewModel
 
 import android.Manifest
-import android.app.Activity
 import android.app.Application
 import android.app.Dialog
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcel
-import android.provider.MediaStore
 import android.view.View
 import android.view.Window
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.databinding.ObservableInt
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.firebase.client.ChildEventListener
@@ -34,14 +27,16 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
+import com.pbt.cogni.activity.chat.ChatActivity
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
 import com.pbt.cogni.activity.chat.upload.ProgressRequestBody
 import com.pbt.cogni.callback.PermissionCallBack
+import com.pbt.cogni.model.BaseExpense
 import com.pbt.cogni.model.Chat
+import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppConstant.Companion.MESSAGES
 import com.pbt.cogni.util.AppConstant.Companion.TYPING
 import com.pbt.cogni.util.AppUtils
@@ -51,7 +46,6 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -59,8 +53,15 @@ import kotlin.collections.ArrayList
 
 class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBody.UploadCallbacks{
 
-    val context = app
 
+
+    companion object {
+        private const val TAG: String = "ChatViewModel"
+       var imgResponseUrl:String=""
+
+    }
+
+    val context = app
     var data = MutableLiveData<ArrayList<Chat>>(ArrayList<Chat>())
     var reffChatRoomID: DatabaseReference? = null
     var typingReference: Firebase? = null
@@ -79,7 +80,8 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
     var reciverName: ObservableField<String>? = null
     var permissionIsGranted: PermissionCallBack? = null
     var selectedImage: ObservableField<String>? = null
-    var imageUri: ObservableField<Uri>? = null
+    var imageUri: ObservableField<String>? = null
+
     var isVisiBled: ObservableField<Boolean> ? = null
 
     init {
@@ -97,7 +99,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         data = MutableLiveData<ArrayList<Chat>>(ArrayList<Chat>())
         selectedImage = ObservableField(context.resources.getString(R.string.choose_image))
         imageUri = ObservableField()
-
     }
 
     fun onMesageTextChanged(s: CharSequence, start: Int, befor: Int, count: Int) {
@@ -138,31 +139,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         else
             permissionIsGranted!!.isGranted(true)
     }
-
-//    fun getImageUri(context: Context, bitmap: Bitmap?): Uri? {
-////        val bytes = ByteArrayOutputStream()
-////        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-////        val path: String = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null)
-////        var uri: Uri = Uri.parse(path)
-////        val fileName = "unknown"
-////        if (uri.getScheme().toString().compareTo("content") === 0) {
-////            val cursor = context.contentResolver.query(uri, null, null, null, null)
-////            if (cursor!!.moveToFirst()) {
-////                val column_index =
-////                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA) //Instead of "MediaStore.Images.Media.DATA" can be used "_data"
-////                var filePathUri = android.net.Uri.parse(cursor.getString(column_index))
-////                selectedImage?.set(filePathUri.getLastPathSegment().toString())
-////            }
-////
-////        } else if (uri.getScheme()?.compareTo("file") === 0) {
-////            selectedImage?.set(uri.getLastPathSegment().toString())
-////        } else {
-////            selectedImage?.set(fileName.toString() + "_" + uri.getLastPathSegment())
-////        }
-////        var uri: Uri? = AppUtils.bitmapToUriConverter(bitmap,context)
-////        imageUri?.set(uri)
-////        return uri;
-//    }
 
     fun setData(context: Context) {
 
@@ -243,9 +219,9 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         })
 
         chatReff!!.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String??) {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
-                AppUtils.logWarning(TAG, " 140 onChildAdded " + dataSnapshot!!.getValue())
+                AppUtils.logWarning(TAG, " 140 onChildAdded " + dataSnapshot.getValue())
                 try {
 
                     if (!dataSnapshot.key.equals(TYPING)) {
@@ -291,8 +267,8 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
                 }
             }
 
-            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String??) {
-                AppUtils.logWarning(TAG, " 186 onChildChanged " + dataSnapshot!!.getValue())
+            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
+                AppUtils.logWarning(TAG, " 186 onChildChanged " + dataSnapshot.getValue())
                 val map = dataSnapshot.getValue().toString()
                 if (!map.contains("user1") && !map.contains("user2")) {
                     data.value!!.forEachIndexed { index, chat ->
@@ -311,11 +287,11 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
             }
         })
 
-        Firebase(BASE_FIREBASE_URL + chatRoomID )!!.child(TYPING).addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(p0: DataSnapshot?, p1: String??) {
+        Firebase(BASE_FIREBASE_URL + chatRoomID ).child(TYPING).addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
             }
 
-            override fun onChildChanged(dataSnapshot: DataSnapshot?, p1: String??) {
+            override fun onChildChanged(dataSnapshot: DataSnapshot?, p1: String?) {
 
                 val map = dataSnapshot!!.value as Map<*, *>
                 if(map.get("id")!= null) {
@@ -334,12 +310,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         });
     }
 
-    fun sendImageToChat(view: View) {
-        if(imageUri?.get() != null){
-            AppUtils.logDebug(TAG,"ImageUri-------->>>>>>>>>>>$imageUri")
-            uploadImage()
-        }
-    }
+
 
     fun sendMessage(view: View) {
 
@@ -354,6 +325,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
                 chat.type = "text"
                 chat.fileName = ""
                 chat.text = message?.get()
+
                 chat.read = 0
                 Firebase(BASE_FIREBASE_URL).child(chatRoomID!!.get().toString()).push()
                     .setValue(chat)
@@ -362,40 +334,139 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         }
     }
 
+    fun sendImageMessage(){
+//        arrayImageChat.forEach((element, index) => {
+//            let chat = new Chat(userID, new Date().getTime(), element.extension, element.image, 0,element.fileName);
+//            firebase.database().ref("messages/" + chatID).push(chat).then((snap) => {
+//                const key = snap.key
+//                        sendNotification(chat, key, userID, receiverID)
+//                var elem = document.getElementById('MyChatMessage');
+//                elem.scrollTop = elem.scrollHeight;
+//            })
+//        });
+    }
 
-     fun uploadImage(){
-         var file : File  =  File(AppUtils.getRealPathFromURI(imageUri?.get()!!,context)!!)
 
-        var contentType : String  = "file"
-//        file: File, content_type: String?, listener: UploadCallbacks
+//     fun uploadImage(){
+//
+////         val file = File(param)
+////         val requestFile: RequestBody =
+////             file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+////         val body: MultipartBody.Part =
+////             MultipartBody.Part.createFormData("image", file.name, requestFile)
+//         var file : File  =  File(imageUri?.get()!!)
+//
+//        var contentType : String  = "file"
+////        file: File, content_type: String?, listener: UploadCallbacks
+//        val fileBody = ProgressRequestBody(file, contentType,this)
+//        val filePart: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.getName(), fileBody)
+//
+//
+////        val requestFile: RequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+////        val body: MultipartBody.Part = MultipartBody.Part.createFormData("image", file.name, requestFile)
+//
+//        val apiclient = ApiClient.getClient()
+//        val apiInterface = apiclient?.create(ApiInterface::class.java)
+//        val request: Call<HttpResponse>? = apiInterface?.uploadImage(filePart)
+//        request?.enqueue(object : Callback<HttpResponse?> {
+//            override fun onResponse(call: Call<HttpResponse?>?, response: Response<HttpResponse?>) {
+//                if (response.isSuccessful()) {
+//
+//                 val httpResponse:HttpResponse= response.body()!!
+//
+//                    imageURLL=httpResponse.data.get("image").toString()
+//
+////                    imageUri.set()
+//                    AppUtils.logDebug(TAG,"Response ===>> "+"$imageURLL")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<HttpResponse?>?, t: Throwable?) {
+//
+//                AppUtils.logError(TAG," Network Error  ===>> "+t!!.message)
+//                /* we can also stop our progress update here, although I have not check if the onError is being called when the file could not be downloaded, so I will just use this as a backup plan just in case the onError did not get called. So I can stop the progress right here. */
+//            }
+//        })
+//
+//
+//    }
+    fun sendImageToChat(view: View) {
+
+        val file : File  =  File(imageUri?.get()!!)
+        val contentType : String  = "file"
         val fileBody = ProgressRequestBody(file, contentType,this)
         val filePart: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.getName(), fileBody)
 
-
-//        val requestFile: RequestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-//        val body: MultipartBody.Part = MultipartBody.Part.createFormData("image", file.name, requestFile)
-
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
-        val request: Call<JsonObject>? = apiInterface?.uploadImage(filePart)
-        request?.enqueue(object : Callback<JsonObject?> {
-            override fun onResponse(call: Call<JsonObject?>?, response: Response<JsonObject?>) {
+        val request: Call<HttpResponse>? = apiInterface?.uploadImage(filePart)
+        request?.enqueue(object : Callback<HttpResponse?> {
+            override fun onResponse(call: Call<HttpResponse?>?, response: Response<HttpResponse?>) {
                 if (response.isSuccessful()) {
-//                    imageUri.set()
-                    AppUtils.logDebug(TAG,"Response ===>> "+response.body())
+
+                    val listLatLong: BaseExpense =
+                        Gson().fromJson(response.body()?.data.toString(), BaseExpense::class.java)
+
+                    sendImageToChatt(listLatLong.image,listLatLong.fileName,listLatLong.extension)
+                    AppUtils.logDebug(TAG,"Response ===>> ${response.body()}")
+
+                    ChatActivity.binding?.rlImageSend?.visibility = View.GONE
+                    ChatActivity.binding?.chatViewModel?.isVisiBled?.set(false)
                 }
             }
+            override fun onFailure(call: Call<HttpResponse?>?, t: Throwable?) {
 
-            override fun onFailure(call: Call<JsonObject?>?, t: Throwable?) {
                 AppUtils.logError(TAG," Network Error  ===>> "+t!!.message)
-                /* we can also stop our progress update here, although I have not check if the onError is being called when the file could not be downloaded, so I will just use this as a backup plan just in case the onError did not get called. So I can stop the progress right here. */
             }
         })
+
+
+//        if(imageUri?.get() != null){
+////            uploadImage()
+//            val chat: Chat = Chat.createFromParcel(Parcel.obtain())
+//            chat.sender = userId!!.get()
+//            chat.timestamp = Date().time
+//            chat.type = "jpg"
+//            chat.fileName = "asdasdadasda.jpg"
+//
+////            chat.text = message?.get()
+//            chat.text = imageURLL
+//            AppUtils.logDebug(TAG,"MY URL--------->>>>\n$imageURLL")
+//            chat.read = 0
+//            Firebase(BASE_FIREBASE_URL).child(chatRoomID!!.get().toString()).push()
+//                .setValue(chat)
+//            message?.set("")
+//
+//            AppUtils.logDebug(TAG,"ImageURLLLLL-->>>$imageURLL")
+//
+//        }
     }
 
-    companion object {
-        private const val TAG: String = "ChatViewModel"
+    private fun sendImageToChatt(imageURLL: String?, fileName: String, extension: String) {
+        if(imageUri?.get() != null){
+//            uploadImage()
+
+            val bar = imageURLL
+            val chat: Chat = Chat.createFromParcel(Parcel.obtain())
+            chat.sender = userId!!.get()
+            chat.timestamp = Date().time
+            chat.type = extension
+            chat.fileName = fileName
+//            chat.text = message?.get()
+            chat.text ="$bar"
+            AppUtils.logDebug(TAG,imageURLL!!)
+            chat.read = 0
+            Firebase(BASE_FIREBASE_URL).child(chatRoomID!!.get().toString()).push()
+                .setValue(chat)
+            message?.set("")
+
+            AppUtils.logDebug(TAG,"ImageURLLLLL-->>>$imageURLL")
+
+        }
+        else
+            AppUtils.logDebug(TAG,"Image Uri is Null")
     }
+
 
     override fun onProgressUpdate(percentage: Int) {
        AppUtils.logDebug(TAG,"ProgressUpdate : "+percentage)

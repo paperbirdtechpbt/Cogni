@@ -17,6 +17,8 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.pbt.cogni.R
+import com.pbt.cogni.activity.MapsActivity
+import com.pbt.cogni.activity.chat.ChatActivity
 import com.pbt.cogni.callback.PermissionCallBack
 import com.pbt.cogni.databinding.ActivityExpenseBinding
 import com.pbt.cogni.util.AppConstant
@@ -34,6 +36,7 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
     private val CAMERA_REQUEST = 1888
     private val MY_CAMERA_PERMISSION_CODE = 1001
     private  var routeId : String = ""
+    private  var assignId : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +48,7 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
 
 
         routeId = intent.getStringExtra(AppConstant.CONST_ROUTE_ID)
+        assignId=intent.getStringExtra(AppConstant.CONST_ASSIGN_ID)
         AppUtils.logDebug(TAG,"RoutID : "+routeId)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_expense)
@@ -52,6 +56,7 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
         binding?.addExpenseViewModel = viewModel
         viewModel!!.permissionIsGranted = this
         viewModel!!.routeId?.set(routeId)
+        viewModel!!.assignID?.set(assignId)
         viewModel!!.activityContext = this@ExpenseActivity
         viewModel!!.bindAdapter()
 
@@ -81,8 +86,7 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         AppUtils.logDebug(TAG, "Camera Result ${result.resultCode}")
         if (result.resultCode == Activity.RESULT_OK) {
-//
-            val selectedImageUri: Uri? = result.data?.data
+
 
             val data: Intent? = result.data
             val imageBitmap = data?.extras?.get("data") as Bitmap
@@ -108,6 +112,9 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
                 e.printStackTrace()
             }
             val filePath = Uri.parse("$root/req_images/"+fname).toString()
+
+            AppUtils.logDebug(TAG,"$filePath")
+
             viewModel!!.selectedImage?.set(fname)
             viewModel!!.imageUri?.set(filePath)
             }
@@ -127,6 +134,7 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
     companion object{
         private var TAG : String  = "ExpenseActivity"
         var activity : Activity ? = null
+
     }
 
 }
