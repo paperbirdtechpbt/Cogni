@@ -40,6 +40,7 @@ import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppConstant.Companion.MESSAGES
 import com.pbt.cogni.util.AppConstant.Companion.TYPING
 import com.pbt.cogni.util.AppUtils
+import com.pbt.cogni.util.ClickListener
 import com.pbt.cogni.util.Config.BASE_FIREBASE_URL
 import okhttp3.MultipartBody
 import org.json.JSONObject
@@ -51,7 +52,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBody.UploadCallbacks{
+class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBody.UploadCallbacks,ClickListener{
 
 
 
@@ -283,6 +284,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
             override fun onChildMoved(dataSnapshot: DataSnapshot, s: String) {}
+
             override fun onCancelled(firebaseError: FirebaseError) {
             }
         })
@@ -396,6 +398,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         val contentType : String  = "file"
         val fileBody = ProgressRequestBody(file, contentType,this)
         val filePart: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.getName(), fileBody)
+AppUtils.logDebug(TAG,"File path--$file")
 
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
@@ -490,5 +493,9 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         val dialogButton: ImageView = dialog.findViewById(R.id.btnSendMessage)
         dialogButton.setOnClickListener(View.OnClickListener { dialog.dismiss() })
         dialog.show()
+    }
+
+    override fun onItemClick(position: Int, v: View?) {
+       Toast.makeText(context,"CLick on $position", Toast.LENGTH_SHORT).show()
     }
 }

@@ -2,6 +2,7 @@
 
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
+import android.app.DownloadManager
 import android.content.Context
 import android.database.Cursor
 import android.net.ConnectivityManager
@@ -21,6 +22,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
+
 
 
  class AppUtils {
@@ -160,6 +162,10 @@ import java.util.regex.Pattern
             }
             return File(mediaStorageDir.path + File.separator + fileName)
         }
+
+
+
+
     }
 
 }

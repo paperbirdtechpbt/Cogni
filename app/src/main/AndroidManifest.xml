@@ -14,6 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cogni"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <activity android:name=".Test.Test">
+
+        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -26,6 +30,7 @@
             android:name=".activity.expense.ExpenseActivity"
             android:label="@string/addexpense"
             tools:ignore="GoogleAppIndexingWarning" />
+
         <activity
             android:name=".activity.chat.ChatActivity"
             android:screenOrientation="portrait"
@@ -89,26 +94,6 @@
                 android:resource="@xml/file_path" />
         </provider>
 
-        <receiver android:name=".fcm.ButtonReceiver">
-            <intent-filter android:priority="999">
-                <action android:name="com.example.cancel" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".activity.home.MyLocationService"
-            android:process=":remote" />
-
-        <service android:name=".fcm.MyFirebaseMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-        <service
-            android:name=".activity.home.service"
-            android:enabled="true"
-            android:exported="true" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -118,7 +103,26 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
+        <receiver android:name=".fcm.ButtonReceiver">
+            <intent-filter android:priority="999">
+                <action android:name="com.example.cancel" />
+            </intent-filter>
+        </receiver>
 
+        <receiver
+            android:name=".activity.home.MyLocationService"
+            android:process=":remote" />
+        <service android:name=".fcm.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".activity.home.service"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
     <queries>
@@ -126,7 +130,6 @@
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
     </queries>
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.access_coarse_location" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -147,5 +150,7 @@
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="MyProvider._READ_PERMISSION" />
+
     <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY " />
+
 </manifest>

@@ -12,6 +12,7 @@ data class Chat(
     var fileName: String? = "",
     var read: Int? = 0,
     var key: String? = ""
+
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(

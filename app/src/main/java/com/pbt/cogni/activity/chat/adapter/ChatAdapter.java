@@ -2,6 +2,12 @@ package com.pbt.cogni.activity.chat.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.text.TextPaint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +16,25 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.pbt.cogni.R;
+import com.pbt.cogni.activity.chat.ChatActivity;
 import com.pbt.cogni.model.Chat;
 import com.pbt.cogni.util.AppUtils;
 import com.pbt.cogni.util.MyPreferencesHelper;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
+
+import es.dmoral.toasty.Toasty;
 
 public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
@@ -49,6 +66,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         int viewType = getItemViewType(position);
         final Chat chat = getItem(position);
+
         if (viewType == MY_MESSAGE) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_my_message, parent, false);
 
@@ -66,10 +84,18 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             TextView txtFileStatus = convertView.findViewById(R.id.txtFileStatus);
             TextView txtTextStauts = convertView.findViewById(R.id.txtTextStauts);
 
-
             LinearLayout llDocs = convertView.findViewById(R.id.llDocs);
             LinearLayout llImageMessage = convertView.findViewById(R.id.llImageMessage);
             LinearLayout llChatTextMessage = convertView.findViewById(R.id.llChatTextMessage);
+
+            llImageMessage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(context,"Click is on "+  chat.getText(),Toast.LENGTH_SHORT).show();
+                    chat.getText();
+                }
+            });
+
 
             if (AppUtils.Companion.checkIsimage(chat.getType()).equals("text")) {
                 llChatTextMessage.setVisibility(View.VISIBLE);
@@ -104,6 +130,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             txtTextStauts.setBackground(getContext().getDrawable(icon));
 
 
+
         } else {
 
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_other_message, parent, false);
@@ -116,11 +143,37 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             TextView txtImageTimeStamp = convertView.findViewById(R.id.txtImageTimeStamp);
             TextView txtFileName = convertView.findViewById(R.id.txtFileName);
             ImageView image = convertView.findViewById(R.id.imgMessage);
+            convertView.callOnClick();
+
+
 
 
             LinearLayout llDocs = convertView.findViewById(R.id.llDocs);
             LinearLayout llImageMessage = convertView.findViewById(R.id.llImageMessage);
             LinearLayout llChatTextMessage = convertView.findViewById(R.id.llChatTextMessage);
+
+            llDocs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(context,"Click is on "+chat.getText(),Toast.LENGTH_SHORT).show();
+
+
+                 new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName());
+
+                }
+            });
+            llImageMessage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(context,"Click is on "+chat.getText(),Toast.LENGTH_SHORT).show();
+
+
+
+
+                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName());
+
+                }
+            });
 
             if (AppUtils.Companion.checkIsimage(chat.getType()).equals("text")) {
                 llChatTextMessage.setVisibility(View.VISIBLE);
@@ -142,4 +195,85 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
     }
 
 
-}
+    private class DownloadFileFromURL extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//        showDialog(progress_bar_type);
+            AppUtils.Companion.logDebug("##DownloadFile","Before Downloading Downloading-----File");
+        }
+
+        /**
+         * Downloading file in background thread
+         * */
+        @Override
+        protected String doInBackground(String... f_url) {
+            int count;
+            try {
+                URL url = new URL(f_url[0]);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+
+                // this will be useful so that you can show a tipical 0-100%
+                // progress bar
+                int lenghtOfFile = connection.getContentLength();
+
+                // download the file
+                InputStream input = new BufferedInputStream(url.openStream(),
+                        8192);
+
+                // Output stream
+                OutputStream output = new FileOutputStream(Environment
+                        .getExternalStorageDirectory().toString()
+                        + "/2011.kml");
+
+                byte data[] = new byte[1024];
+
+                long total = 0;
+
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // publishing the progress....
+                    // After this onProgressUpdate will be called
+                    publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+
+                    // writing data to file
+                    output.write(data, 0, count);
+                }
+
+                // flushing output
+                output.flush();
+
+                // closing streams
+                output.close();
+                input.close();
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+            return null;
+        }
+
+        /**
+         * Updating progress bar
+         * */
+        protected void onProgressUpdate(String... progress) {
+            AppUtils.Companion.logDebug("##DownloadFile","In Downloading-----File");
+            // setting progress percentage
+//        pDialog.setProgress(Integer.parseInt(progress[0]));
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        @Override
+        protected void onPostExecute(String file_url) {
+            AppUtils.Companion.logDebug("##DownloadFile","Downloaded-----File");
+
+            // dismiss the dialog after the file was downloaded
+//        dismissDialog(progress_bar_type);
+
+        }
+
+    }}

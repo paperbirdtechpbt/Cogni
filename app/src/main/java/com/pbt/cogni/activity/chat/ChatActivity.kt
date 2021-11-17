@@ -3,10 +3,13 @@ package com.pbt.cogni.activity.chat
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.DownloadManager
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -31,11 +34,9 @@ import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.viewModel.ChatViewModel
 import kotlinx.android.synthetic.main.activity_chat2.*
-import java.io.ByteArrayOutputStream
+import kotlinx.android.synthetic.main.activity_test.*
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.nio.channels.FileChannel
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -43,9 +44,12 @@ import kotlin.collections.ArrayList
 class ChatActivity : AppCompatActivity(), PermissionCallBack {
 
     companion object {
+       public final var mProgressDialog: ProgressDialog? = null
         private const val TAG: String = "ChatActivity"
         var isChatVisible: Boolean = false
          var binding: ActivityChat2Binding? = null
+
+
     }
 
 
@@ -54,20 +58,26 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
     private val GELARY_REQUEST = 1088
     private val MY_CAMERA_PERMISSION_CODE = 1001
 
-    var mimeTypes = arrayOf(
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  // .doc & .docx
-        "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  // .ppt & .pptx
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  // .xls & .xlsx
-        "text/plain",
-        "application/pdf",
-        "application/zip"
-    )
+//    var mimeTypes = arrayOf(
+//        "application/msword",
+//        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  // .doc & .docx
+//        "application/vnd.ms-powerpoint",
+//        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  // .ppt & .pptx
+//        "application/vnd.ms-excel",
+//        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  // .xls & .xlsx
+//        "text/plain",
+//        "application/pdf",
+//        "application/zip"
+//    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mProgressDialog =  ProgressDialog(this)
+        mProgressDialog!!.setMessage("A message")
+        mProgressDialog!!.setIndeterminate(true)
+        mProgressDialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+        mProgressDialog!!.setCancelable(true)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_chat2)
         chatViewModel = ViewModelProvider(
@@ -96,20 +106,12 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
         )
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                MY_CAMERA_PERMISSION_CODE
-            )
-
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MY_CAMERA_PERMISSION_CODE)
 
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
+                                            grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         AppUtils.logDebug(TAG, " requestCode : " + requestCode)
         when (requestCode) {
@@ -174,62 +176,53 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
             AppUtils.logDebug(TAG,"Outside the result ok dialog")
         }
 
-    private fun getImageUri(applicationContext: Context?, photo: Bitmap): Uri {
 
-        val bytes = ByteArrayOutputStream()
-        photo.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(applicationContext?.getContentResolver(), photo, "Title", null)
-        return Uri.parse(path)
-
-    }
 
     var gallaryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             AppUtils.logDebug(TAG, "Camera Result ${result.resultCode}")
             if (result.resultCode == Activity.RESULT_OK) {
+                AppUtils.logDebug(TAG, "Result Is ok")
                 if (result.data != null) {
 
-//                    val selectedImage: Uri? = result.data!!.data
-//                    AppUtils.logDebug(TAG,"galllary launcgher  uri ----"+selectedImage)
-//
-//                    chatViewModel!!.selectedImage?.set(selectedImage!!.toString())
-////                    chatViewModel!!.imageUri?.set(selectedImage!!)
-////                    var file  =  File(AppUtils.getRealPathFromURI(selectedImage!!,this))
-//                //                    chatViewModel!!.uploadImage(file)
-//
-    val selectedImage: Uri? = result.data!!.data
+                    val selectedImage: Uri? = result?.data!!.data
+                  val file =  getRealPathFromURII(selectedImage)
 
-//                    var imageBitmap =
-//                        MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                    Log.d("##test","URI--$selectedImage\n file--$file")
 
-                    val root = Environment.getExternalStorageDirectory().toString()
-                    val myDir = File("$root/req_images")
-
-                    val source: File = File(selectedImage?.getPath())
-                    val src: FileChannel = FileInputStream(source).getChannel()
-                    val dst: FileChannel = FileOutputStream(myDir).getChannel()
-                    dst.transferFrom(src, 0, src.size())
-                    src.close()
-                    dst.close()
-
-
-
-////                    val filePath = Uri.parse("$root/req_images/"+File.na).toString()
-//
-//                    chatViewModel!!.imageUri?.set(filePath)
-//
-//
-//
-//                    chatViewModel!!.imageUri?.set(selectedImage?.path)
-//
-//                    binding?.rlImageSend?.visibility = View.VISIBLE
-//                    binding?.chatViewModel?.isVisiBled?.set(true)
-//                    binding?.imgPreview?.setImageBitmap(imageBitmap)
 
                 }
+
             }
+
         }
 
+    private fun getRealPathFromURII(contentUri: Uri?):String {
+        var res: String? = null
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor? = contentResolver.query(contentUri!!, proj, null, null, null)
+        if (cursor!!.moveToFirst()) {
+            val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            res = cursor.getString(column_index)
+        }
+        cursor.close()
+        return res!!
+
+    }
+    fun DownloadFile(file_url: String,context: Context,filename:String) {
+        val request = DownloadManager.Request(Uri.parse(file_url))
+            .setTitle(filename)
+            .setDescription("Downloading")
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+            .setAllowedOverMetered(true)
+            .setVisibleInDownloadsUi(false)
+        request.allowScanningByMediaScanner()
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"File")
+        val downloadManager:DownloadManager=context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager.enqueue(request)
+
+    }
 
 
     override fun isGranted(isGranted: Boolean) {
@@ -258,11 +251,13 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
                 setResult(CAMERA_REQUEST, cameraIntent)
                 resultLauncher.launch(cameraIntent)
             } else if (options[item] == "Choose from Gallery") {
+
                 val pickPhoto = Intent()
                 pickPhoto.setType("*/*")
                 pickPhoto.setAction(Intent.ACTION_GET_CONTENT)
                 setResult(GELARY_REQUEST, pickPhoto)
                 gallaryLauncher.launch(pickPhoto)
+
             } else if (options[item] == "Cancel") {
                 dialog.dismiss()
             }
@@ -279,5 +274,8 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         super.onPause()
         isChatVisible = false
     }
+
+
+
 
 }
