@@ -1,12 +1,12 @@
 package com.pbt.cogni.activity
 
 import `in`.shadowfax.proswipebutton.ProSwipeButton
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
 import android.location.Location
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
@@ -51,9 +52,6 @@ import com.pbt.cogni.util.Config.BASE_GOOGLE_MAP_ROUTES
 import com.pbt.cogni.util.MyPreferencesHelper
 import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_maps.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -209,6 +207,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             //in currnet trip fragment
             floatingAddExpense.visibility = View.VISIBLE
             floating_action_button.visibility = View.VISIBLE
+            imgSOS.visibility=View.VISIBLE
 
 
                     getExpense()
@@ -224,7 +223,41 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             btnEndTrip.visibility = View.GONE
         }
         getWayPoint()
+        imgSOS.setOnClickListener(){
+            openAlertDialog()
+        }
     }
+
+    @SuppressLint("MissingPermission")
+    private fun openAlertDialog() {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle("Emergency Call ")
+        builder.setMessage("Do You Want to Call Emergency")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+
+        builder.setPositiveButton("Yes"){dialogInterface, which ->
+            Toast.makeText(applicationContext,"Calling",Toast.LENGTH_LONG).show()
+            val callIntent = Intent(Intent.ACTION_CALL)
+            callIntent.data = Uri.parse("tel:112")
+            startActivity(callIntent)
+        }
+
+        builder.setNeutralButton("Cancel"){dialogInterface , which ->
+            AppUtils.logDebug(TAG,"Click Cancel")
+        }
+
+        builder.setNegativeButton("No"){dialogInterface, which ->
+            Toast.makeText(applicationContext,"Call Canceld",Toast.LENGTH_LONG).show()
+        }
+
+        val alertDialog: AlertDialog = builder.create()
+
+        alertDialog.setCancelable(false)
+        alertDialog.show()
+
+}
+
     fun getExpense() {
            AppUtils.logDebug(TAG, " routeId  : " + routeId)
         val apiclient = ApiClient.getClient()

@@ -12,11 +12,14 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -35,8 +38,9 @@ import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.viewModel.ChatViewModel
 import kotlinx.android.synthetic.main.activity_chat2.*
 import kotlinx.android.synthetic.main.activity_test.*
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -48,6 +52,7 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         private const val TAG: String = "ChatActivity"
         var isChatVisible: Boolean = false
          var binding: ActivityChat2Binding? = null
+        var progressbar:ProgressBar?=null
 
 
     }
@@ -209,18 +214,22 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         return res!!
 
     }
-    fun DownloadFile(file_url: String,context: Context,filename:String) {
-        val request = DownloadManager.Request(Uri.parse(file_url))
-            .setTitle(filename)
-            .setDescription("Downloading")
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-            .setAllowedOverMetered(true)
-            .setVisibleInDownloadsUi(false)
-        request.allowScanningByMediaScanner()
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"File")
-        val downloadManager:DownloadManager=context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        downloadManager.enqueue(request)
+    fun DownloadFile(file_url: String,context: Context,filename:String,image:ImageView,progressBar: ProgressBar) {
+        progressbar=progressBar
+        DownloadFileUrl().execute(file_url)
+//        val request = DownloadManager.Request(Uri.parse(file_url))
+//            .setTitle(filename)
+//            .setDescription("Downloading")
+//            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+//            .setAllowedOverMetered(true)
+//            .setVisibleInDownloadsUi(false)
+//        request.allowScanningByMediaScanner()
+//        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+//        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"File")
+//        val downloadManager:DownloadManager=context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+////        downloadManager.enqueue(request)
+//        val  downloadId:Long = downloadManager.enqueue(request)
+//
 
     }
 
@@ -276,6 +285,70 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
     }
 
 
+class DownloadFileUrl : AsyncTask<String, String, String>() {
+    override fun doInBackground(vararg fileUrl: String?): String? {
 
+        try {
+            var input: InputStream? = null
+            var output: OutputStream? = null
+            var connection: HttpURLConnection? = null
+            try {
+                val url = URL(fileUrl.get(0))
+                connection = url.openConnection() as HttpURLConnection
+                connection.connect()
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() !== HttpURLConnection.HTTP_OK)
+                    return "Server returned HTTP " + connection.getResponseCode()
+                    .toString() + " " + connection.getResponseMessage()
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                val fileLength: Int = connection.getContentLength()
+                // download the file
+                input = connection.getInputStream()
+                output = FileOutputStream("/sdcard/file_name.extension")
+                val data = ByteArray(4096)
+                var total: Long = 0
+                var count: Int
+                while (input.read(data).also { count = it } != -1) {
+                    // allow canceling with back button
+                    if (isCancelled) return null
+                    total += count.toLong()
+                    AppUtils.logDebug(TAG,"total"+total.toString())
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                      publishProgress(((total * 100 / fileLength).toString()))
+                    output.write(data, 0, count)
+                    AppUtils.logDebug(TAG,"filelength"+fileLength.toString())
+                }
+            } catch (e: java.lang.Exception) {
+                return e.toString()
+            } finally {
+                try {
+                    if (output != null) output.close()
+                    input?.close()
+                } catch (ignored: IOException) {
+                    AppUtils.logError(TAG,"Exception:"+ignored.message)
+                }
+                if (connection != null) connection.disconnect()
+            }
+        } finally {
+
+        }
+return null
+    }
+
+    protected fun onProgressUpdate(vararg progress: Int?) {
+        super.onProgressUpdate(progress.toString())
+
+        mProgressDialog!!.isIndeterminate = false
+        mProgressDialog!!.max = 100
+        mProgressDialog!!.progress = progress[0]!!
+    }
+
+
+
+
+}
 
 }

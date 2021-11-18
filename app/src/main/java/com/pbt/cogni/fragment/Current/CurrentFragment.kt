@@ -63,8 +63,6 @@ class CurrentFragment : Fragment(), RoutesViewRecyclerViewItemClick{
       viewmodel?.onRouteListRequest(requireContext())
 
 
-
-
         viewmodel?.routesList?.observe(viewLifecycleOwner, Observer { routes ->
             recyclerViewCurrentTrip?.layoutManager = LinearLayoutManager(requireContext())
             listAdapter = AdapterViewRouteList(routes, this)

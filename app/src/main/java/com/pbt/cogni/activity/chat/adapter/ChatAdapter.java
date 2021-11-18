@@ -3,6 +3,7 @@ package com.pbt.cogni.activity.chat.adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.ContextWrapper;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +52,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
     public int getViewTypeCount() {
         return 2;
     }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -143,6 +146,8 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             TextView txtImageTimeStamp = convertView.findViewById(R.id.txtImageTimeStamp);
             TextView txtFileName = convertView.findViewById(R.id.txtFileName);
             ImageView image = convertView.findViewById(R.id.imgMessage);
+            ImageView imageview = convertView.findViewById(R.id.imgDownload);
+            ProgressBar progressBar = convertView.findViewById(R.id.download_progressbar);
             convertView.callOnClick();
 
 
@@ -155,22 +160,21 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             llDocs.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context,"Click is on "+chat.getText(),Toast.LENGTH_SHORT).show();
+                    imageview.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.VISIBLE);
+                    String fileurl=chat.getText();
 
 
-                 new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName());
+
+                 new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview,progressBar);
 
                 }
             });
             llImageMessage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context,"Click is on "+chat.getText(),Toast.LENGTH_SHORT).show();
 
-
-
-
-                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName());
+                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview,progressBar);
 
                 }
             });

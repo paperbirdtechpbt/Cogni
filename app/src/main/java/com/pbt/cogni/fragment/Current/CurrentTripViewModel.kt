@@ -1,17 +1,24 @@
 package com.pbt.cogni.fragment.Current
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.internal.ContextUtils.getActivity
 import com.google.gson.Gson
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
@@ -23,14 +30,10 @@ import com.pbt.cogni.repository.BaseRoutes
 import com.pbt.cogni.util.AppConstant.Companion.CONST_START_TRIP
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.system.measureTimeMillis
+
 
 class CurrentTripViewModel : ViewModel(), Callback<HttpResponse> {
 
@@ -89,19 +92,47 @@ class CurrentTripViewModel : ViewModel(), Callback<HttpResponse> {
 
      fun fetchlocation(context: Context) {
         user = MyPreferencesHelper.getUser(context)
-
+//         fetchMyLocation(context)
 
         val timedTask: Runnable = object : Runnable {
             override fun run() {
-
+////fetchMyLocation(context)
                     fetchLocation(context)
-                    updateLatLongApi(context)
-
-
+////                    updateLatLongApi(context)
+//
+//
                 handler.postDelayed(this, 20000)
             }
         }
         handler.post(timedTask)
+    }
+
+    @SuppressLint("RestrictedApi", "MissingPermission")
+    private fun fetchMyLocation(context: Context) {
+        var locationManager =  getActivity(context)!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+
+
+        val locationListenerGPS: LocationListener = object : LocationListener {
+
+            override fun onLocationChanged(location: Location) {
+                val latitude = location.latitude
+                val longitude = location.longitude
+                val msg = "New Latitude: " + latitude + "New Longitude: " + longitude
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            }
+
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1,0.5F, locationListenerGPS)
+
+
+
+
+
+
     }
 
     private fun updateLatLongApi(context: Context) {
@@ -115,9 +146,9 @@ class CurrentTripViewModel : ViewModel(), Callback<HttpResponse> {
          var locationrequest: LocationRequest
          var fusedLocationProviderClient: FusedLocationProviderClient
         locationrequest = LocationRequest()
-        locationrequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationrequest.interval = 10000
-        locationrequest.fastestInterval = 10000
+        locationrequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        locationrequest.interval = 0
+//        locationrequest.fastestInterval = 10000
         locationrequest.smallestDisplacement = 2F
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
@@ -138,17 +169,15 @@ class CurrentTripViewModel : ViewModel(), Callback<HttpResponse> {
 
         task.addOnSuccessListener {
 
-
             if (it != null) {
                 lat = it.latitude
                 long = it.longitude
+                Toast.makeText(context,"lat-----${lat},  long-----${long}",Toast.LENGTH_SHORT).show()
 
                 AppUtils.logDebug(TAG,"lat-----${lat},  long-----${long}")
 
             } else {
-
                 AppUtils.logDebug(TAG,"Please  Enable Location")
-
             }
         }
     }

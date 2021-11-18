@@ -83,6 +83,17 @@
 
     </FrameLayout>
 
+    <!--    <in.shadowfax.proswipebutton.ProSwipeButton-->
+<!--        android:id="@+id/proswipebutton_main_error"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="8dp"-->
+<!--        app:arrow_color="#33FFFFFF"-->
+<!--        app:bg_color="@android:color/holo_blue_dark"-->
+<!--        app:btn_radius="2dp"-->
+<!--        app:btn_text="Place Order"-->
+<!--        app:text_color="@android:color/white"-->
+<!--        app:text_size="12sp" />-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -92,45 +103,25 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_back"
-            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginStart="@dimen/_10sdp"
-            android:drawableTint="@color/black"
+            android:layout_marginTop="@dimen/_10sdp"
             android:background="@android:color/transparent"
-            />
-
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingAddExpense"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/floating_action_button"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="top|right"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="30dp"
-            android:visibility="gone"
-            android:layout_marginBottom="10dp"
-            android:tint="@android:color/white"
-            app:backgroundTint="@color/purple_700"
-            app:srcCompat="@drawable/ic_add_expense"
-            app:tint="@color/white" />
+            android:drawableLeft="@drawable/ic_back"
+            android:drawableTint="@color/black" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/btnBack"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp"
-            android:layout_below="@+id/btnBack"
             android:background="#B2FBF9F9">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/_5sdp"
-                >
+                android:padding="@dimen/_5sdp">
 
                 <TextView
                     android:id="@+id/txtLine"
@@ -206,6 +197,40 @@
         </LinearLayout>
 
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingAddExpense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/floating_action_button"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="top|right"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="10dp"
+            android:tint="@android:color/white"
+            android:visibility="gone"
+            app:backgroundTint="@color/purple_700"
+            app:srcCompat="@drawable/ic_add_expense"
+            app:tint="@color/white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/imgSOS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:shapeAppearanceOverlay="@style/shapeableimage"
+            android:src="@drawable/ic_sos"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="10dp"
+            app:backgroundTint="@color/purple_700"
+            app:tint="@color/white"
+            android:layout_above="@+id/floatingAddExpense"
+            android:visibility="gone"/>
+
+
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_action_button"
@@ -217,9 +242,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="30dp"
-            android:visibility="gone"
             android:layout_marginBottom="88dp"
             android:tint="@android:color/white"
+            android:visibility="gone"
             app:backgroundTint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -228,17 +253,6 @@
 
     </RelativeLayout>
 
-<!--    <in.shadowfax.proswipebutton.ProSwipeButton-->
-<!--        android:id="@+id/proswipebutton_main_error"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="8dp"-->
-<!--        app:arrow_color="#33FFFFFF"-->
-<!--        app:bg_color="@android:color/holo_blue_dark"-->
-<!--        app:btn_radius="2dp"-->
-<!--        app:btn_text="Place Order"-->
-<!--        app:text_color="@android:color/white"-->
-<!--        app:text_size="12sp" />-->
     <in.shadowfax.proswipebutton.ProSwipeButton
         android:id="@+id/btnStartTrip"
         android:layout_width="match_parent"

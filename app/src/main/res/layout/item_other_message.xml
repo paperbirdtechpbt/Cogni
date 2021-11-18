@@ -79,6 +79,7 @@
                         android:layout_toStartOf="@+id/imgDownload"
                         android:layout_toEndOf="@+id/imgDocs"
                         android:textColor="@color/greay" />
+                  
 
                     <ImageView
                         android:id="@+id/imgDownload"
@@ -89,8 +90,24 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
+                        android:visibility="visible"
                         android:background="@drawable/ic_download"
                         android:backgroundTint="@color/greay" />
+
+                    <ProgressBar
+                        android:id="@+id/download_progressbar"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                      android:indeterminateOnly="false"
+                        android:layout_marginRight="8dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/circle_download"
+                        android:visibility="gone" />
+
 
                 </RelativeLayout>
 
