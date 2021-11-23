@@ -445,7 +445,7 @@ AppUtils.logDebug(TAG,"File path--$file")
 //        }
     }
 
-    private fun sendImageToChatt(imageURLL: String?, fileName: String, extension: String) {
+     fun sendImageToChatt(imageURLL: String?, fileName: String, extension: String) {
         if(imageUri?.get() != null){
 //            uploadImage()
 

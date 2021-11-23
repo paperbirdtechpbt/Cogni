@@ -13,6 +13,8 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.loader.content.CursorLoader
 import com.pbt.cogni.BuildConfig
+import com.pbt.cogni.WebService.ApiClient
+import com.pbt.cogni.WebService.ApiInterface
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -162,6 +164,8 @@ import java.util.regex.Pattern
             }
             return File(mediaStorageDir.path + File.separator + fileName)
         }
+
+
 
 
 

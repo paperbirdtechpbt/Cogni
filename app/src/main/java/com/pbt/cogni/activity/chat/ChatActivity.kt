@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.AsyncTask
@@ -17,6 +16,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
 import com.pbt.cogni.callback.PermissionCallBack
@@ -62,6 +63,11 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
     private val CAMERA_REQUEST = 1888
     private val GELARY_REQUEST = 1088
     private val MY_CAMERA_PERMISSION_CODE = 1001
+    private val REQUEST_EXTERNAL_STORAGE = 1
+    private val PERMISSIONS_STORAGE = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
 
 //    var mimeTypes = arrayOf(
 //        "application/msword",
@@ -78,11 +84,8 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mProgressDialog =  ProgressDialog(this)
-        mProgressDialog!!.setMessage("A message")
-        mProgressDialog!!.setIndeterminate(true)
-        mProgressDialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-        mProgressDialog!!.setCancelable(true)
+      progressbar=findViewById(R.id.download_progressbar)
+
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_chat2)
         chatViewModel = ViewModelProvider(
@@ -115,6 +118,7 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
 
     }
 
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -133,6 +137,7 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             AppUtils.logDebug(TAG, "Camera Result ${result.resultCode}")
             if (result.resultCode == Activity.RESULT_OK) {
+
                 if (result.data != null) {
 
                     val selectedImageUri: Uri? = result.data?.data
@@ -177,59 +182,56 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
 
 
                 }
+                else{
+                    AppUtils.logError(TAG,"In Else And result.data is null")
+                }
+
             }
             AppUtils.logDebug(TAG,"Outside the result ok dialog")
         }
-
-
 
     var gallaryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             AppUtils.logDebug(TAG, "Camera Result ${result.resultCode}")
             if (result.resultCode == Activity.RESULT_OK) {
-                AppUtils.logDebug(TAG, "Result Is ok")
-                if (result.data != null) {
 
-                    val selectedImage: Uri? = result?.data!!.data
-                  val file =  getRealPathFromURII(selectedImage)
+                if (result.data !=null) {
+                    val userid=MyPreferencesHelper.getUser(this)
+                    val selectedImageUri: Uri? = result.data?.data
+                    val filePathFromUri = FilePath.getPath(this, selectedImageUri!!)
+                    val file = File(filePathFromUri)
+                    val absolutePath = file.absolutePath
+                    val fileExtention: String = file.extension
 
-                    Log.d("##test","URI--$selectedImage\n file--$file")
+                    chatViewModel!!.imageUri?.set(absolutePath)
+                    val view=View(this)
+                    chatViewModel!!.sendImageToChat(view)
+//                    chatViewModel!!.sendImageToChatt(absolutePath,file.name,file.extension)
 
 
+
+                    AppUtils.logDebug(TAG, "uri - $absolutePath  ++extension $fileExtention")
                 }
 
-            }
+        }}
 
-        }
 
-    private fun getRealPathFromURII(contentUri: Uri?):String {
-        var res: String? = null
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor: Cursor? = contentResolver.query(contentUri!!, proj, null, null, null)
-        if (cursor!!.moveToFirst()) {
-            val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            res = cursor.getString(column_index)
-        }
-        cursor.close()
-        return res!!
+    fun DownloadFile(file_url: String,context: Context,filename:String,image:ImageView) {
 
-    }
-    fun DownloadFile(file_url: String,context: Context,filename:String,image:ImageView,progressBar: ProgressBar) {
-        progressbar=progressBar
-        DownloadFileUrl().execute(file_url)
-//        val request = DownloadManager.Request(Uri.parse(file_url))
-//            .setTitle(filename)
-//            .setDescription("Downloading")
-//            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-//            .setAllowedOverMetered(true)
-//            .setVisibleInDownloadsUi(false)
-//        request.allowScanningByMediaScanner()
-//        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-//        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"File")
-//        val downloadManager:DownloadManager=context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-////        downloadManager.enqueue(request)
+//        DownloadFileUrl().execute(file_url)
+        val request = DownloadManager.Request(Uri.parse(file_url))
+            .setTitle(filename)
+            .setDescription("Downloading")
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+            .setAllowedOverMetered(true)
+            .setVisibleInDownloadsUi(false)
+        request.allowScanningByMediaScanner()
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+
+           request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"File").toString()
+        val downloadManager:DownloadManager=context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager.enqueue(request)
 //        val  downloadId:Long = downloadManager.enqueue(request)
-//
 
     }
 
@@ -260,7 +262,13 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
                 setResult(CAMERA_REQUEST, cameraIntent)
                 resultLauncher.launch(cameraIntent)
             } else if (options[item] == "Choose from Gallery") {
+//                val i = Intent(
+//                    Intent.ACTION_PICK
+//                )
+//                i.setType("*/*")
 
+//                startActivityForResult(i, 100)
+////
                 val pickPhoto = Intent()
                 pickPhoto.setType("*/*")
                 pickPhoto.setAction(Intent.ACTION_GET_CONTENT)

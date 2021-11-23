@@ -116,7 +116,8 @@ var currentMilli:Long?=null
         Log.d("##CHan", "oncreate")
 
         videoCallEnable = intent.extras!!.getBoolean(CALL)
-        roomId = intent.extras?.getString(ROOM_ID)
+//        roomId = intent.extras?.getString(ROOM_ID)
+        roomId = "SkwH5kkjBTlQYD2azs7X"
         name = intent.extras?.getString(CONST_SENDER_NAME)
         sendername = intent.extras?.getString(CONST_SENDER_MOBILE_NUMBER)
         postmilli=intent.extras?.getLong("currentmilli")
