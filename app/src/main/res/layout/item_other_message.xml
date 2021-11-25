@@ -94,6 +94,16 @@
                         android:visibility="visible"
                         android:background="@drawable/ic_download"
                         android:backgroundTint="@color/greay" />
+                    <TextView
+                        android:id="@+id/text_percentage"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:visibility="gone"/>
 
 
                     <ProgressBar
@@ -108,7 +118,6 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:indeterminate="false"
                         android:max="100"
-                        android:visibility="gone"
                         android:progressDrawable="@drawable/style_circular"
                         />
 

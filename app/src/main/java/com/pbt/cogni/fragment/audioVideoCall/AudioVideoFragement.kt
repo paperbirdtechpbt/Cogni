@@ -1,5 +1,6 @@
 package com.pbt.cogni.fragment.audioVideoCall
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.pbt.cogni.R
+import com.pbt.cogni.activity.WebView.WebViewRTC
 import com.pbt.cogni.util.AppUtils
 import org.apache.http.HttpResponse
 
@@ -43,11 +45,13 @@ class AudioVideoFragement() : Fragment() {
         audioVideCallAdapter = AudioVideCallAdapter(requireContext()) { i, view ,result,sendername->
             when (view.id) {
                 R.id.rlVideoCall -> {
-                   AudioVideoViewModel().sendCall(true,result.id.toString(),sendername,requireContext(),
-                       AppUtils.getRandomString(15),result.Mobile)
+//                   AudioVideoViewModel().sendCall(true,result.id.toString(),sendername,requireContext(),
+//                       AppUtils.getRandomString(15),result.Mobile)
+            startActivity(Intent(requireContext(),WebViewRTC::class.java))
                 }
                 R.id.rlVoiceCall -> {
                     AudioVideoViewModel().sendCall(false,result.id.toString(),sendername,requireContext(),AppUtils.getRandomString(15),result.Mobile)
+
                 }
             }
         }

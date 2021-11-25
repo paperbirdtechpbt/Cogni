@@ -2,12 +2,11 @@ package com.pbt.cogni.activity.chat.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.ContextWrapper;
-import android.net.Uri;
+
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.text.TextPaint;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,14 +34,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
+import kotlin.Unit;
 
 public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
     private static final int MY_MESSAGE = 0, OTHER_MESSAGE = 1;
     private Activity context;
+    ProgressBar progressBarr;
+    ImageView imgDownload;
+    String TAG="ChatAdapter";
+    TextView textpercentage;
+
+
 
     public ChatAdapter(Activity context, List<Chat> data) {
         super(context, R.layout.item_my_message, data);
@@ -92,13 +99,15 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             LinearLayout llDocs = convertView.findViewById(R.id.llDocs);
             LinearLayout llImageMessage = convertView.findViewById(R.id.llImageMessage);
             LinearLayout llChatTextMessage = convertView.findViewById(R.id.llChatTextMessage);
-            ImageView imgDownload =convertView.findViewById(R.id.imgDownload);
+             imgDownload =convertView.findViewById(R.id.imgDownload);
 
             llImageMessage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(context,"Click is on "+  chat.getText(),Toast.LENGTH_SHORT).show();
                     chat.getText();
+
+
                 }
             });
 
@@ -151,7 +160,12 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             TextView txtFileName = convertView.findViewById(R.id.txtFileName);
             ImageView image = convertView.findViewById(R.id.imgMessage);
             ImageView imageview = convertView.findViewById(R.id.imgDownload);
-            ProgressBar progressBar = convertView.findViewById(R.id.download_progressbar);
+//            ProgressBar progressBar = convertView.findViewById(R.id.download_progressbar);
+            progressBarr = convertView.findViewById(R.id.download_progressbar);
+            imgDownload =convertView.findViewById(R.id.imgDownload);
+            textpercentage=convertView.findViewById(R.id.text_percentage);
+
+
             convertView.callOnClick();
 
 
@@ -160,25 +174,44 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             LinearLayout llDocs = convertView.findViewById(R.id.llDocs);
             LinearLayout llImageMessage = convertView.findViewById(R.id.llImageMessage);
             LinearLayout llChatTextMessage = convertView.findViewById(R.id.llChatTextMessage);
-
-            llDocs.setOnClickListener(new View.OnClickListener() {
+            imgDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    String fileurl=chat.getText();
-                    progressBar.setVisibility(View.VISIBLE);
-                    imageview.setVisibility(View.GONE);
+                  int i=  getPosition(chat);
 
 
-//                    new DownloadFileFromURLTask().execute(chat.getText());
-                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview);
-                }
+                    textpercentage.setVisibility(View.VISIBLE);
+                        imageview.setVisibility(View.GONE);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                new DownloadFileFromURLTask().execute(chat.getText());
+                            }
+                        },1000);
+                    }
+
+
+
             });
+
+//            llDocs.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                    progressBarr.setVisibility(View.VISIBLE);
+//                    imageview.setVisibility(View.GONE);
+//
+//                    new DownloadFileFromURLTask().execute(chat.getText());
+////                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview);
+//
+//                }
+//            });
             llImageMessage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview);
+                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName());
 
                 }
             });
@@ -205,6 +238,103 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
 
 
+    class DownloadFileFromURLTask extends
+            AsyncTask<String, String, String> {
 
+        /**
+         * Downloading file in background thread
+         * */
+        @SuppressLint("SdCardPath")
+        @Override
+        protected String doInBackground(String... f_url) {
+
+            Log.d("##ChatAdapter", "do in background");
+            int count;
+            try {
+                URL url = new URL(f_url[0]);
+                URLConnection conection = url.openConnection();
+                conection.connect();
+                // getting file length
+                int lenghtOfFile = conection.getContentLength();
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(url.openStream(),
+                        8192);
+                File myObj = new File(Environment.getExternalStorageDirectory()+"/"+"filename.txt");
+              // File myObj = new File(Environment.DIRECTORY_DOWNLOADS,"File");
+
+                // Output stream to write file
+                OutputStream output = new FileOutputStream(myObj.toString());
+
+                byte data[] = new byte[1024];
+
+                long total = 0;
+
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // publishing the progress....
+                    // After this onProgressUpdate will be called
+                    publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+
+                    // writing data to file
+                    output.write(data, 0, count);
+                }
+
+                // flushing output
+                output.flush();
+
+                // closing streams
+                output.close();
+                input.close();
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+
+            return null;
+        }
+
+        /**
+         * Updating progress bar
+         * */
+        protected void onProgressUpdate(String... progress) {
+            // setting progress percentage
+
+            Log.d("##DownloadFile",progress.toString());
+
+         progressBarr.setProgress(Integer.parseInt(progress[0]));
+         String i= String.valueOf(Integer.parseInt(progress[0]));
+            textpercentage.setText(i);
+
+
+        }
+
+
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+
+        @Override
+        protected void onPostExecute(String file_url) {
+            if (progressBarr.getProgress()==100) {
+
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBarr.setVisibility(View.GONE);
+                        imgDownload.setVisibility(View.VISIBLE);
+                    }
+                }, 3000);
+                Toast.makeText(context, "Download Completed ", Toast.LENGTH_LONG).show();
+                Log.i("##ChatAdapter", "on post excute!");
+
+            }
+
+        }
+
+
+    }
 
 }

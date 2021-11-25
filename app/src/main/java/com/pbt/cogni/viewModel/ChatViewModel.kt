@@ -255,6 +255,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
                                 } else {
                                     currentUser!!.set("user2")
                                 }
+                                mAdapter?.notifyDataSetChanged()
                             } catch (e: Exception) {
                                 AppUtils.logError(TAG, "Exception : ==${e.message}")
                             }
@@ -291,10 +292,11 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
         Firebase(BASE_FIREBASE_URL + chatRoomID ).child(TYPING).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
+                mAdapter?.notifyDataSetChanged()
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot?, p1: String?) {
-
+                mAdapter?.notifyDataSetChanged()
                 val map = dataSnapshot!!.value as Map<*, *>
                 if(map.get("id")!= null) {
                     if (!map.get("id").toString().equals(userId!!.get())) {

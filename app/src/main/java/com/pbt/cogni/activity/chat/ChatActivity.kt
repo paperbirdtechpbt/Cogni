@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,6 +27,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.AdapterListUpdateCallback
 
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
@@ -83,11 +85,17 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-      progressbar=findViewById(R.id.download_progressbar)
-
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_chat2)
+
+        if (savedInstanceState==null){
+            AppUtils.logDebug(TAG,"savedInstanceState is NULL")
+        }
+        else{
+            AppUtils.logDebug(TAG,"savedInstanceState is  not NULL")
+        }
+
+
+
         chatViewModel = ViewModelProvider(
             this,
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
@@ -95,15 +103,18 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         binding?.chatViewModel = chatViewModel
         binding?.executePendingBindings()
 
+
         val reciverID: Int = intent.getIntExtra(RECEIVER_ID, 0)
         val reciverName: String = intent.getStringExtra(RECEIVER_NAME)
         val userID: Int = MyPreferencesHelper.getUser(this@ChatActivity)!!.id.toInt()
-
         binding?.chatViewModel?.initChat(this@ChatActivity, reciverID, userID, reciverName)
         binding?.chatViewModel?.mAdapter = ChatAdapter(this@ChatActivity, ArrayList<Chat>())
         binding?.listviewChat?.setAdapter(binding?.chatViewModel?.mAdapter)
+
         chatViewModel!!.permissionIsGranted = this
-        isChatVisible = true
+        binding?.chatViewModel?.mAdapter?.notifyDataSetChanged()
+
+  isChatVisible = true
 
         binding!!.backArrow.setOnClickListener {
             finish()
@@ -216,7 +227,7 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         }}
 
 
-    fun DownloadFile(file_url: String,context: Context,filename:String,image:ImageView) {
+    fun DownloadFile(file_url: String,context: Context,filename:String) {
 
 //        DownloadFileUrl().execute(file_url)
         val request = DownloadManager.Request(Uri.parse(file_url))
@@ -284,79 +295,20 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
 
     override fun onResume() {
         super.onResume()
+        AppUtils.logDebug(TAG,"On Resume")
+        Handler().postDelayed(Runnable{
+            progressbar_imageupload.visibility=View.GONE
+        },2500)
+
         isChatVisible = true
     }
 
     override fun onPause() {
         super.onPause()
+        AppUtils.logDebug(TAG,"On Pause")
         isChatVisible = false
     }
 
 
-class DownloadFileUrl : AsyncTask<String, String, String>() {
-    override fun doInBackground(vararg fileUrl: String?): String? {
-
-        try {
-            var input: InputStream? = null
-            var output: OutputStream? = null
-            var connection: HttpURLConnection? = null
-            try {
-                val url = URL(fileUrl.get(0))
-                connection = url.openConnection() as HttpURLConnection
-                connection.connect()
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() !== HttpURLConnection.HTTP_OK)
-                    return "Server returned HTTP " + connection.getResponseCode()
-                    .toString() + " " + connection.getResponseMessage()
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                val fileLength: Int = connection.getContentLength()
-                // download the file
-                input = connection.getInputStream()
-                output = FileOutputStream("/sdcard/file_name.extension")
-                val data = ByteArray(4096)
-                var total: Long = 0
-                var count: Int
-                while (input.read(data).also { count = it } != -1) {
-                    // allow canceling with back button
-                    if (isCancelled) return null
-                    total += count.toLong()
-                    AppUtils.logDebug(TAG,"total"+total.toString())
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                      publishProgress(((total * 100 / fileLength).toString()))
-                    output.write(data, 0, count)
-                    AppUtils.logDebug(TAG,"filelength"+fileLength.toString())
-                }
-            } catch (e: java.lang.Exception) {
-                return e.toString()
-            } finally {
-                try {
-                    if (output != null) output.close()
-                    input?.close()
-                } catch (ignored: IOException) {
-                    AppUtils.logError(TAG,"Exception:"+ignored.message)
-                }
-                if (connection != null) connection.disconnect()
-            }
-        } finally {
-
-        }
-return null
-    }
-
-    protected fun onProgressUpdate(vararg progress: Int?) {
-        super.onProgressUpdate(progress.toString())
-
-        mProgressDialog!!.isIndeterminate = false
-        mProgressDialog!!.max = 100
-        mProgressDialog!!.progress = progress[0]!!
-    }
-
-
-
-
-}
 
 }

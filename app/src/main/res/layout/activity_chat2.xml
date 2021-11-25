@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -86,12 +87,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:visibility="@{ChatViewModel.isVisiBled() ? View.VISIBLE: View.GONE}" >
-<ProgressBar
-    android:id="@+id/progressbar_imageupload"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerVertical="true"
-    android:layout_centerHorizontal="true"/>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -103,7 +99,7 @@
                     android:layout_below="@+id/txtClose"
                     android:layout_alignParentStart="true"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="-2dp"
+                    android:layout_marginStart="-4dp"
 
                     android:layout_marginTop="-2dp" />
 
@@ -192,6 +188,15 @@
             </RelativeLayout>
 
         </androidx.appcompat.widget.Toolbar>
+        <ProgressBar
+            android:id="@+id/progressbar_imageupload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:visibility="visible"
+
+            android:layout_centerHorizontal="true"/>
+
 
     </RelativeLayout>
 

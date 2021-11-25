@@ -15,13 +15,11 @@
         android:theme="@style/Theme.Cogni"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".activity.WebView.WebViewRTC">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-        <activity android:name=".Test.Test"></activity>
+        <activity android:name=".Test.Test">
+
+        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -69,7 +67,11 @@
             android:name=".activity.SplashActivity"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.call.CallActivity"

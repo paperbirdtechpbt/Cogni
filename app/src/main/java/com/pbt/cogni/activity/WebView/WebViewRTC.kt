@@ -32,8 +32,19 @@ class WebViewRTC : AppCompatActivity(),View.OnClickListener {
                     request.grant(request.getResources())
                 }
             } })
+        openWebView()
 
-        wenviewbutton.setOnClickListener(this)
+//        wenviewbutton.setOnClickListener(this)
+    }
+
+    private fun openWebView() {
+        wenviewbutton.visibility=View.GONE
+        val url ="https://webrtc-demo-6a14b.web.app/"
+
+        www?.getSettings()?.setLoadsImagesAutomatically(true)
+        www?.getSettings()?.setJavaScriptEnabled(true)
+        www?.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY)
+        www?.loadUrl(url)
     }
 
     @SuppressLint("SetJavaScriptEnabled")

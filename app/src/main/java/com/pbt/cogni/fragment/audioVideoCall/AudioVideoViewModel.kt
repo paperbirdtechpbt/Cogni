@@ -91,7 +91,7 @@ class AudioVideoViewModel : ViewModel() {
                 Log.d("####makeCAllresponse",roomID)
                 val httpResponse=response.body()
                if ( !httpResponse!!.code){
-                   val intent : Intent = Intent(context,CallActivity::class.java)
+                   val intent  = Intent(context,CallActivity::class.java)
                    intent.putExtra(CALL,myCall)
                    intent.putExtra(CONST_SENDER_NAME,sendername)
                    intent.putExtra(AppConstant.ROOM_ID,roomID)
