@@ -2,10 +2,8 @@ package com.pbt.cogni.activity.chat.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-
 import android.os.AsyncTask;
 import android.os.Environment;
-
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.pbt.cogni.R;
@@ -26,7 +23,6 @@ import com.pbt.cogni.activity.chat.ChatActivity;
 import com.pbt.cogni.model.Chat;
 import com.pbt.cogni.util.AppUtils;
 import com.pbt.cogni.util.MyPreferencesHelper;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,8 +33,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.dmoral.toasty.Toasty;
-import kotlin.Unit;
 
 public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
@@ -47,13 +41,15 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
     ProgressBar progressBarr;
     ImageView imgDownload;
     String TAG="ChatAdapter";
-    TextView textpercentage;
+    int i=0;
+   List dataa;
 
 
 
     public ChatAdapter(Activity context, List<Chat> data) {
         super(context, R.layout.item_my_message, data);
         this.context = context;
+        this.dataa=data;
 
     }
 
@@ -65,6 +61,8 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
     @Override
     public int getItemViewType(int position) {
+
+
         Chat item = getItem(position);
         assert item != null;
         if (item.getSender() == Integer.valueOf(MyPreferencesHelper.Companion.getUser(context.getApplication()).getId()))
@@ -160,10 +158,11 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             TextView txtFileName = convertView.findViewById(R.id.txtFileName);
             ImageView image = convertView.findViewById(R.id.imgMessage);
             ImageView imageview = convertView.findViewById(R.id.imgDownload);
+
 //            ProgressBar progressBar = convertView.findViewById(R.id.download_progressbar);
             progressBarr = convertView.findViewById(R.id.download_progressbar);
             imgDownload =convertView.findViewById(R.id.imgDownload);
-            textpercentage=convertView.findViewById(R.id.text_percentage);
+
 
 
             convertView.callOnClick();
@@ -177,18 +176,23 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             imgDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                  int i=  getPosition(chat);
+                   i=  getPosition(chat);
 
 
-                    textpercentage.setVisibility(View.VISIBLE);
+
+//                    textpercentage.setVisibility(View.VISIBLE);
                         imageview.setVisibility(View.GONE);
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+                        progressBarr.setVisibility(View.VISIBLE);
 
-                                new DownloadFileFromURLTask().execute(chat.getText());
-                            }
-                        },1000);
+                      new   Handler().postDelayed(new Runnable() {
+                          @Override
+                          public void run() {
+                              new DownloadFileFromURLTask().execute(chat.getText());
+                          }
+                      },1500);
+
+
+
                     }
 
 
@@ -294,37 +298,35 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             return null;
         }
 
-        /**
-         * Updating progress bar
-         * */
         protected void onProgressUpdate(String... progress) {
             // setting progress percentage
 
             Log.d("##DownloadFile",progress.toString());
 
-         progressBarr.setProgress(Integer.parseInt(progress[0]));
-         String i= String.valueOf(Integer.parseInt(progress[0]));
-            textpercentage.setText(i);
+        dataa.get(i);
+
+
+
+            progressBarr.setProgress(Integer.parseInt(progress[0]));
+
+//         String i= String.valueOf(Integer.parseInt(progress[0]));
+//            textpercentage.setText(i);
 
 
         }
-
-
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
 
         @Override
         protected void onPostExecute(String file_url) {
             if (progressBarr.getProgress()==100) {
 
-
                 new Handler().postDelayed(new Runnable() {
+
                     @Override
                     public void run() {
+                        imgDownload.setTag(i);
                         progressBarr.setVisibility(View.GONE);
                         imgDownload.setVisibility(View.VISIBLE);
+
                     }
                 }, 3000);
                 Toast.makeText(context, "Download Completed ", Toast.LENGTH_LONG).show();
