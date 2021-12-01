@@ -229,6 +229,21 @@
             app:tint="@color/white"
             android:layout_above="@+id/floatingAddExpense"
             android:visibility="gone"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/imgSOSon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:shapeAppearanceOverlay="@style/shapeableimage"
+            android:src="@drawable/ic_sos"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="10dp"
+            app:backgroundTint="@color/red"
+            app:tint="@color/white"
+            android:layout_above="@+id/floatingAddExpense"
+            android:visibility="gone"/>
 
 
 

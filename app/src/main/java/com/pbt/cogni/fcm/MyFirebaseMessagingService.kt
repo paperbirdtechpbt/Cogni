@@ -185,7 +185,7 @@ AppUtils.logDebug(TAG,"in Alert Notification")
             .setSmallIcon(R.drawable.ic__chat_profile)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCustomContentView(notificationLayout)
-            .setFullScreenIntent(pendingIntent,true)
+            .setFullScreenIntent(pendingIntent,false)
             .setVibrate(longArrayOf(300, 500, 1500,1600,1700))
 
 
@@ -198,7 +198,7 @@ AppUtils.logDebug(TAG,"in Alert Notification")
             channel.setShowBadge(true)
             channel.setVibrationPattern(longArrayOf(300, 500, 1500,1600,1700))
             channel.enableVibration(true)
-            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }

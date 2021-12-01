@@ -38,7 +38,7 @@ import org.webrtc.SessionDescription;
  */
 public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents {
   private static final String TAG = "WSRTCClient";
-  private static final String ROOM_JOIN = "join";
+  private static final String ROOM_JOIN = "join"; 
   private static final String ROOM_MESSAGE = "message";
   private static final String ROOM_LEAVE = "leave";
 

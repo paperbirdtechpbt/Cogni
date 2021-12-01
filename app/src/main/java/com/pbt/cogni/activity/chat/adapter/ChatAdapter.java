@@ -2,12 +2,8 @@ package com.pbt.cogni.activity.chat.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.ContextWrapper;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +23,6 @@ import com.pbt.cogni.activity.chat.ChatActivity;
 import com.pbt.cogni.model.Chat;
 import com.pbt.cogni.util.AppUtils;
 import com.pbt.cogni.util.MyPreferencesHelper;
-
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -36,12 +31,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-import es.dmoral.toasty.Toasty;
 
 public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
     private static final int MY_MESSAGE = 0, OTHER_MESSAGE = 1;
     private Activity context;
+
+
+
 
     public ChatAdapter(Activity context, List<Chat> data) {
         super(context, R.layout.item_my_message, data);
@@ -147,9 +144,11 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             TextView txtFileName = convertView.findViewById(R.id.txtFileName);
             ImageView image = convertView.findViewById(R.id.imgMessage);
             ImageView imageview = convertView.findViewById(R.id.imgDownload);
-            ProgressBar progressBar = convertView.findViewById(R.id.download_progressbar);
+//             progressBar = convertView.findViewById(R.id.download_progressbar);
+          final    ImageView imgDownload=convertView.findViewById(R.id.imgDownload);
             convertView.callOnClick();
 
+            final ProgressBar progressBar = ((ProgressBar) convertView.findViewById(R.id.download_progressbar));
 
 
 
@@ -160,13 +159,18 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             llDocs.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    imageview.setVisibility(View.GONE);
-                    progressBar.setVisibility(View.VISIBLE);
+
+
+//
                     String fileurl=chat.getText();
+                    imgDownload.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.VISIBLE);
+//                    progressBar.setTag(position);
 
 
-
-                 new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview,progressBar);
+              new DownloadFileFromURL(progressBar,imgDownload).execute(fileurl);
+//
+//                 new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview);
 
                 }
             });
@@ -174,7 +178,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
                 @Override
                 public void onClick(View v) {
 
-                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview,progressBar);
+                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview);
 
                 }
             });
@@ -199,12 +203,20 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
     }
 
 
+
+
     private class DownloadFileFromURL extends AsyncTask<String, String, String> {
+ProgressBar progressBar;
+ImageView imaDownload;
+
+        public DownloadFileFromURL(ProgressBar progressBar, ImageView imgDownload) {
+            this.progressBar=progressBar;
+            this.imaDownload=imgDownload;
+        }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-//        showDialog(progress_bar_type);
             AppUtils.Companion.logDebug("##DownloadFile","Before Downloading Downloading-----File");
         }
 
@@ -219,15 +231,12 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
                 URLConnection connection = url.openConnection();
                 connection.connect();
 
-                // this will be useful so that you can show a tipical 0-100%
-                // progress bar
+
                 int lenghtOfFile = connection.getContentLength();
 
-                // download the file
-                InputStream input = new BufferedInputStream(url.openStream(),
-                        8192);
 
-                // Output stream
+                InputStream input = new BufferedInputStream(url.openStream(), 8192);
+
                 OutputStream output = new FileOutputStream(Environment
                         .getExternalStorageDirectory().toString()
                         + "/2011.kml");
@@ -263,9 +272,10 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
          * Updating progress bar
          * */
         protected void onProgressUpdate(String... progress) {
-            AppUtils.Companion.logDebug("##DownloadFile","In Downloading-----File");
-            // setting progress percentage
-//        pDialog.setProgress(Integer.parseInt(progress[0]));
+           AppUtils.Companion.logDebug("##DownloadFile","In Downloading-----File"+progress[0].toString());
+
+           progressBar.setProgress(Integer.parseInt(progress[0]));
+
         }
 
         /**
@@ -273,10 +283,12 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
          * **/
         @Override
         protected void onPostExecute(String file_url) {
-            AppUtils.Companion.logDebug("##DownloadFile","Downloaded-----File");
+            progressBar.setVisibility(View.GONE);
+            imaDownload.setVisibility(View.VISIBLE);
 
-            // dismiss the dialog after the file was downloaded
-//        dismissDialog(progress_bar_type);
+            AppUtils.Companion.logDebug("##DownloadFile","Downloaded-----File");
+           Toast.makeText(context,"Download Completed ",Toast.LENGTH_SHORT).show();
+
 
         }
 

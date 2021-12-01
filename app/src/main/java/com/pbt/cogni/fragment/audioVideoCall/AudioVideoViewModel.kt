@@ -77,6 +77,7 @@ class AudioVideoViewModel : ViewModel() {
     }
 
     fun sendCall(myCall : Boolean,id : String,sendername:String,context : Context,roomID :String,senderMobile : String) {
+        Log.d("####sendcall",roomID)
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
         val call = apiInterface?.makeCall(roomID, MyPreferencesHelper.getUser(context)!!.Mobile, myCall.toString(),id,

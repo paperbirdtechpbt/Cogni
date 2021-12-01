@@ -3,7 +3,6 @@ package com.pbt.cogni.activity.chat
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.DownloadManager
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -18,8 +17,12 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -38,6 +41,8 @@ import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.viewModel.ChatViewModel
 import kotlinx.android.synthetic.main.activity_chat2.*
 import kotlinx.android.synthetic.main.activity_test.*
+import kotlinx.android.synthetic.main.item_other_message.*
+import kotlinx.android.synthetic.main.item_other_message.view.*
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -102,6 +107,7 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         chatViewModel!!.permissionIsGranted = this
         isChatVisible = true
 
+
         binding!!.backArrow.setOnClickListener {
             finish()
         }
@@ -114,6 +120,8 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MY_CAMERA_PERMISSION_CODE)
 
     }
+
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
@@ -190,11 +198,16 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
                 AppUtils.logDebug(TAG, "Result Is ok")
                 if (result.data != null) {
 
-                    val selectedImage: Uri? = result?.data!!.data
-                  val file =  getRealPathFromURII(selectedImage)
+                    val userid=MyPreferencesHelper.getUser(this)
+                    val selectedImageUri: Uri? = result.data?.data
+                    val filePathFromUri = FilePath.getPath(this, selectedImageUri!!)
+                    val file = File(filePathFromUri)
+                    val absolutePath = file.absolutePath
+                    val fileExtention: String = file.extension
 
-                    Log.d("##test","URI--$selectedImage\n file--$file")
-
+                    chatViewModel!!.imageUri?.set(absolutePath)
+                    val view=View(this)
+                    chatViewModel!!.sendImageToChat(view)
 
                 }
 
@@ -214,9 +227,9 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         return res!!
 
     }
-    fun DownloadFile(file_url: String,context: Context,filename:String,image:ImageView,progressBar: ProgressBar) {
-        progressbar=progressBar
-        DownloadFileUrl().execute(file_url)
+    fun DownloadFile(file_url: String,context: Context,filename:String,image:ImageView) {
+
+//        DownloadFileUrl().execute(file_url)
 //        val request = DownloadManager.Request(Uri.parse(file_url))
 //            .setTitle(filename)
 //            .setDescription("Downloading")
@@ -227,10 +240,8 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
 //        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 //        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"File")
 //        val downloadManager:DownloadManager=context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-////        downloadManager.enqueue(request)
+//        downloadManager.enqueue(request)
 //        val  downloadId:Long = downloadManager.enqueue(request)
-//
-
     }
 
 

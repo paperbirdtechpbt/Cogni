@@ -38,8 +38,8 @@ interface ApiInterface {
     @FormUrlEncoded
     @POST("api/updateLatLng")
       fun postLatLng(
-        @Field("lat") lat: String,
-        @Field("lng") lng: String,
+        @Field("lat") lat: Double,
+        @Field("lng") lng: Double,
         @Field("id") id: String): Call<HttpResponse>
 
     @FormUrlEncoded
@@ -84,6 +84,13 @@ interface ApiInterface {
     @POST("api/getExpense")
      fun getExpense(
         @Field("routeid") roleId: String,
+    ): retrofit2.Call<HttpResponse>
+
+     @FormUrlEncoded
+    @POST("api/updateSos")
+     fun getSOSstatus(
+        @Field("id") userid: String,
+        @Field("sos") sos: Int,
     ): retrofit2.Call<HttpResponse>
 
     @FormUrlEncoded

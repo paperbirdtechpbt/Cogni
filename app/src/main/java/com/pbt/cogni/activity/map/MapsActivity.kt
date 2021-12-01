@@ -70,11 +70,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
     private var startcitylatlng: String? = ""
     private var endcitylatlng: String? = ""
-    private var startcity: String? = ""
-    private var endcity: String? = ""
     private var startAddress: String? = ""
     private var endAddress: String? = ""
     private var myWaypoint: String? = ""
+
 
     companion object {
         var list = ArrayList<Expense>()
@@ -103,12 +102,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         markerPoints.clear()
         coordinates.clear()
 
-           runOnUiThread {
-
-
-                   getExpense()
-
-           }
+        getExpense()
 
 
         floatButton = findViewById(R.id.floating_action_button)
@@ -133,7 +127,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         }
 
         floatingAddExpense?.setOnClickListener {
-            var intent = Intent(this, ExpenseActivity::class.java)
+            val intent = Intent(this, ExpenseActivity::class.java)
             intent.putExtra(CONST_ROUTE_ID, routeId)
             intent.putExtra(CONST_ASSIGN_ID, assignId)
             startActivity(intent)
@@ -207,7 +201,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             //in currnet trip fragment
             floatingAddExpense.visibility = View.VISIBLE
             floating_action_button.visibility = View.VISIBLE
-            imgSOS.visibility=View.VISIBLE
+          imgSOS.visibility=View.VISIBLE
 
 
                     getExpense()
@@ -222,41 +216,82 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             btnStartTrip.visibility = View.GONE
             btnEndTrip.visibility = View.GONE
         }
+
         getWayPoint()
         imgSOS.setOnClickListener(){
-            openAlertDialog()
+            imgSOSon.visibility=View.VISIBLE
+            imgSOS.visibility=View.GONE
+//            openAlertDialog()
+          val   startSos=1
+            updateApiSOSstatus(startSos)
+        }
+        imgSOSon.setOnClickListener(){
+            imgSOSon.visibility=View.GONE
+            imgSOS.visibility=View.VISIBLE
+//            openAlertDialog()
+          val   startSos=0
+            updateApiSOSstatus(startSos)
         }
     }
 
+    private fun updateApiSOSstatus(startSos: Int) {
+
+        val user= MyPreferencesHelper.getUser(this)
+        val apiclient = ApiClient.getClient()
+        val apiInterface = apiclient?.create(ApiInterface::class.java)
+        val call = apiInterface?.getSOSstatus(user!!.id, startSos)
+
+        call?.enqueue(object :retrofit2.Callback<HttpResponse>{
+            override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
+           if (startSos==0){
+               Toast.makeText(this@MapsActivity,"Turning Off SOS",Toast.LENGTH_SHORT).show()
+           }
+                else{
+               Toast.makeText(this@MapsActivity,"SOS is Turned On",Toast.LENGTH_SHORT).show()
+
+           }
+            }
+
+            override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+                Toast.makeText(this@MapsActivity,"SOS Failure ${t.message}",Toast.LENGTH_SHORT).show()
+
+            }
+
+        })
+
+
+
+    }
+
     @SuppressLint("MissingPermission")
-    private fun openAlertDialog() {
-        val builder = AlertDialog.Builder(this)
-
-        builder.setTitle("Emergency Call ")
-        builder.setMessage("Do You Want to Call Emergency")
-        builder.setIcon(android.R.drawable.ic_dialog_alert)
-
-        builder.setPositiveButton("Yes"){dialogInterface, which ->
-            Toast.makeText(applicationContext,"Calling",Toast.LENGTH_LONG).show()
-            val callIntent = Intent(Intent.ACTION_CALL)
-            callIntent.data = Uri.parse("tel:112")
-            startActivity(callIntent)
-        }
-
-        builder.setNeutralButton("Cancel"){dialogInterface , which ->
-            AppUtils.logDebug(TAG,"Click Cancel")
-        }
-
-        builder.setNegativeButton("No"){dialogInterface, which ->
-            Toast.makeText(applicationContext,"Call Canceld",Toast.LENGTH_LONG).show()
-        }
-
-        val alertDialog: AlertDialog = builder.create()
-
-        alertDialog.setCancelable(false)
-        alertDialog.show()
-
-}
+//    private fun openAlertDialog() {
+//        val builder = AlertDialog.Builder(this)
+//
+//        builder.setTitle("Emergency Call ")
+//        builder.setMessage("Do You Want to Call Emergency")
+//        builder.setIcon(android.R.drawable.ic_dialog_alert)
+//
+//        builder.setPositiveButton("Yes"){dialogInterface, which ->
+//            Toast.makeText(applicationContext,"Calling",Toast.LENGTH_LONG).show()
+//            val callIntent = Intent(Intent.ACTION_CALL)
+//            callIntent.data = Uri.parse("tel:112")
+//            startActivity(callIntent)
+//        }
+//
+//        builder.setNeutralButton("Cancel"){dialogInterface , which ->
+//            AppUtils.logDebug(TAG,"Click Cancel")
+//        }
+//
+//        builder.setNegativeButton("No"){dialogInterface, which ->
+//            Toast.makeText(applicationContext,"Call Canceld",Toast.LENGTH_LONG).show()
+//        }
+//
+//        val alertDialog: AlertDialog = builder.create()
+//
+//        alertDialog.setCancelable(false)
+//        alertDialog.show()
+//
+//}
 
     fun getExpense() {
            AppUtils.logDebug(TAG, " routeId  : " + routeId)
@@ -295,7 +330,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         val apiInterface = apiclient?.create(ApiInterface::class.java)
         val call = apiInterface?.updateTripStatus(assignId, status)
 
-        call?.enqueue(object : retrofit2.Callback<HttpResponse> {
+        call?.enqueue(object : Callback<HttpResponse> {
             override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
                 AppUtils.logDebug(TAG, "Status Response : " + response.body().toString())
                 btnStartTrip.visibility = View.GONE
@@ -385,7 +420,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
 
-        if (response?.body()?.code == false) {
+        if (response.body()?.code == false) {
             AppUtils.logError(TAG,"onresponse ${response.body()}")
 
             val listLatLong: BaseRoutLatLng =
@@ -410,8 +445,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
             )
 
             var uri = "waypoints="
-            var k: Int = 1
-            var count: Int = 0
+            var k = 1
+            var count = 0
             val size: Int = listLatLong.listLatLng.size / 22
             listLatLong.listLatLng.forEach {
                 if (k == 1) {
@@ -512,15 +547,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
 
             override fun onPostExecute(result: List<List<HashMap<String, String>>>?) {
-                val lineOptions: PolylineOptions? = PolylineOptions()
+                val lineOptions: PolylineOptions = PolylineOptions()
 
 
                 for (i in result!!.indices) {
                     AppUtils.logDebug(TAG,"result---$result")
 
-                    lineOptions?.addAll(coordinates)
-                    lineOptions?.width(9f)
-                    lineOptions?.color(Color.BLUE)
+                    lineOptions.addAll(coordinates)
+                    lineOptions.width(9f)
+                    lineOptions.color(Color.BLUE)
                 }
 
                 setMarkerPoints(LatLng(startLat, startLong))
@@ -545,13 +580,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
 
             private fun setMarkerPoints(start: LatLng) {
                 markerPoints.add(start)
-                MapsActivity.options.position(start)
-                MapsActivity.options.icon(
+                options.position(start)
+                options.icon(
                     BitmapDescriptorFactory.defaultMarker(
                         BitmapDescriptorFactory.HUE_RED
                     )
                 )
-                mMap?.addMarker(MapsActivity.options)
+                mMap?.addMarker(options)
             }
         }
     }
