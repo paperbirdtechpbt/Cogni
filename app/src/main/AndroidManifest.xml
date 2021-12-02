@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cogni"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activity.WebView.WebViewRTC">
 
+        </activity>
         <activity android:name=".Test.Test">
 
         </activity>
@@ -30,7 +32,6 @@
             android:name=".activity.expense.ExpenseActivity"
             android:label="@string/addexpense"
             tools:ignore="GoogleAppIndexingWarning" />
-
         <activity
             android:name=".activity.chat.ChatActivity"
             android:screenOrientation="portrait"
@@ -93,7 +94,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -103,22 +103,22 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
+
         <receiver android:name=".fcm.ButtonReceiver">
             <intent-filter android:priority="999">
                 <action android:name="com.example.cancel" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".activity.home.MyLocationService"
             android:process=":remote" />
+
         <service android:name=".fcm.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
         <service
             android:name=".activity.home.service"
             android:enabled="true"
@@ -135,7 +135,7 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.access_fine_location" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -151,7 +151,9 @@
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="MyProvider._READ_PERMISSION" />
-
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
     <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY " />
 
 </manifest>

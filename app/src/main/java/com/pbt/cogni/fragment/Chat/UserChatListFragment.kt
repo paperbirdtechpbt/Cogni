@@ -37,6 +37,7 @@ class UserChatListFragment : Fragment(),RecyclerviewClickLisetner {
         val repository = AnalystRepository(api)
         factory = AnalystViewModelFactory(repository)
 
+
         viewModel = ViewModelProviders.of(this,factory).get(UserChatListViewModel::class.java)
 
         viewModel.getAnalyst(MyPreferencesHelper.getUser(requireActivity())!!.companyId,MyPreferencesHelper.getUser(requireActivity())!!.RoleId,MyPreferencesHelper.getUser(requireActivity())!!.UserName)
@@ -48,6 +49,7 @@ class UserChatListFragment : Fragment(),RecyclerviewClickLisetner {
                 it.adapter = AdapterChatUserList(analyst,this)
             }
         })
+        progressBarChatUser.visibility=View.GONE
     }
 
     override fun onRecyclerViewItemClick(view: View, users: Users) {
