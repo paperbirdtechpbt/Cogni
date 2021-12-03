@@ -67,7 +67,7 @@ class CurrentFragment : Fragment(), RoutesViewRecyclerViewItemClick{
             recyclerViewCurrentTrip?.layoutManager = LinearLayoutManager(requireContext())
             listAdapter = AdapterViewRouteList(routes, this)
             recyclerViewCurrentTrip?.adapter = listAdapter
-            rlCurrentNoData.visibility =  View.GONE
+
             if(routes.isNullOrEmpty()) {
                 handler.removeCallbacksAndMessages(null)
 

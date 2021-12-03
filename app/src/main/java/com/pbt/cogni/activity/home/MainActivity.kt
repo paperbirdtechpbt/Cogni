@@ -1,41 +1,31 @@
 package com.pbt.cogni.activity.home
 
-import android.app.Activity
-import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.view.get
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pbt.cogni.R
-import com.pbt.cogni.WebService.ApiClient
-import com.pbt.cogni.WebService.ApiInterface
-import com.pbt.cogni.activity.MapsActivity
 import com.pbt.cogni.activity.TabLayout.TabTripStatusFragment
 import com.pbt.cogni.activity.login.LoginActivity
 import com.pbt.cogni.fragment.Chat.UserChatListFragment
 import com.pbt.cogni.fragment.Profile.ProfileFragment
-import com.pbt.cogni.fragment.Upcoming.UpCommingTripViewModel
 import com.pbt.cogni.fragment.ViewRoute.ViewRouteFragement
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoFragement
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.model.UserDetailsData
-import com.pbt.cogni.util.AppConstant.Companion.CONST_CHECK_STATUS
 import com.pbt.cogni.util.AppConstant.Companion.PREFF_OVERYLAY_PERMISSION
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
@@ -43,11 +33,11 @@ import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Runnable
 import kotlin.coroutines.CoroutineContext
 
 
 class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope {
+
 
     var bottomNavigation: BottomNavigationView? = null
     lateinit var chatsFragement: UserChatListFragment
@@ -60,6 +50,8 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
     private var job: Job = Job()
 
     lateinit var locationrequest: LocationRequest
+
+
 
 
     companion object {
@@ -81,7 +73,7 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
 
         setContentView(R.layout.activity_main)
 
-
+DownloadUrl("String Constructor").execute("www.google.com")
 
         val overlaypermission =
             MyPreferencesHelper.getStringValue(this, PREFF_OVERYLAY_PERMISSION, null)
@@ -173,6 +165,18 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
 //              fetchlocation()
 //          }
 
+
+    }
+
+    class DownloadUrl(constructor: String) : AsyncTask<String, String, String>() {
+        val sss:String=constructor
+
+
+        override fun doInBackground(vararg params: String?): String {
+
+           println(sss)
+            return null.toString()
+        }
 
     }
 
@@ -309,6 +313,9 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
 
     override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
         Toast.makeText(this, "${t.message}", Toast.LENGTH_LONG).show()
+    }
+    fun demo(){
+        //asdasdasdasdasd
     }
 
     override val coroutineContext: CoroutineContext

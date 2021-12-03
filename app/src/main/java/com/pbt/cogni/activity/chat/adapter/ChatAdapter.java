@@ -24,6 +24,7 @@ import com.pbt.cogni.model.Chat;
 import com.pbt.cogni.util.AppUtils;
 import com.pbt.cogni.util.MyPreferencesHelper;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -91,7 +92,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
             llImageMessage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context,"Click is on "+  chat.getText(),Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context,"Click is on "+  chat.getText(),Toast.LENGTH_SHORT).show();
                     chat.getText();
                 }
             });
@@ -168,7 +169,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 //                    progressBar.setTag(position);
 
 
-              new DownloadFileFromURL(progressBar,imgDownload).execute(fileurl);
+              new DownloadFileFromURL(progressBar,imgDownload,chat).execute(fileurl);
 //
 //                 new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview);
 
@@ -208,10 +209,12 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
     private class DownloadFileFromURL extends AsyncTask<String, String, String> {
 ProgressBar progressBar;
 ImageView imaDownload;
+Chat chat;
 
-        public DownloadFileFromURL(ProgressBar progressBar, ImageView imgDownload) {
+        public DownloadFileFromURL(ProgressBar progressBar, ImageView imgDownload, Chat chat) {
             this.progressBar=progressBar;
             this.imaDownload=imgDownload;
+            this.chat=chat;
         }
 
         @Override
@@ -237,9 +240,9 @@ ImageView imaDownload;
 
                 InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
-                OutputStream output = new FileOutputStream(Environment
-                        .getExternalStorageDirectory().toString()
-                        + "/2011.kml");
+                File storage = new File(Environment.getExternalStorageDirectory() + File.separator + "/Download/");
+                String FileName = "/" + chat.getFileName();
+                FileOutputStream output = new FileOutputStream(storage+FileName);
 
                 byte data[] = new byte[1024];
 
@@ -292,4 +295,7 @@ ImageView imaDownload;
 
         }
 
-    }}
+    }
+
+
+}

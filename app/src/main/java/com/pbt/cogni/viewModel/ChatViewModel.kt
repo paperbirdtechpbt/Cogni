@@ -1,6 +1,7 @@
 package com.pbt.cogni.viewModel
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.app.Dialog
 import android.app.NotificationManager
@@ -13,6 +14,7 @@ import android.os.Parcel
 import android.view.View
 import android.view.Window
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.ObservableField
@@ -58,7 +60,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
     companion object {
         private const val TAG: String = "ChatViewModel"
-       var imgResponseUrl:String=""
+
 
     }
 
@@ -67,14 +69,14 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
     var reffChatRoomID: DatabaseReference? = null
     var typingReference: Firebase? = null
     var listener: ValueEventListener? = null
-    var chatReff: Firebase? = null
+    private var chatReff: Firebase? = null
     var message: ObservableField<String>? = null
     var chatRoomID: ObservableField<String>? = null
     var room: ObservableField<String>? = null
     var room1: ObservableField<String>? = null
     var userId: ObservableField<Int>? = null
-    var chatID: ObservableField<Int>? = null
-    var reciverId: ObservableField<Int>? = null
+private    var chatID: ObservableField<Int>? = null
+    private var reciverId: ObservableField<Int>? = null
     var currentUser: ObservableField<String>? = null
     var mAdapter: ChatAdapter? = null
     var isTyping: ObservableField<String>? = null
@@ -82,10 +84,12 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
     var permissionIsGranted: PermissionCallBack? = null
     var selectedImage: ObservableField<String>? = null
     var imageUri: ObservableField<String>? = null
-
+    @SuppressLint("StaticFieldLeak")
+    var progressBar:ProgressBar?=null
     var isVisiBled: ObservableField<Boolean> ? = null
 
     init {
+        progressBar=null
         reciverName = ObservableField("")
         message = ObservableField("")
         currentUser = ObservableField("")
@@ -105,9 +109,9 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
     fun onMesageTextChanged(s: CharSequence, start: Int, befor: Int, count: Int) {
 
         if (s.length > 0) {
-            var type = object {
-                var id = userId!!.get()!!.toInt()
-                var isTyping = s.toString()
+            val type = object {
+//                var id = userId!!.get()!!.toInt()
+//                var isTyping = s.toString()
             }
             FirebaseDatabase.getInstance().getReference(MESSAGES)
                 .child(chatRoomID!!.get().toString())
@@ -125,7 +129,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         room!!.set(userId!!.get().toString() + "_" + reciverId!!.get().toString())
         room1!!.set(reciverId!!.get().toString() + "_" + userId!!.get().toString())
 
-        reffChatRoomID = FirebaseDatabase.getInstance().getReference();
+        reffChatRoomID = FirebaseDatabase.getInstance().getReference()
 
         setData(context)
     }
@@ -175,8 +179,8 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
     fun initChat(context: Context, chatRoomID: String) {
 
-        var checkTypeReff =
-            FirebaseDatabase.getInstance().getReference(MESSAGES).child(chatRoomID).child(TYPING);
+        val checkTypeReff =
+            FirebaseDatabase.getInstance().getReference(MESSAGES).child(chatRoomID).child(TYPING)
 
         chatReff = Firebase(BASE_FIREBASE_URL + chatRoomID)
 
@@ -186,14 +190,14 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
                 if (snapshot.getValue() == null) {
 
                     val typing = object {
-                        var user1 = object {
-                            var id = reciverId!!.get()!!.toInt()
-                            var isTyping = ""
-                        }
-                        var user2 = object {
-                            var id = userId!!.get()!!.toInt()
-                            var isTyping = ""
-                        }
+//                        var user1 = object {
+//                            var id = reciverId!!.get()!!.toInt()
+//                            var isTyping = ""
+//                        }
+//                        var user2 = object {
+//                            var id = userId!!.get()!!.toInt()
+//                            var isTyping = ""
+//                        }
                     }
                     FirebaseDatabase.getInstance().getReference(MESSAGES).child("${chatRoomID}")
                         .child(TYPING).setValue(typing)
@@ -221,6 +225,9 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
         chatReff!!.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+
+             progressBar!!.visibility=View.GONE
+
 
                 AppUtils.logWarning(TAG, " 140 onChildAdded " + dataSnapshot.getValue())
                 try {
@@ -292,6 +299,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
         Firebase(BASE_FIREBASE_URL + chatRoomID ).child(TYPING).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
+                progressBar!!.visibility=View.GONE
                 mAdapter?.notifyDataSetChanged()
             }
 
@@ -311,7 +319,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
             override fun onChildRemoved(p0: DataSnapshot?) {}
             override fun onChildMoved(p0: DataSnapshot?, p1: String?) {}
             override fun onCancelled(p0: FirebaseError?) {}
-        });
+        })
     }
 
 
@@ -338,7 +346,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
         }
     }
 
-    fun sendImageMessage(){
+//    fun sendImageMessage(){
 //        arrayImageChat.forEach((element, index) => {
 //            let chat = new Chat(userID, new Date().getTime(), element.extension, element.image, 0,element.fileName);
 //            firebase.database().ref("messages/" + chatID).push(chat).then((snap) => {
@@ -348,7 +356,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 //                elem.scrollTop = elem.scrollHeight;
 //            })
 //        });
-    }
+//    }
 
 
 //     fun uploadImage(){
@@ -395,8 +403,9 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 //
 //    }
     fun sendImageToChat(view: View) {
+progressBar!!.visibility=View.VISIBLE
 
-        val file : File  =  File(imageUri?.get()!!)
+    val file   =  File(imageUri?.get()!!)
         val contentType : String  = "file"
         val fileBody = ProgressRequestBody(file, contentType,this)
         val filePart: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.getName(), fileBody)
@@ -414,7 +423,6 @@ AppUtils.logDebug(TAG,"File path--$file")
 
                     sendImageToChatt(listLatLong.image,listLatLong.fileName,listLatLong.extension)
                     AppUtils.logDebug(TAG,"Response ===>> ${response.body()}")
-
                     ChatActivity.binding?.rlImageSend?.visibility = View.GONE
                     ChatActivity.binding?.chatViewModel?.isVisiBled?.set(false)
                 }
@@ -493,7 +501,7 @@ AppUtils.logDebug(TAG,"File path--$file")
         val imagePreview = dialog.findViewById(R.id.btnSendMessage) as ImageView
         imagePreview.setImageBitmap(bitmap)
         val dialogButton: ImageView = dialog.findViewById(R.id.btnSendMessage)
-        dialogButton.setOnClickListener(View.OnClickListener { dialog.dismiss() })
+        dialogButton.setOnClickListener({ dialog.dismiss() })
         dialog.show()
     }
 

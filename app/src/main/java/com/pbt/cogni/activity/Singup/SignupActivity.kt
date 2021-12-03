@@ -9,6 +9,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.pbt.cogni.R
+import com.pbt.cogni.activity.home.MainActivity
 import kotlinx.android.synthetic.main.activity_signup.*
 
 class SignupActivity : AppCompatActivity() {
@@ -31,6 +32,7 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun signUp() {
+
         progress.visibility = View.VISIBLE
         signupButton?.visibility = View.GONE
         firebaseAuth?.createUserWithEmailAndPassword(
