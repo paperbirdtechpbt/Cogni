@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.maps.SupportMapFragment
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.MapsActivity
 import com.pbt.cogni.fragment.Current.CurrentFragment
@@ -43,6 +45,11 @@ class UpcomingFragment : Fragment(), RoutesViewRecyclerViewItemClick {
             param2 = it.getString(ARG_PARAM2)
         }
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.title = "UpComing"
+
+    }
 
 
     override fun onCreateView(
@@ -51,11 +58,13 @@ class UpcomingFragment : Fragment(), RoutesViewRecyclerViewItemClick {
         savedInstanceState: Bundle?
     ): View {
         val view: View = inflater.inflate(R.layout.fragment_upcoming, container, false)
+
         initViewModel()
         return view
     }
 
     private fun initViewModel() {
+
          viewmodel = ViewModelProvider(this).get(UpCommingTripViewModel::class.java)
 
 

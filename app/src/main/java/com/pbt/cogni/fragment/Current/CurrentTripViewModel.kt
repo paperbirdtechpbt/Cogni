@@ -8,6 +8,9 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Handler
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
@@ -37,6 +40,9 @@ class CurrentTripViewModel : ViewModel(), Callback<HttpResponse> {
     var user: UserDetailsData? = null
     var lat: Double = 1.0
     var long: Double = 1.0
+    var relativelayout:RelativeLayout?=null
+    val context:Context?=null
+
 
     companion object {
         val handler = Handler()
@@ -58,6 +64,8 @@ class CurrentTripViewModel : ViewModel(), Callback<HttpResponse> {
             AppUtils.logDebug(TAG, " Response : " + response.body())
 
             if (response.body()!!.data!=null){
+                relativelayout?.visibility=View.GONE
+
             val baseList: BaseRoutes = Gson().fromJson(
                 response.body()?.data.toString(),
                 BaseRoutes::class.java
@@ -72,10 +80,13 @@ class CurrentTripViewModel : ViewModel(), Callback<HttpResponse> {
             if(!curremtTripList.isNullOrEmpty()){
 
                 routesList.value = curremtTripList
-            }}
-            else{
-             AppUtils.logDebug(TAG,"No routes Found")
             }
+            else{
+                AppUtils.logDebug(TAG,"No routes Found")
+                relativelayout?.visibility= View.VISIBLE
+            }
+            }
+
 
 
 

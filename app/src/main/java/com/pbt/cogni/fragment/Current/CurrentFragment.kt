@@ -1,20 +1,19 @@
 package com.pbt.cogni.fragment.Current
 
-import android.app.PendingIntent
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.MapsActivity
-import com.pbt.cogni.activity.home.MyLocationService
-import com.pbt.cogni.activity.home.service
 import com.pbt.cogni.fragment.Current.CurrentTripViewModel.Companion.handler
 import com.pbt.cogni.fragment.ViewRoute.AdapterViewRouteList
 import com.pbt.cogni.model.Routes
@@ -36,6 +35,7 @@ class CurrentFragment : Fragment(), RoutesViewRecyclerViewItemClick{
     lateinit var listAdapter: AdapterViewRouteList
 
     var viewmodel: CurrentTripViewModel ? = null
+    var notData:RelativeLayout?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,19 +48,30 @@ class CurrentFragment : Fragment(), RoutesViewRecyclerViewItemClick{
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_current, container, false)
-
+notData=view.findViewById(R.id.rlCurrentNoData)
             initViewModel()
+
 
 
         return view
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.title = "Current"
+
+    }
+
 
 
     private  fun initViewModel() {
+
          viewmodel = ViewModelProvider(this).get(CurrentTripViewModel::class.java)
 
 
       viewmodel?.onRouteListRequest(requireContext())
+
+        viewmodel!!.relativelayout=notData
+
 
 
         viewmodel?.routesList?.observe(viewLifecycleOwner, Observer { routes ->
@@ -68,16 +79,15 @@ class CurrentFragment : Fragment(), RoutesViewRecyclerViewItemClick{
             listAdapter = AdapterViewRouteList(routes, this)
             recyclerViewCurrentTrip?.adapter = listAdapter
 
-            if(routes.isNullOrEmpty()) {
-                handler.removeCallbacksAndMessages(null)
+            if(!routes.isNullOrEmpty()) {
+           viewmodel!!.fetchlocation(requireContext())
 
-                rlCurrentNoData.visibility =  View.VISIBLE
 
-            }else{
-
-                viewmodel?.fetchlocation(requireContext())
-                rlCurrentNoData.visibility =  View.GONE
             }
+//            else{
+//
+//                notData?.visibility =  View.GONE
+//            }
         })
     }
     companion object {

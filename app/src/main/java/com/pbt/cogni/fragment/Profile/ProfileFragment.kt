@@ -1,14 +1,10 @@
 package com.pbt.cogni.fragment.Profile
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.pbt.cogni.R
-import com.pbt.cogni.activity.home.service
 import com.pbt.cogni.model.UserDetailsData
 import com.pbt.cogni.util.MyPreferencesHelper
 
@@ -37,13 +33,25 @@ class ProfileFragment : Fragment() {
 
         val view: View = inflater.inflate(R.layout.fragment_profile, container, false)
 
-
+        setHasOptionsMenu(true)
 
         setProfileData(view)
 
 
         return view
     }
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.ic_menu_logout).isVisible = true
+
+    }
+
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.main_menu, menu)
+//        menu.findItem(R.id.ic_menu_logout).setVisible(true)
+//
+//        super.onCreateOptionsMenu(menu, inflater)
+//    }
 
     private fun setProfileData(view: View) {
         val userdataDetails: UserDetailsData? =MyPreferencesHelper.getUser(requireContext())

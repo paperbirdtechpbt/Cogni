@@ -22,14 +22,14 @@ object FilePath {
 
     val videoExts: ArrayList<String>
         get() {
-            val videoTypes = arrayOf("mpeg", "mp4", "gif", "wmv", "mov", "mpg", "3gp", "flv")
+            val videoTypes = arrayOf("mpeg", "mp4", "gif", "wmv", "mov", "mpg", "3gp", "flv","mkv")
             val videoExts = videoTypes.indices.mapTo(ArrayList()) { videoTypes[it] }
             return videoExts
         }
 
     val docExts: ArrayList<String>
         get() {
-            val docTypes = arrayOf("doc", "docx", "pdf", "txt")
+            val docTypes = arrayOf("doc", "docx", "pdf", "txt","apk","xls","xlsx")
             val docExts = docTypes.indices.mapTo(ArrayList()) { docTypes[it] }
             return docExts
         }

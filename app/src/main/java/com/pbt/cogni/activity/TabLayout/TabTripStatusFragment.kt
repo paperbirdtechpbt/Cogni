@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -72,9 +73,16 @@ class TabTripStatusFragment : Fragment() {
                 tab?.getIcon()?.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN)
 
                when (tab?.position) {
-                    0 -> fragment = UpcomingFragment()
-                    1 -> fragment = CurrentFragment()
-                    2 -> fragment = FinishTripFragment()
+                    0 -> {
+                        getActivity()?.setTitle("UpcomingFragment")
+
+                        fragment = UpcomingFragment()}
+                    1 ->{
+                        activity?.setTitle("CurrentFragment")
+                        fragment = CurrentFragment()}
+                    2 -> {
+                        activity?.setTitle("FinishTripFragment")
+                        fragment = FinishTripFragment()}
                 }
                 val fm = requireActivity().supportFragmentManager
                 val ft = fm.beginTransaction()
@@ -100,6 +108,7 @@ class TabTripStatusFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+
     }
 
     override fun onResume() {

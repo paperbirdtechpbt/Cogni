@@ -108,6 +108,7 @@ var currentMilli:Long?=null
         layout_callername.setText(sendernamee)
         layout_callernumber.setText(payloadMessage)
 
+
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                     or WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
@@ -164,7 +165,7 @@ var currentMilli:Long?=null
 
     private fun playOutGoingRing() {
         val sound: Uri =
-            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.tringtringtring)
+            Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.outgoingcallringtone)
 
         ringtone = RingtoneManager.getRingtone(applicationContext, sound)
 
@@ -732,6 +733,7 @@ var currentMilli:Long?=null
         activityRunning = false
         Log.e("##CAll", "onDestroyed call ")
         onCallHangUp()
+        audioManager!!.mode=AudioManager.MODE_NORMAL
         super.onDestroy()
     }
 

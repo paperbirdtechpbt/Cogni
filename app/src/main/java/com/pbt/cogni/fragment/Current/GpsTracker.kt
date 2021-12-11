@@ -1,20 +1,25 @@
 package com.pbt.cogni.fragment.Current
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import com.pbt.cogni.R
 import com.pbt.cogni.WebService.ApiClient
 import com.pbt.cogni.WebService.ApiInterface
+import com.pbt.cogni.activity.home.MainActivity
+import com.pbt.cogni.fcm.ButtonReceiver
+
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
@@ -25,6 +30,10 @@ import retrofit2.Response
 
 class GPSTracker(private val mContext: Context) : Service(),
     LocationListener, Callback<HttpResponse?> {
+
+    class GPSTracker(context: Context){
+
+    }
     var isGPSEnabled = false
     var isNetworkEnabled = false
     var canGetLocation = false
@@ -148,11 +157,21 @@ class GPSTracker(private val mContext: Context) : Service(),
     }
 
     override fun onLocationChanged(location: Location) {
-//        Toast.makeText(mContext, """On Location Chnaged${location.latitude}   ${location.longitude}
+        Toast.makeText(mContext, """On Location Chnaged${location.latitude} ${location.longitude}
 //     """.trimIndent(), Toast.LENGTH_LONG
-//        ).show()
+        ).show()
         updateLatlong(location)
         Log.d("##GPSTracker", location.toString())
+    }
+
+    override fun onDestroy() {
+
+
+
+
+        AppUtils.logDebug(TAG,"On destroy in service class")
+        val broadcastIntent = Intent(this, BroadClassRecicver::class.java)
+        sendBroadcast(broadcastIntent)
     }
 
     private fun updateLatlong(location: Location) {
@@ -168,6 +187,16 @@ class GPSTracker(private val mContext: Context) : Service(),
         return null
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        getLocation()
+
+
+
+        Log.i(TAG, "In onStartCommand");
+        return  START_STICKY
+    }
+
     override fun onResponse(call: Call<HttpResponse?>, response: Response<HttpResponse?>) {
         AppUtils.logDebug("##GpsTracker","${response.body()?.message}")
 //        Toast.makeText(mContext,"On response successfull",Toast.LENGTH_SHORT).show()
@@ -176,10 +205,11 @@ class GPSTracker(private val mContext: Context) : Service(),
 //        Toast.makeText(mContext,"Error : ${t.message}",Toast.LENGTH_SHORT).show()
     }
 
+
     companion object {
         // The minimum distance to change Updates in meters
         val TAG="mContext"
-        private const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Long = 100 // 10 meters
+        private const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Long = 15 // 10 meters
     }
 
     init {

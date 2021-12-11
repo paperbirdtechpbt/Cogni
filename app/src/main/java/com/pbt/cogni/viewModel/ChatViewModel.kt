@@ -8,6 +8,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcel
@@ -16,7 +17,11 @@ import android.view.Window
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat.requestPermissions
+
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -87,8 +92,10 @@ private    var chatID: ObservableField<Int>? = null
     @SuppressLint("StaticFieldLeak")
     var progressBar:ProgressBar?=null
     var isVisiBled: ObservableField<Boolean> ? = null
+    var imgSendIcon:ImageView?=null
 
     init {
+        imgSendIcon=null
         progressBar=null
         reciverName = ObservableField("")
         message = ObservableField("")
@@ -110,8 +117,8 @@ private    var chatID: ObservableField<Int>? = null
 
         if (s.length > 0) {
             val type = object {
-//                var id = userId!!.get()!!.toInt()
-//                var isTyping = s.toString()
+                var id = userId!!.get()!!.toInt()
+                var isTyping = s.toString()
             }
             FirebaseDatabase.getInstance().getReference(MESSAGES)
                 .child(chatRoomID!!.get().toString())
@@ -135,12 +142,15 @@ private    var chatID: ObservableField<Int>? = null
     }
 
     fun captureImage(view: View) {
+
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
-        )
-            permissionIsGranted!!.isGranted(false)
+        ){
+
+
+            permissionIsGranted!!.isGranted(false)}
         else
             permissionIsGranted!!.isGranted(true)
     }
@@ -190,14 +200,14 @@ private    var chatID: ObservableField<Int>? = null
                 if (snapshot.getValue() == null) {
 
                     val typing = object {
-//                        var user1 = object {
-//                            var id = reciverId!!.get()!!.toInt()
-//                            var isTyping = ""
-//                        }
-//                        var user2 = object {
-//                            var id = userId!!.get()!!.toInt()
-//                            var isTyping = ""
-//                        }
+                        var user1 = object {
+                            var id = reciverId!!.get()!!.toInt()
+                            var isTyping = ""
+                        }
+                        var user2 = object {
+                            var id = userId!!.get()!!.toInt()
+                            var isTyping = ""
+                        }
                     }
                     FirebaseDatabase.getInstance().getReference(MESSAGES).child("${chatRoomID}")
                         .child(TYPING).setValue(typing)
@@ -324,6 +334,7 @@ private    var chatID: ObservableField<Int>? = null
 
 
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun sendMessage(view: View) {
 
         if (!AppUtils.isNetworkConnected(context)) {
@@ -403,6 +414,7 @@ private    var chatID: ObservableField<Int>? = null
 //
 //    }
     fun sendImageToChat(view: View) {
+
 progressBar!!.visibility=View.VISIBLE
 
     val file   =  File(imageUri?.get()!!)
@@ -415,6 +427,7 @@ AppUtils.logDebug(TAG,"File path--$file")
         val apiInterface = apiclient?.create(ApiInterface::class.java)
         val request: Call<HttpResponse>? = apiInterface?.uploadImage(filePart)
         request?.enqueue(object : Callback<HttpResponse?> {
+            @RequiresApi(Build.VERSION_CODES.Q)
             override fun onResponse(call: Call<HttpResponse?>?, response: Response<HttpResponse?>) {
                 if (response.isSuccessful()) {
 
@@ -425,13 +438,17 @@ AppUtils.logDebug(TAG,"File path--$file")
                     AppUtils.logDebug(TAG,"Response ===>> ${response.body()}")
                     ChatActivity.binding?.rlImageSend?.visibility = View.GONE
                     ChatActivity.binding?.chatViewModel?.isVisiBled?.set(false)
+                    imgSendIcon?.visibility=View.GONE
                 }
             }
             override fun onFailure(call: Call<HttpResponse?>?, t: Throwable?) {
-
+progressBar!!.visibility=View.GONE
+                imgSendIcon?.visibility=View.GONE
                 AppUtils.logError(TAG," Network Error  ===>> "+t!!.message)
             }
-        })
+
+        }
+        )
 
 
 //        if(imageUri?.get() != null){
@@ -455,6 +472,7 @@ AppUtils.logDebug(TAG,"File path--$file")
 //        }
     }
 
+     @RequiresApi(Build.VERSION_CODES.Q)
      fun sendImageToChatt(imageURLL: String?, fileName: String, extension: String) {
         if(imageUri?.get() != null){
 //            uploadImage()

@@ -2,6 +2,7 @@ package com.pbt.cogni.fragment.Upcoming
 
 import android.content.Context
 import android.view.View
+import android.widget.ProgressBar
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
@@ -23,6 +24,7 @@ class UpCommingTripViewModel : ViewModel(), Callback<HttpResponse> {
 
     var routesList  = MutableLiveData<List<Routes>>()
 
+
     companion object {
         private var TAG : String = "UpCommingTripViewModel"
     }
@@ -37,6 +39,7 @@ class UpCommingTripViewModel : ViewModel(), Callback<HttpResponse> {
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
         if(response?.body()?.code == false){
+
             AppUtils.logDebug(TAG,  " Response : " +response?.body())
             var baseList : BaseRoutes =  Gson().fromJson(response?.body()?.data.toString(),
                 BaseRoutes::class.java)
@@ -56,6 +59,7 @@ class UpCommingTripViewModel : ViewModel(), Callback<HttpResponse> {
     }
 
     override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
+
         AppUtils.logError(TAG,  " onFailure : " + t?.message)
     }
 }

@@ -65,8 +65,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 //
             try {
 
-
-
 //                this.runOnUiThread(Runnable // start actions in UI thread
 //                {
 //                    displayData() // this action have to be in UI thread

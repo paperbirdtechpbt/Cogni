@@ -1,8 +1,10 @@
 package com.pbt.cogni.activity.home
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.AsyncTask
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -11,6 +13,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.fragment.app.FragmentTransaction
@@ -21,6 +24,8 @@ import com.pbt.cogni.R
 import com.pbt.cogni.activity.TabLayout.TabTripStatusFragment
 import com.pbt.cogni.activity.login.LoginActivity
 import com.pbt.cogni.fragment.Chat.UserChatListFragment
+import com.pbt.cogni.fragment.Current.BroadClassRecicver
+import com.pbt.cogni.fragment.Current.GPSTracker
 import com.pbt.cogni.fragment.Profile.ProfileFragment
 import com.pbt.cogni.fragment.ViewRoute.ViewRouteFragement
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoFragement
@@ -29,7 +34,9 @@ import com.pbt.cogni.model.UserDetailsData
 import com.pbt.cogni.util.AppConstant.Companion.PREFF_OVERYLAY_PERMISSION
 import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,19 +76,43 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
     override  fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        AppUtils.logDebug(TAG,"On Creast")
+
+
         user = MyPreferencesHelper.getUser(this)
 
         setContentView(R.layout.activity_main)
+//        try{
+//        if (BroadClassRecicver.isMyServiceRunning(this, GPSTracker::class.java)) {
+//            Log.e(TAG, "Service running no need to start again")
+////            System.out.println("Service running no need to start again");
+//        } else {
+//
+//            val background = Intent(this, GPSTracker::class.java)
+//            //            context.startService(background);
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                this.startForegroundService(background)
+//            } else {
+//                this.startService(background)
+//            }
+//        }}
+//        catch (e:Exception){
+//            AppUtils.logDebug(TAG,"$e")
+//        }
 
-DownloadUrl("String Constructor").execute("www.google.com")
 
-        val overlaypermission =
-            MyPreferencesHelper.getStringValue(this, PREFF_OVERYLAY_PERMISSION, null)
-        if (overlaypermission == null) {
-            startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(this)){
+                        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + applicationContext.packageName))
+                        startActivity(intent)
+                    }
+                }
+
+
             MyPreferencesHelper.setStringValue(this, PREFF_OVERYLAY_PERMISSION, "true")
 
-        }
+//        }
         getSupportActionBar()?.setTitle("Analyst Routes List ")
 
         if (savedInstanceState == null) {
@@ -159,111 +190,25 @@ DownloadUrl("String Constructor").execute("www.google.com")
         }
 
 
-//            fetchlocation()
-
-//          launch {
-//              fetchlocation()
-//          }
 
 
     }
 
-    class DownloadUrl(constructor: String) : AsyncTask<String, String, String>() {
-        val sss:String=constructor
 
 
-        override fun doInBackground(vararg params: String?): String {
-
-           println(sss)
-            return null.toString()
-        }
-
-    }
-
-//     fun fetchlocation() {
-//        val handler = Handler()
-//
-//        val timedTask: Runnable = object : Runnable {
-//            override fun run() {
-//              GlobalScope.launch(Dispatchers.IO) {
-//                  fetchLocation()
-//                  updateLatLongApi()
-//              }
-//
-//                handler.postDelayed(this, 10000)
-//            }
-//        }
-//        handler.post(timedTask)
-//    }
-
-//    private  fun fetchLocation() {
-//        locationrequest = LocationRequest()
-//        locationrequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-//        locationrequest.interval = 60000
-//        locationrequest.fastestInterval = 60000
-//        locationrequest.smallestDisplacement = 2F
-//
-//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-//        if (ActivityCompat.checkSelfPermission(
-//                this,
-//                android.Manifest.permission.ACCESS_FINE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-//                this,
-//                android.Manifest.permission.ACCESS_COARSE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//
-//            return
-//        }
-//        fusedLocationProviderClient.requestLocationUpdates(locationrequest, getPendingIntent())
-//        val task = fusedLocationProviderClient.lastLocation
-//        Log.d("task", task.toString())
-//
-//        task.addOnSuccessListener {
-//
-//
-//            if (it != null) {
-//                lat = it.latitude
-//                long = it.longitude
-//
-//                AppUtils.logDebug(TAG,"lat-----$lat,  long-----$long")
-//
-//            } else {
-//
-//AppUtils.logDebug(TAG,"Please  Enable Location")
-//
-//            }
-//        }
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.main_menu, menu)
+        menu.findItem(R.id.ic_menu_logout).setVisible(false)
         return true
     }
 
-//    private fun getPendingIntent(): PendingIntent? {
-//
-//        val intent = Intent(this, MyLocationService::class.java)
-//        intent.setAction(MyLocationService.ACTION_UPDATES)
-//        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-//
-//    }
 
-//    private  fun updateLatLongApi() {
-//
-//
-//        ApiClient.client.create(ApiInterface::class.java)
-//            .postLatLng(lat.toString(), long.toString(), user!!.id).enqueue(this)}
 
 
     override fun onDestroy() {
         super.onDestroy()
-
-//
-//        val broadcastIntent = Intent(this, MyLocationService::class.java)
-//        broadcastIntent.putExtra("startservice","startservice")
-//        sendBroadcast(broadcastIntent)
 
 
     }
@@ -272,14 +217,42 @@ DownloadUrl("String Constructor").execute("www.google.com")
         // Handle item selection
         return when (item.itemId) {
             R.id.ic_menu_logout -> {
-                MyPreferencesHelper.clearPref(this)
-                startActivity(Intent(this,LoginActivity::class.java))
-                this.finishAffinity()
+showAlertDialog()
                 true
             }
           else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private fun showAlertDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.dialogTitle)
+        builder.setMessage(R.string.dialogMessage)
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+
+
+
+        builder.setPositiveButton("Yes") { dialog, which ->
+
+
+            setVisible(false)
+            MyPreferencesHelper.clearPref(this)
+            startActivity(Intent(this,LoginActivity::class.java))
+            this.finishAffinity()
+        }
+
+        builder.setNegativeButton("No") { dialog, which ->
+            Toast.makeText(applicationContext,
+                android.R.string.no, Toast.LENGTH_SHORT).show()
+        }
+
+        builder.setNeutralButton("Cancle") { dialog, which ->
+            Toast.makeText(applicationContext,
+                "Cancle", Toast.LENGTH_SHORT).show()
+        }
+        builder.show()
+    }
+
 
     private fun chechpermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
@@ -306,19 +279,36 @@ DownloadUrl("String Constructor").execute("www.google.com")
         return true
     }
 
+
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
 //        Toast.makeText(this, "ResponseSucessFull", Toast.LENGTH_LONG).show()
         AppUtils.logDebug(TAG,"Response Successfull")
     }
 
+
     override fun onFailure(call: Call<HttpResponse>, t: Throwable) {
         Toast.makeText(this, "${t.message}", Toast.LENGTH_LONG).show()
     }
-    fun demo(){
-        //asdasdasdasdasd
+
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.ic_menu_logout)?.setVisible(false)
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override val coroutineContext: CoroutineContext
         get() =  Dispatchers.Main + job
+    fun isMyServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
+        val activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val services = activityManager.getRunningServices(Int.MAX_VALUE)
+        if (services != null) {
+            for (i in services.indices) {
+                if (serviceClass.name == services[i].service.className && services[i].pid != 0) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
 }

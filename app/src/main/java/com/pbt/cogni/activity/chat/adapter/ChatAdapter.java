@@ -162,7 +162,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
                 public void onClick(View v) {
 
 
-//
+//.ex
                     String fileurl=chat.getText();
                     imgDownload.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
@@ -175,14 +175,7 @@ public class ChatAdapter extends ArrayAdapter<Chat> implements Filterable {
 
                 }
             });
-            llImageMessage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                    new ChatActivity().DownloadFile(chat.getText() ,context,chat.getFileName(),imageview);
-
-                }
-            });
 
             if (AppUtils.Companion.checkIsimage(chat.getType()).equals("text")) {
                 llChatTextMessage.setVisibility(View.VISIBLE);

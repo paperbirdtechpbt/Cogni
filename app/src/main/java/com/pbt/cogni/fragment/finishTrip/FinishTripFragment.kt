@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -32,14 +34,21 @@ class FinishTripFragment : Fragment(), RoutesViewRecyclerViewItemClick {
 
     lateinit var listAdapter: AdapterViewRouteList
     var viewmodel: FinishTripViewModel ? = null
+    var noDataLayout:RelativeLayout?=null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         var view: View = inflater.inflate(R.layout.fragment_finish_trip, container, false)
+   noDataLayout=view.findViewById(R.id.rlfinishNoData)
         initViewModel()
         return view
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.title = "Finish"
+
     }
 
 
@@ -47,21 +56,16 @@ class FinishTripFragment : Fragment(), RoutesViewRecyclerViewItemClick {
          viewmodel =
             ViewModelProvider(this).get(FinishTripViewModel::class.java)
 
-        GlobalScope.launch {
+viewmodel!!.notDataLayout=noDataLayout
+
             viewmodel?.onRouteListRequest(requireContext())
-        }
+
 
         viewmodel?.routesList?.observe(viewLifecycleOwner, Observer { routes ->
             recyclerViewFinishTrip?.layoutManager = LinearLayoutManager(requireContext())
             listAdapter = AdapterViewRouteList(routes, this)
             recyclerViewFinishTrip?.adapter = listAdapter
 
-            if (routes.isNullOrEmpty()) {
-                rlCurrentNoData.visibility = View.VISIBLE
-            } else {
-
-                rlCurrentNoData.visibility = View.GONE
-            }
         })
     }
 

@@ -8,20 +8,13 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.AsyncTask
-import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
+import android.os.*
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.AdapterView.OnItemClickListener
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,7 +25,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.chat.adapter.ChatAdapter
-import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.callback.PermissionCallBack
 import com.pbt.cogni.databinding.ActivityChat2Binding
 import com.pbt.cogni.model.Chat
@@ -46,8 +38,7 @@ import kotlinx.android.synthetic.main.activity_test.*
 import kotlinx.android.synthetic.main.item_other_message.*
 import kotlinx.android.synthetic.main.item_other_message.view.*
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
+import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -60,6 +51,8 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         var isChatVisible: Boolean = false
          var binding: ActivityChat2Binding? = null
         var progressbar:ProgressBar?=null
+        var reciverName: String =""
+
 
 
     }
@@ -85,7 +78,13 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
+                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.CAMERA,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,), 100)
 
+        }
 
 //        mProgressDialog =  ProgressDialog(this)
 //        mProgressDialog!!.setMessage("A message")
@@ -102,7 +101,11 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         binding?.executePendingBindings()
 
         val reciverID: Int = intent.getIntExtra(RECEIVER_ID, 0)
-        val reciverName: String = intent.getStringExtra(RECEIVER_NAME)
+        if (intent.getStringExtra(RECEIVER_NAME)==null){
+             reciverName ="User"
+        }
+        else{
+         reciverName = intent.getStringExtra(RECEIVER_NAME)}
         val userID: Int = MyPreferencesHelper.getUser(this@ChatActivity)!!.id.toInt()
 
         binding?.chatViewModel?.initChat(this@ChatActivity, reciverID, userID, reciverName)
@@ -111,19 +114,21 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         chatViewModel!!.permissionIsGranted = this
         isChatVisible = true
         chatViewModel!!.progressBar=progressbar_imageupload
+        chatViewModel!!.imgSendIcon=btnSendImage
 
 
         binding!!.backArrow.setOnClickListener {
             finish()
         }
 
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        )
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MY_CAMERA_PERMISSION_CODE)
 
+//        if (ContextCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.CAMERA
+//            ) != PackageManager.PERMISSION_GRANTED
+//        )
+//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MY_CAMERA_PERMISSION_CODE)
+//
     }
 
 
@@ -134,7 +139,21 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         AppUtils.logDebug(TAG, " requestCode : " + requestCode)
         when (requestCode) {
             MY_CAMERA_PERMISSION_CODE -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
+                        android.Manifest.permission.CAMERA
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestPermissions(
+                        arrayOf(
+
+                            android.Manifest.permission.CAMERA,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE
+                        ), 100
+                    )
+
                 }
                 return
             }
@@ -147,6 +166,7 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
             AppUtils.logDebug(TAG, "Camera Result ${result.resultCode}")
             if (result.resultCode == Activity.RESULT_OK) {
                 if (result.data != null) {
+                   btnSendImage.visibility=View.VISIBLE
 
                     val selectedImageUri: Uri? = result.data?.data
 
@@ -186,6 +206,12 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
                     binding?.rlImageSend?.visibility = View.VISIBLE
                     binding?.chatViewModel?.isVisiBled?.set(true)
                     binding?.imgPreview?.setImageBitmap(imageBitmap)
+                    val fileinBytes=file.length()
+                    val fileSizeInKB: Long = fileinBytes / 1024
+
+                    val fileSizeInMB = fileSizeInKB / 1024
+
+                    AppUtils.logDebug(TAG,"Result  File size-----  $fileSizeInMB-- $fileinBytes")
 
 //                    chatViewModel!!.uploadImage()
 
@@ -202,6 +228,7 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
             AppUtils.logDebug(TAG, "Camera Result ${result.resultCode}")
             if (result.resultCode == Activity.RESULT_OK) {
                 AppUtils.logDebug(TAG, "Result Is ok")
+                try{
                 if (result.data != null) {
 
                     val userid=MyPreferencesHelper.getUser(this)
@@ -210,11 +237,32 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
                     val file = File(filePathFromUri)
                     val absolutePath = file.absolutePath
                     val fileExtention: String = file.extension
+                    val fileinBytes=file.length()
+                    val fileSizeInKB: Float = (fileinBytes / 1024).toFloat()
 
-                    chatViewModel!!.imageUri?.set(absolutePath)
-                    val view=View(this)
-                    chatViewModel!!.sendImageToChat(view)
+                    val fileSizeInMB = fileSizeInKB / 1024
+                    val df = DecimalFormat("#.#")
+                    val fileTotalsize=df.format(fileSizeInMB)
+                    if (file.length()<10000000){
+                        AppUtils.logDebug(TAG,"Gallery File size----- ${df.format(fileSizeInMB)}--  $fileinBytes")
+                        chatViewModel!!.imageUri?.set(absolutePath)
+                        val view=View(this)
+                        chatViewModel!!.sendImageToChat(view)
+                    }
+                    else{
+                        Toast.makeText(this,"Please Select Less Than 10MB Files",Toast.LENGTH_LONG).show()
 
+                    }
+
+
+
+
+
+                }}
+                catch (e:Exception){
+                    Toast.makeText(this,"Please Select Less Than 10MB Files",Toast.LENGTH_LONG).show()
+
+                    AppUtils.logError(TAG,"Catch Exception----"+"$e")
                 }
 
             }
@@ -222,22 +270,6 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
         }
 
 
-    fun DownloadFile(file_url: String,context: Context,filename:String,image:ImageView) {
-
-//        DownloadFileUrl().execute(file_url)
-//        val request = DownloadManager.Request(Uri.parse(file_url))
-//            .setTitle(filename)
-//            .setDescription("Downloading")
-//            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-//            .setAllowedOverMetered(true)
-//            .setVisibleInDownloadsUi(false)
-//        request.allowScanningByMediaScanner()
-//        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-//        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"File")
-//        val downloadManager:DownloadManager=context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-//        downloadManager.enqueue(request)
-//        val  downloadId:Long = downloadManager.enqueue(request)
-    }
 
 
     override fun isGranted(isGranted: Boolean) {

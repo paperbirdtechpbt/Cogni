@@ -14,12 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cogni"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activity.WebView.WebViewRTC">
-
-        </activity>
-        <activity android:name=".Test.Test">
-
-        </activity>
+        <activity android:name=".activity.ResetPassword.ResetPassword"></activity>
+        <activity android:name=".activity.WebView.WebViewRTC"></activity>
+        <activity android:name=".Test.Test"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -78,12 +75,16 @@
             android:enabled="true"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
+            android:showOnLockScreen="true"
             android:taskAffinity="" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -113,16 +114,22 @@
             android:name=".activity.home.MyLocationService"
             android:process=":remote" />
 
+        <receiver android:name=".fragment.Current.BroadClassRecicver">
+            <intent-filter>
+                <action android:name="BackgroundProcess" />
+            </intent-filter>
+        </receiver>
+
         <service android:name=".fcm.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
         <service
-            android:name=".activity.home.service"
-            android:enabled="true"
-            android:exported="true" />
+            android:name=".fragment.Current.GPSTracker"
+            tools:ignore="Instantiatable" />
     </application>
 
     <queries>
@@ -130,6 +137,9 @@
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
     </queries>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.access_coarse_location" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -142,7 +152,6 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -152,9 +161,11 @@
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="MyProvider._READ_PERMISSION" />
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="true" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
     <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY " />
 
 </manifest>

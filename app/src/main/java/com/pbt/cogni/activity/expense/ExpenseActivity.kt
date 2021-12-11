@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -13,12 +14,9 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.pbt.cogni.R
-import com.pbt.cogni.activity.MapsActivity
-import com.pbt.cogni.activity.chat.ChatActivity
 import com.pbt.cogni.callback.PermissionCallBack
 import com.pbt.cogni.databinding.ActivityExpenseBinding
 import com.pbt.cogni.util.AppConstant
@@ -43,9 +41,19 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_expense)
 
-        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar()?.setDisplayShowHomeEnabled(true);
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
+        getSupportActionBar()?.setDisplayShowHomeEnabled(true)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
+                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.CAMERA,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,), 100)
+
+        }
+
+//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED )
+//            requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MY_CAMERA_PERMISSION_CODE)
 
         routeId = intent.getStringExtra(AppConstant.CONST_ROUTE_ID)
         assignId=intent.getStringExtra(AppConstant.CONST_ASSIGN_ID)
@@ -60,23 +68,22 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
         viewModel!!.activityContext = this@ExpenseActivity
         viewModel!!.bindAdapter()
 
-       if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED )
-           requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MY_CAMERA_PERMISSION_CODE)
+
 
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        AppUtils.logDebug(TAG," requestCode : "+requestCode)
-        when (requestCode) {
-            MY_CAMERA_PERMISSION_CODE -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-
-                }
-                return
-            }
-        }
-    }
+//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        AppUtils.logDebug(TAG," requestCode : "+requestCode)
+//        when (requestCode) {
+//            MY_CAMERA_PERMISSION_CODE -> {
+//                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//
+//                }
+//                return
+//            }
+//        }
+//    }
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()

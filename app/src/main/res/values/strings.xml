@@ -233,6 +233,7 @@
     <string name="msg_Report_error">Error Msg</string>
     <string name="enter_username">Enter Username</string>
     <string name="enter_password">Enter Password</string>
+    <string name="reenter_password">Re-enter Password</string>
     <string name="sign_in">Sign In</string>
     <string name="analyst_pvt_ltd">Analyst pvt Ltd</string>
     <string name="analyst">Analyst</string>
@@ -266,5 +267,7 @@
     <string name="upcoming">Upcoming</string>
     <string name="finish">Completed</string>
     <string name="end_trip">End Trip</string>
+    <string name="dialogTitle">LogOut</string>
+    <string name="dialogMessage">Are You Sure</string>
 
 </resources>

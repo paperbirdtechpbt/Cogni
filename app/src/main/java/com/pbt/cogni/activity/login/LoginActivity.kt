@@ -1,6 +1,7 @@
 package com.pbt.cogni.activity.login
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -10,9 +11,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.pbt.cogni.R
+import com.pbt.cogni.activity.ResetPassword.ResetPassword
 import com.pbt.cogni.activity.home.MainActivity
 import com.pbt.cogni.callback.LoginListener
-
 import com.pbt.cogni.databinding.ActivityLoginBinding
 import com.pbt.cogni.util.AppConstant.Companion.PREF_IS_LOGIN
 import com.pbt.cogni.util.AppConstant.Companion.PREF_USER
@@ -20,6 +21,8 @@ import com.pbt.cogni.util.AppUtils
 import com.pbt.cogni.util.MyPreferencesHelper
 import com.pbt.cogni.viewModel.LoginViewModel
 import es.dmoral.toasty.Toasty
+import kotlinx.android.synthetic.main.activity_login.*
+
 
 class LoginActivity : AppCompatActivity(), LoginListener {
 
@@ -28,6 +31,7 @@ class LoginActivity : AppCompatActivity(), LoginListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getDeviceName()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         viewModel = ViewModelProvider(
@@ -39,6 +43,17 @@ class LoginActivity : AppCompatActivity(), LoginListener {
         viewModel!!.loginListener = this
 
         initObservables()
+        txtForgotPassword.setOnClickListener{
+            startActivity(Intent(this,ResetPassword::class.java))
+        }
+    }
+
+    private fun getDeviceName() {
+        val manufacturer = Build.BRAND
+        val model = Build.MODEL
+        val version:Int=Build.VERSION.SDK_INT
+
+        AppUtils.logDebug("##Login","manufacturer-$manufacturer\n model-$model \n version-$version \n")
     }
 
     private fun initObservables() {
