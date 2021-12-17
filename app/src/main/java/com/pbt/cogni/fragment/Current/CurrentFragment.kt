@@ -1,7 +1,10 @@
 package com.pbt.cogni.fragment.Current
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +34,7 @@ class CurrentFragment : Fragment(), RoutesViewRecyclerViewItemClick{
 
     private var param1: String? = null
     private var param2: String? = null
+    var route:List<Routes>?=null
 
     lateinit var listAdapter: AdapterViewRouteList
 
@@ -50,11 +54,14 @@ class CurrentFragment : Fragment(), RoutesViewRecyclerViewItemClick{
         val view: View = inflater.inflate(R.layout.fragment_current, container, false)
 notData=view.findViewById(R.id.rlCurrentNoData)
             initViewModel()
-
+          startService()
 
 
         return view
     }
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title = "Current"
@@ -78,18 +85,68 @@ notData=view.findViewById(R.id.rlCurrentNoData)
             recyclerViewCurrentTrip?.layoutManager = LinearLayoutManager(requireContext())
             listAdapter = AdapterViewRouteList(routes, this)
             recyclerViewCurrentTrip?.adapter = listAdapter
+            route=routes
+//
+//            Handler().postDelayed({
+//                if(!routes.isNullOrEmpty()) {
+//                    val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
+//                    if (!checkService){
+//                        GPSTracker.startService(requireContext(), "Foreground Service is running...")
+//                    }
+//
+//                    viewmodel!!.fetchlocation(requireContext())
+//
+//
+//                }
+//                else{
+//                    val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
+//                    AppUtils.logError(TAG,"----------$checkService")
+//                    if (checkService){
+//                        GPSTracker.stopService(requireContext())
+//                    }
+//                }
+//            },3500)
 
-            if(!routes.isNullOrEmpty()) {
-           viewmodel!!.fetchlocation(requireContext())
+
+        })
+    }
+    private fun startService() {
+        Handler().postDelayed({
+            if(!route.isNullOrEmpty()) {
+                val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
+                if (!checkService){
+                    GPSTracker.startService(requireContext(), "Foreground Service is running...")
+                }
+
+                viewmodel!!.fetchlocation(requireContext())
 
 
             }
-//            else{
-//
-//                notData?.visibility =  View.GONE
-//            }
-        })
+            else{
+                val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
+                AppUtils.logError(TAG,"----------$checkService")
+                if (checkService){
+                    GPSTracker.stopService(requireContext())
+                }
+            }
+        },3500)
     }
+
+
+
+    fun isMyServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val services = activityManager.getRunningServices(Int.MAX_VALUE)
+        if (services != null) {
+            for (i in services.indices) {
+                if (serviceClass.name == services[i].service.className && services[i].pid != 0) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     companion object {
 
         private const val TAG = "CurrentFragment";

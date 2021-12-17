@@ -2,6 +2,7 @@ package com.pbt.cogni.activity.home
 
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.widget.Toast
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,7 +14,9 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.pbt.cogni.fragment.Current.BroadClassRecicver
 import com.pbt.cogni.util.AppUtils
+import kotlinx.coroutines.channels.BroadcastChannel
 
 
 class service : Service() {
@@ -28,17 +31,17 @@ var TAG="Service"
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-//        Log.d("####onbroadcastreviever","recived Broadcast")
+        Log.d("####onbroadcastreviever","recived Broadcast")
 
-//            getLatlong()
-//        val handler = Handler()
-//
-//        val timedTask: Runnable = object : Runnable {
-//            override fun run() {
-//                fetchLocation()
-//                handler.postDelayed(this, 180000) }
-//        }
-//        handler.post(timedTask)
+            getLatlong()
+        val handler = Handler()
+
+        val timedTask: Runnable = object : Runnable {
+            override fun run() {
+                fetchLocation()
+                handler.postDelayed(this, 180000) }
+        }
+        handler.post(timedTask)
         return START_STICKY
     }
 
@@ -46,31 +49,31 @@ var TAG="Service"
     override fun onCreate() {
         super.onCreate()
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-////           getLatlong()
-//            val handler = Handler()
-//
-//            val timedTask: Runnable = object : Runnable {
-//                override fun run() {
-//
-//                    fetchLocation()
-//                    handler.postDelayed(this, 180000) }
-//            }
-//            handler.post(timedTask)
-//        }
-//        else{
-//            Log.d("####oncreatesevice","in on Create Service class")
-//            val handler = Handler()
-//
-//            val timedTask: Runnable = object : Runnable {
-//                override fun run() {
-//                    fetchLocation()
-//
-//                    handler.postDelayed(this, 180000) }
-//            }
-//            handler.post(timedTask)
-////            getLatlong()
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+           getLatlong()
+            val handler = Handler()
+
+            val timedTask: Runnable = object : Runnable {
+                override fun run() {
+
+                    fetchLocation()
+                    handler.postDelayed(this, 180000) }
+            }
+            handler.post(timedTask)
+        }
+        else{
+            Log.d("####oncreatesevice","in on Create Service class")
+            val handler = Handler()
+
+            val timedTask: Runnable = object : Runnable {
+                override fun run() {
+                    fetchLocation()
+
+                    handler.postDelayed(this, 180000) }
+            }
+            handler.post(timedTask)
+            getLatlong()
+        }
     }
 
 
@@ -134,8 +137,7 @@ var TAG="Service"
 
     private fun getPendingIntent(): PendingIntent? {
 
-        val intent = Intent(this, MyLocationService::class.java)
-        intent.setAction(MyLocationService.ACTION_UPDATES)
+        val intent = Intent(this, BroadClassRecicver()::class.java)
         return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
     }

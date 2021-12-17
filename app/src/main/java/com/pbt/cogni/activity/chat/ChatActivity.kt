@@ -52,9 +52,6 @@ class ChatActivity : AppCompatActivity(), PermissionCallBack {
          var binding: ActivityChat2Binding? = null
         var progressbar:ProgressBar?=null
         var reciverName: String =""
-
-
-
     }
 
 

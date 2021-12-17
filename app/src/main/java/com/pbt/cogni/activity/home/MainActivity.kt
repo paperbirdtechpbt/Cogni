@@ -1,7 +1,7 @@
 package com.pbt.cogni.activity.home
 
-import android.app.ActivityManager
-import android.content.Context
+
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -24,10 +24,8 @@ import com.pbt.cogni.R
 import com.pbt.cogni.activity.TabLayout.TabTripStatusFragment
 import com.pbt.cogni.activity.login.LoginActivity
 import com.pbt.cogni.fragment.Chat.UserChatListFragment
-import com.pbt.cogni.fragment.Current.BroadClassRecicver
 import com.pbt.cogni.fragment.Current.GPSTracker
 import com.pbt.cogni.fragment.Profile.ProfileFragment
-import com.pbt.cogni.fragment.ViewRoute.ViewRouteFragement
 import com.pbt.cogni.fragment.audioVideoCall.AudioVideoFragement
 import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.model.UserDetailsData
@@ -49,7 +47,6 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
     var bottomNavigation: BottomNavigationView? = null
     lateinit var chatsFragement: UserChatListFragment
     lateinit var audioVideoFragement: AudioVideoFragement
-    lateinit var viewRouteFraFusedLocationProviderClientgement: ViewRouteFragement
     lateinit var tabTripStatusFragment: TabTripStatusFragment
     lateinit var profileFragement: ProfileFragment
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -64,8 +61,8 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
     companion object {
         var instance: MainActivity? = null
             get() = instance
-        var lat: Double = 1.0
-        var long: Double = 1.0
+        var lat = 1.0
+        var long = 1.0
 
         const val TAG = "MainActivity"
     }
@@ -82,26 +79,47 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
         user = MyPreferencesHelper.getUser(this)
 
         setContentView(R.layout.activity_main)
-//        try{
-//        if (BroadClassRecicver.isMyServiceRunning(this, GPSTracker::class.java)) {
-//            Log.e(TAG, "Service running no need to start again")
-////            System.out.println("Service running no need to start again");
-//        } else {
-//
-//            val background = Intent(this, GPSTracker::class.java)
-//            //            context.startService(background);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                this.startForegroundService(background)
-//            } else {
-//                this.startService(background)
-//            }
-//        }}
-//        catch (e:Exception){
-//            AppUtils.logDebug(TAG,"$e")
-//        }
+        val manufacturer = "xiaomi"
 
+        if (manufacturer.equals(Build.MANUFACTURER, ignoreCase = true)) {
+            //this will open auto start screen where user can enable permission for your app
+            val intent1 = Intent(  )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            intent1.setClassName(
+                "com.miui.securitycenter",
+                "com.miui.permcenter.permissions.PermissionsEditorActivity",
+            )
+            intent1.putExtra("extra_pkgname", getPackageName())
+            startActivity(intent1)
+
+            Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option",Toast.LENGTH_LONG).show()
+
+        }
+        val manufactureVIVO = "vivo"
+        if (manufactureVIVO.equals(Build.MANUFACTURER, ignoreCase = true)) {
+            //this will open auto start screen where user can enable permission for your app
+            val intent1 = Intent(  )
+
+            intent1.setClassName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.FloatWindowManager")
+            intent1.putExtra("packagename", packageName)
+            startActivity(intent1)
+
+            Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option",Toast.LENGTH_LONG).show()
+
+        }
+        val manufactureOPPO = "oppo"
+        if (manufactureOPPO.equals(Build.MANUFACTURER, ignoreCase = true)) {
+            //this will open auto start screen where user can enable permission for your app
+            val intent1 = Intent(  )
+
+            intent1.setClassName("com.oppo.safe", "com.oppo.safe.permission.PermissionAppListActivity")
+            intent1.putExtra("packagename", getPackageName())
+            startActivity(intent1)
+
+            Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option",Toast.LENGTH_LONG).show()
+
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (!Settings.canDrawOverlays(this)){
                         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:" + applicationContext.packageName))
@@ -117,7 +135,7 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
 
         if (savedInstanceState == null) {
             if (chechpermission()) {
-
+AppUtils.logDebug(TAG,"Checking Permission")
             }
             supportFragmentManager.beginTransaction()
                 .replace(R.id.framelayout, TabTripStatusFragment()).commit()
@@ -207,11 +225,6 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
 
 
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
@@ -233,7 +246,7 @@ showAlertDialog()
 
 
         builder.setPositiveButton("Yes") { dialog, which ->
-
+            GPSTracker.stopService(this)
 
             setVisible(false)
             MyPreferencesHelper.clearPref(this)
@@ -272,8 +285,7 @@ showAlertDialog()
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     android.Manifest.permission.CALL_PHONE,
-                    ), 100
-            )
+                    ), 100)
 
         }
         return true
@@ -298,17 +310,15 @@ showAlertDialog()
 
     override val coroutineContext: CoroutineContext
         get() =  Dispatchers.Main + job
-    fun isMyServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
-        val activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        val services = activityManager.getRunningServices(Int.MAX_VALUE)
-        if (services != null) {
-            for (i in services.indices) {
-                if (serviceClass.name == services[i].service.className && services[i].pid != 0) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
 
+    @SuppressLint("MissingSuperCall")
+    override fun onDestroy() {
+
+//        GPSTracker.startService(this, "Foreground Service is running...")
+        //for Stop service
+//        GPSTracker.stopService(this)
+
+        super.onDestroy()
+
+    }
 }

@@ -185,6 +185,7 @@ AppUtils.logDebug(TAG,"in Alert Notification")
             .setCustomContentView(notificationLayout)
             .setFullScreenIntent(pendingIntent,false)
             .setVibrate(longArrayOf(300, 500, 1500,1600,1700))
+            .setAutoCancel(true)
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -308,7 +309,7 @@ AppUtils.logDebug(TAG,"in Alert Notification")
 
         val buildNotification = notificationBuilder.build()
         val mNotifyMgr = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        mNotifyMgr.notify(1,  buildNotification)
+        mNotifyMgr.notify(3,  buildNotification)
 
 
             }

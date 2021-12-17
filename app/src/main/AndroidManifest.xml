@@ -105,31 +105,37 @@
                 android:resource="@xml/file_path" />
         </provider>
 
-        <receiver android:name=".fcm.ButtonReceiver">
+        <receiver android:name=".fcm.ButtonReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter android:priority="999">
                 <action android:name="com.example.cancel" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".activity.home.MyLocationService"
-            android:process=":remote" />
+<!--        <receiver-->
+<!--            android:name=".activity.home.MyLocationService" />-->
 
-        <receiver android:name=".fragment.Current.BroadClassRecicver">
-            <intent-filter>
-                <action android:name="BackgroundProcess" />
-            </intent-filter>
+        <receiver android:name=".fragment.Current.BroadClassRecicver"
+            android:enabled="true"
+            android:exported="true">
+
         </receiver>
-
         <service android:name=".fcm.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+        <service android:name=".activity.home.service"/>
 
         <service
             android:name=".fragment.Current.GPSTracker"
-            tools:ignore="Instantiatable" />
+            android:enabled="true"
+            android:foregroundServiceType="location"
+            android:exported="true">
+        <intent-filter>
+            <action android:name="com.package.name.START_SERVICE" />
+        </intent-filter> </service>
     </application>
 
     <queries>
@@ -149,6 +155,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -158,14 +165,13 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="MyProvider._READ_PERMISSION" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
-
     <uses-permission android:name="android.permission.TYPE_APPLICATION_OVERLAY " />
+   
 
 </manifest>
