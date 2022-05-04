@@ -32,11 +32,7 @@ class SplashActivity : AppCompatActivity() {
         AppUtils.logDebug(
             "SplashACtivity",
             "Check login tokem ==>> " + MyPreferencesHelper.getStringTokenValue(
-                this@SplashActivity,
-                PREF_TOKEN,
-                ""
-            )
-        )
+                this@SplashActivity, PREF_TOKEN, ""))
 
         AppUtils.logDebug(
             "SplashACtivity",
@@ -46,8 +42,6 @@ class SplashActivity : AppCompatActivity() {
                 ""
             )
         )
-
-
 
         runOnUiThread {
             Handler().postDelayed({

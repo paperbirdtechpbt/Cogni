@@ -55,8 +55,8 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
 //        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED )
 //            requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MY_CAMERA_PERMISSION_CODE)
 
-        routeId = intent.getStringExtra(AppConstant.CONST_ROUTE_ID)
-        assignId=intent.getStringExtra(AppConstant.CONST_ASSIGN_ID)
+        routeId = intent.getStringExtra(AppConstant.CONST_ROUTE_ID)!!
+        assignId=intent.getStringExtra(AppConstant.CONST_ASSIGN_ID)!!
         AppUtils.logDebug(TAG,"RoutID : "+routeId)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_expense)
@@ -119,7 +119,7 @@ class ExpenseActivity : AppCompatActivity(),PermissionCallBack {
                 e.printStackTrace()
             }
             val filePath = Uri.parse("$root/req_images/"+fname).toString()
-
+            AppUtils.logError(TAG,"FilePAth=="+filePath)
             AppUtils.logDebug(TAG,"$filePath")
 
             viewModel!!.selectedImage?.set(fname)

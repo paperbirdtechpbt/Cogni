@@ -1,9 +1,9 @@
 package com.pbt.cogni.activity.home
 
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +20,9 @@ import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.crashlytics.ktx.setCustomKeys
+import com.google.firebase.ktx.Firebase
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.TabLayout.TabTripStatusFragment
 import com.pbt.cogni.activity.login.LoginActivity
@@ -56,8 +59,6 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
     lateinit var locationrequest: LocationRequest
 
 
-
-
     companion object {
         var instance: MainActivity? = null
             get() = instance
@@ -77,6 +78,12 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
 
 
         user = MyPreferencesHelper.getUser(this)
+        crashReportImplementation()
+        if(!AppUtils.isFileAccessPermissionGranted(this)){
+    checkVersion()
+        }
+
+
 
         setContentView(R.layout.activity_main)
         val manufacturer = "xiaomi"
@@ -95,37 +102,53 @@ class MainActivity : AppCompatActivity(), Callback<HttpResponse>, CoroutineScope
             Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option",Toast.LENGTH_LONG).show()
 
         }
-        val manufactureVIVO = "vivo"
-        if (manufactureVIVO.equals(Build.MANUFACTURER, ignoreCase = true)) {
-            //this will open auto start screen where user can enable permission for your app
-            val intent1 = Intent(  )
-
-            intent1.setClassName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.FloatWindowManager")
-            intent1.putExtra("packagename", packageName)
-            startActivity(intent1)
-
-            Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option",Toast.LENGTH_LONG).show()
-
-        }
+//        val manufactureVIVO = "vivo"
+//        if (manufactureVIVO.equals(Build.MANUFACTURER, ignoreCase = true)) {
+//            //this will open auto start screen where user can enable permission for your app
+//            val intent1 = Intent( )
+//
+//            intent1.setClassName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.FloatWindowManager")
+//            intent1.putExtra("packagename", packageName)
+//            startActivity(intent1)
+//
+//
+//            Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option",Toast.LENGTH_LONG).show()
+//
+//        }
         val manufactureOPPO = "oppo"
         if (manufactureOPPO.equals(Build.MANUFACTURER, ignoreCase = true)) {
             //this will open auto start screen where user can enable permission for your app
-            val intent1 = Intent(  )
+//            val intent1 = Intent(  )
+//
+//            intent1.setClassName("com.oppo.safe", "com.oppo.safe.permission.PermissionAppListActivity")
+//            intent1.putExtra("packagename", getPackageName())
+//            startActivity(intent1)
 
-            intent1.setClassName("com.oppo.safe", "com.oppo.safe.permission.PermissionAppListActivity")
-            intent1.putExtra("packagename", getPackageName())
-            startActivity(intent1)
-
-            Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option",Toast.LENGTH_LONG).show()
+            Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option in App Settings",Toast.LENGTH_LONG).show()
 
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (!Settings.canDrawOverlays(this)){
-                        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:" + applicationContext.packageName))
-                        startActivity(intent)
-                    }
+        if(!Settings.canDrawOverlays(this)){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                try {
+//                    val intent = Intent( Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+//                        Uri.parse("package:" + applicationContext.packageName))
+//                    startActivity(intent)
+//                    Toast.makeText(this,"Please Allow the Above Permission",Toast.LENGTH_LONG).show()
+                    Toast.makeText(this,"Please Allow Show on LockScreen in Others Permission Option in App Settings",Toast.LENGTH_LONG).show()
+
                 }
+                catch (e:Exception){
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                    intent.addCategory("android.intent.category.DEFAULT")
+                    val uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivityForResult(intent, 101)
+                    Toast.makeText(this,"Please Allow the Above Permission",Toast.LENGTH_LONG).show()
+
+                }
+            }
+        }
+
 
 
             MyPreferencesHelper.setStringValue(this, PREFF_OVERYLAY_PERMISSION, "true")
@@ -142,6 +165,7 @@ AppUtils.logDebug(TAG,"Checking Permission")
             bottomNavigation = findViewById(R.id.bottom_navigation)
             bottomNavigation?.getMenu()?.get(0)?.setChecked(true)
         }
+
         bottomNavigation?.setOnNavigationItemSelectedListener {
 
             when (it.itemId) {
@@ -180,17 +204,7 @@ AppUtils.logDebug(TAG,"Checking Permission")
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .commit()
                 }
-//                R.id.viewroute -> {
-//                    getSupportActionBar()?.setTitle("Analyst Routes List ")
-//                    supportActionBar?.show()
-//
-//                    viewRouteFragement = ViewRouteFragement()
-//                    supportFragmentManager
-//                        .beginTransaction()
-//                        .replace(R.id.framelayout, viewRouteFragement)
-//                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                        .commit()
-//                }
+
                 R.id.test -> {
 
                     getSupportActionBar()?.setTitle("Analyst Routes List ")
@@ -206,13 +220,43 @@ AppUtils.logDebug(TAG,"Checking Permission")
             }
             true
         }
+    }
+
+    private fun checkVersion() {
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.R){
+            Toast.makeText(this,"Please Allow the Above Permission",Toast.LENGTH_LONG).show()
+
+            try {
 
 
+            val intent = Intent( Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                Uri.parse("package:" + applicationContext.packageName))
+            startActivity(intent)}
+            catch (e:Exception){
+                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                intent.addCategory("android.intent.category.DEFAULT")
+                val uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivityForResult(intent, 101)
+            }
+
+        }
 
 
     }
 
+    private fun crashReportImplementation() {
+        Firebase.crashlytics.setCrashlyticsCollectionEnabled(true)
+        Firebase.crashlytics.log("message")
+        Firebase.crashlytics.setUserId("user123456789")
+        val crashlytics = Firebase.crashlytics
+        crashlytics.setCustomKeys {
+            key("my_string_key", "foo") // String value
+            key("my_bool_key", true)    // boolean value
 
+        }
+
+    }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -227,7 +271,7 @@ AppUtils.logDebug(TAG,"Checking Permission")
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
+
         return when (item.itemId) {
             R.id.ic_menu_logout -> {
 showAlertDialog()
@@ -277,6 +321,7 @@ showAlertDialog()
                     android.Manifest.permission.READ_CONTACTS,
                     android.Manifest.permission.CAMERA,
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.LOCATION_HARDWARE,
                     android.Manifest.permission.READ_CONTACTS,
                     android.Manifest.permission.INTERNET,
                     android.Manifest.permission.VIBRATE,
@@ -284,6 +329,7 @@ showAlertDialog()
                     android.Manifest.permission.CAPTURE_AUDIO_OUTPUT,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+
                     android.Manifest.permission.CALL_PHONE,
                     ), 100)
 
@@ -293,7 +339,6 @@ showAlertDialog()
 
 
     override fun onResponse(call: Call<HttpResponse>, response: Response<HttpResponse>) {
-//        Toast.makeText(this, "ResponseSucessFull", Toast.LENGTH_LONG).show()
         AppUtils.logDebug(TAG,"Response Successfull")
     }
 
@@ -308,17 +353,17 @@ showAlertDialog()
         return super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        lateinit var my_audio_manager:AudioManager
+        my_audio_manager = getSystemService(AUDIO_SERVICE) as AudioManager
+        my_audio_manager.mode = AudioManager.MODE_NORMAL
+
+
+    }
+
     override val coroutineContext: CoroutineContext
         get() =  Dispatchers.Main + job
 
-    @SuppressLint("MissingSuperCall")
-    override fun onDestroy() {
 
-//        GPSTracker.startService(this, "Foreground Service is running...")
-        //for Stop service
-//        GPSTracker.stopService(this)
-
-        super.onDestroy()
-
-    }
 }

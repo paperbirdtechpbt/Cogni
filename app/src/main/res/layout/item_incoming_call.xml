@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="100dp"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -12,8 +12,9 @@
         android:layout_height="wrap_content"
         android:textSize="14sp"
 android:textStyle="bold"
+
        android:layout_marginLeft="20dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="10dp"
         android:text="CallersName"
 />
 
@@ -35,13 +36,13 @@ android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_centerInParent="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:layout_marginLeft="100dp"
-            android:layout_marginTop="10dp"
-            android:padding="4dp"
+            android:padding="6dp"
             android:text="Answer"
             android:textColor="#49CA56"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
@@ -49,12 +50,12 @@ android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
+
             android:layout_marginRight="100dp"
             android:text="Reject"
-            android:padding="4dp"
+            android:padding="6dp"
             android:textColor="#CD694F"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
     </RelativeLayout>
 

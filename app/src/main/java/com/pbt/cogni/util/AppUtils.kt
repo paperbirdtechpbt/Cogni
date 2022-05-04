@@ -1,9 +1,10 @@
  package com.pbt.cogni.util
 
+import android.Manifest
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
-import android.app.DownloadManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.ConnectivityManager
 import android.net.Uri
@@ -11,10 +12,9 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.loader.content.CursorLoader
 import com.pbt.cogni.BuildConfig
-import com.pbt.cogni.WebService.ApiClient
-import com.pbt.cogni.WebService.ApiInterface
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -24,7 +24,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
-
 
 
  class AppUtils {
@@ -44,6 +43,17 @@ import java.util.regex.Pattern
             val pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE)
             val matcher = pattern.matcher(email)
             return matcher.matches()
+        }
+        fun isFileAccessPermissionGranted(context:Context) :Boolean {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                return Environment.isExternalStorageManager()
+            } else {
+                val readExtStorage = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+                return readExtStorage == PackageManager.PERMISSION_GRANTED
+            }
         }
 
         fun logError(tag: String, message: String) {

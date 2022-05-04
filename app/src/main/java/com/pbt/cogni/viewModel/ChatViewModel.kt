@@ -1,7 +1,6 @@
 package com.pbt.cogni.viewModel
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Application
 import android.app.Dialog
 import android.app.NotificationManager
@@ -15,13 +14,9 @@ import android.os.Parcel
 import android.view.View
 import android.view.Window
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat.requestPermissions
-
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -65,7 +60,7 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
 
     companion object {
         private const val TAG: String = "ChatViewModel"
-
+        var imgResponseUrl:String=""
 
     }
 
@@ -74,14 +69,14 @@ class ChatViewModel(app: Application) : AndroidViewModel(app), ProgressRequestBo
     var reffChatRoomID: DatabaseReference? = null
     var typingReference: Firebase? = null
     var listener: ValueEventListener? = null
-    private var chatReff: Firebase? = null
+    var chatReff: Firebase? = null
     var message: ObservableField<String>? = null
     var chatRoomID: ObservableField<String>? = null
     var room: ObservableField<String>? = null
     var room1: ObservableField<String>? = null
     var userId: ObservableField<Int>? = null
-private    var chatID: ObservableField<Int>? = null
-    private var reciverId: ObservableField<Int>? = null
+    var chatID: ObservableField<Int>? = null
+    var reciverId: ObservableField<Int>? = null
     var currentUser: ObservableField<String>? = null
     var mAdapter: ChatAdapter? = null
     var isTyping: ObservableField<String>? = null
@@ -89,14 +84,10 @@ private    var chatID: ObservableField<Int>? = null
     var permissionIsGranted: PermissionCallBack? = null
     var selectedImage: ObservableField<String>? = null
     var imageUri: ObservableField<String>? = null
-    @SuppressLint("StaticFieldLeak")
-    var progressBar:ProgressBar?=null
+
     var isVisiBled: ObservableField<Boolean> ? = null
-    var imgSendIcon:ImageView?=null
 
     init {
-        imgSendIcon=null
-        progressBar=null
         reciverName = ObservableField("")
         message = ObservableField("")
         currentUser = ObservableField("")
@@ -116,7 +107,7 @@ private    var chatID: ObservableField<Int>? = null
     fun onMesageTextChanged(s: CharSequence, start: Int, befor: Int, count: Int) {
 
         if (s.length > 0) {
-            val type = object {
+            var type = object {
                 var id = userId!!.get()!!.toInt()
                 var isTyping = s.toString()
             }
@@ -136,21 +127,18 @@ private    var chatID: ObservableField<Int>? = null
         room!!.set(userId!!.get().toString() + "_" + reciverId!!.get().toString())
         room1!!.set(reciverId!!.get().toString() + "_" + userId!!.get().toString())
 
-        reffChatRoomID = FirebaseDatabase.getInstance().getReference()
+        reffChatRoomID = FirebaseDatabase.getInstance().getReference();
 
         setData(context)
     }
 
     fun captureImage(view: View) {
-
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
-        ){
-
-
-            permissionIsGranted!!.isGranted(false)}
+        )
+            permissionIsGranted!!.isGranted(false)
         else
             permissionIsGranted!!.isGranted(true)
     }
@@ -158,39 +146,39 @@ private    var chatID: ObservableField<Int>? = null
     fun setData(context: Context) {
 
         listener = reffChatRoomID?.child(MESSAGES)?.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
 
-                    AppUtils.logDebug(TAG, "ChatRoom ID Chage : " + snapshot.getValue())
+                AppUtils.logDebug(TAG, "ChatRoom ID Chage : " + snapshot.getValue())
 
-                    val map = snapshot.value as Map<*, *>
-                    if (map.containsKey(room!!.get().toString())) {
-                        chatRoomID!!.set(room!!.get())
-                    } else if (map.containsKey(room1!!.get().toString())) {
-                        chatRoomID!!.set(room1!!.get())
-                    } else {
-                        chatRoomID!!.set("")
-                    }
-
-                    if (chatRoomID!!.get().toString().isEmpty()) {
-                        chatRoomID!!.set(room!!.get())
-                    }
-
-                    AppUtils.logDebug(TAG," Current Room : "+chatRoomID!!.get())
-
-                    initChat(context, chatRoomID!!.get().toString())
-
-                    reffChatRoomID?.child(MESSAGES)?.removeEventListener(listener!!)
+                val map = snapshot.value as Map<*, *>
+                if (map.containsKey(room!!.get().toString())) {
+                    chatRoomID!!.set(room!!.get())
+                } else if (map.containsKey(room1!!.get().toString())) {
+                    chatRoomID!!.set(room1!!.get())
+                } else {
+                    chatRoomID!!.set("")
                 }
 
-                override fun onCancelled(error: DatabaseError) {
+                if (chatRoomID!!.get().toString().isEmpty()) {
+                    chatRoomID!!.set(room!!.get())
                 }
-            })
+
+                AppUtils.logDebug(TAG," Current Room : "+chatRoomID!!.get())
+
+                initChat(context, chatRoomID!!.get().toString())
+
+                reffChatRoomID?.child(MESSAGES)?.removeEventListener(listener!!)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
 
     fun initChat(context: Context, chatRoomID: String) {
 
-        val checkTypeReff =
-            FirebaseDatabase.getInstance().getReference(MESSAGES).child(chatRoomID).child(TYPING)
+        var checkTypeReff =
+            FirebaseDatabase.getInstance().getReference(MESSAGES).child(chatRoomID).child(TYPING);
 
         chatReff = Firebase(BASE_FIREBASE_URL + chatRoomID)
 
@@ -235,9 +223,6 @@ private    var chatID: ObservableField<Int>? = null
 
         chatReff!!.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-
-             progressBar!!.visibility=View.GONE
-
 
                 AppUtils.logWarning(TAG, " 140 onChildAdded " + dataSnapshot.getValue())
                 try {
@@ -309,7 +294,6 @@ private    var chatID: ObservableField<Int>? = null
 
         Firebase(BASE_FIREBASE_URL + chatRoomID ).child(TYPING).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
-                progressBar!!.visibility=View.GONE
                 mAdapter?.notifyDataSetChanged()
             }
 
@@ -329,7 +313,7 @@ private    var chatID: ObservableField<Int>? = null
             override fun onChildRemoved(p0: DataSnapshot?) {}
             override fun onChildMoved(p0: DataSnapshot?, p1: String?) {}
             override fun onCancelled(p0: FirebaseError?) {}
-        })
+        });
     }
 
 
@@ -340,24 +324,30 @@ private    var chatID: ObservableField<Int>? = null
         if (!AppUtils.isNetworkConnected(context)) {
             Toast.makeText(context, "Please Connect To Internet !", Toast.LENGTH_SHORT).show()
         } else {
+try {
+    if (!message!!.get().toString().isEmpty()) {
+        val chat: Chat = Chat.createFromParcel(Parcel.obtain())
+        chat.sender = userId!!.get()
+        chat.timestamp = Date().time
+        chat.type = "text"
+        chat.fileName = ""
+        chat.text = message?.get()
 
-            if (!message!!.get().toString().isEmpty()) {
-                val chat: Chat = Chat.createFromParcel(Parcel.obtain())
-                chat.sender = userId!!.get()
-                chat.timestamp = Date().time
-                chat.type = "text"
-                chat.fileName = ""
-                chat.text = message?.get()
+        chat.read = 0
+        AppUtils.logDebug(TAG,"ChatRoomId"+ chatRoomID!!.get())
+        Firebase(BASE_FIREBASE_URL).child(chatRoomID!!.get().toString()).push()
+            .setValue(chat)
+        message?.set("")
+    }
+}
+catch (e:Exception){
+    AppUtils.logError(TAG,"exception in Method SendMessage=>"+e.message.toString())
+}
 
-                chat.read = 0
-                Firebase(BASE_FIREBASE_URL).child(chatRoomID!!.get().toString()).push()
-                    .setValue(chat)
-                message?.set("")
-            }
         }
     }
 
-//    fun sendImageMessage(){
+    fun sendImageMessage(){
 //        arrayImageChat.forEach((element, index) => {
 //            let chat = new Chat(userID, new Date().getTime(), element.extension, element.image, 0,element.fileName);
 //            firebase.database().ref("messages/" + chatID).push(chat).then((snap) => {
@@ -366,11 +356,11 @@ private    var chatID: ObservableField<Int>? = null
 //                var elem = document.getElementById('MyChatMessage');
 //                elem.scrollTop = elem.scrollHeight;
 //            })
-//        });
-//    }
+//        });zzz
+    }
 
 
-//     fun uploadImage(){
+    //     fun uploadImage(){
 //
 ////         val file = File(param)
 ////         val requestFile: RequestBody =
@@ -415,13 +405,11 @@ private    var chatID: ObservableField<Int>? = null
 //    }
     fun sendImageToChat(view: View) {
 
-progressBar!!.visibility=View.VISIBLE
-
-    val file   =  File(imageUri?.get()!!)
+        val file : File  =  File(imageUri?.get()!!)
         val contentType : String  = "file"
         val fileBody = ProgressRequestBody(file, contentType,this)
         val filePart: MultipartBody.Part = MultipartBody.Part.createFormData("file", file.getName(), fileBody)
-AppUtils.logDebug(TAG,"File path--$file")
+        AppUtils.logDebug(TAG,"File path--$file")
 
         val apiclient = ApiClient.getClient()
         val apiInterface = apiclient?.create(ApiInterface::class.java)
@@ -436,19 +424,16 @@ AppUtils.logDebug(TAG,"File path--$file")
 
                     sendImageToChatt(listLatLong.image,listLatLong.fileName,listLatLong.extension)
                     AppUtils.logDebug(TAG,"Response ===>> ${response.body()}")
+
                     ChatActivity.binding?.rlImageSend?.visibility = View.GONE
                     ChatActivity.binding?.chatViewModel?.isVisiBled?.set(false)
-                    imgSendIcon?.visibility=View.GONE
                 }
             }
             override fun onFailure(call: Call<HttpResponse?>?, t: Throwable?) {
-progressBar!!.visibility=View.GONE
-                imgSendIcon?.visibility=View.GONE
+
                 AppUtils.logError(TAG," Network Error  ===>> "+t!!.message)
             }
-
-        }
-        )
+        })
 
 
 //        if(imageUri?.get() != null){
@@ -472,8 +457,8 @@ progressBar!!.visibility=View.GONE
 //        }
     }
 
-     @RequiresApi(Build.VERSION_CODES.Q)
-     fun sendImageToChatt(imageURLL: String?, fileName: String, extension: String) {
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun sendImageToChatt(imageURLL: String?, fileName: String, extension: String) {
         if(imageUri?.get() != null){
 //            uploadImage()
 
@@ -500,7 +485,7 @@ progressBar!!.visibility=View.GONE
 
 
     override fun onProgressUpdate(percentage: Int) {
-       AppUtils.logDebug(TAG,"ProgressUpdate : "+percentage)
+        AppUtils.logDebug(TAG,"ProgressUpdate : "+percentage)
     }
 
     override fun onError() {
@@ -519,11 +504,11 @@ progressBar!!.visibility=View.GONE
         val imagePreview = dialog.findViewById(R.id.btnSendMessage) as ImageView
         imagePreview.setImageBitmap(bitmap)
         val dialogButton: ImageView = dialog.findViewById(R.id.btnSendMessage)
-        dialogButton.setOnClickListener({ dialog.dismiss() })
+        dialogButton.setOnClickListener(View.OnClickListener { dialog.dismiss() })
         dialog.show()
     }
 
     override fun onItemClick(position: Int, v: View?) {
-       Toast.makeText(context,"CLick on $position", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context,"CLick on $position", Toast.LENGTH_SHORT).show()
     }
 }

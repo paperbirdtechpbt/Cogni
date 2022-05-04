@@ -15,7 +15,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
          android:layout_margin="10dp"
-            android:src="@drawable/ic_alerticon" />
+            android:src="@drawable/ic_alerticon"
+            />
 
         <RelativeLayout
             android:layout_width="match_parent"

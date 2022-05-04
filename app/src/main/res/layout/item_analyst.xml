@@ -51,6 +51,15 @@ android:id="@+id/relativelayout"
                 android:backgroundTint="#fff"
                 android:drawableTint="#fff" />
         </RelativeLayout>
+<!--        <ImageView-->
+<!--            android:id="@+id/test_jitsi_videCall"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="5dp"-->
+<!--            android:layout_marginRight="10dp"-->
+<!--            android:src="@drawable/ic_baseline_videoca"-->
+<!--            android:layout_toLeftOf="@id/rlVoiceCall"-->
+<!--            />-->
 
         <RelativeLayout
             android:id="@+id/rlVoiceCall"
@@ -82,9 +91,9 @@ android:id="@+id/relativelayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Name----------"
             android:layout_alignParentTop="true"
             android:fontFamily="@font/droidsans"
+            android:text="Name----------"
             android:textSize="16sp"
             android:textStyle="bold" />
         <TextView

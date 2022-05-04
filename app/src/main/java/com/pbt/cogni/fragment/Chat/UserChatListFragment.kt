@@ -43,13 +43,22 @@ class UserChatListFragment : Fragment(),RecyclerviewClickLisetner {
         viewModel.getAnalyst(MyPreferencesHelper.getUser(requireActivity())!!.companyId,MyPreferencesHelper.getUser(requireActivity())!!.RoleId,MyPreferencesHelper.getUser(requireActivity())!!.UserName)
 
         viewModel.listAnalystList.observe(viewLifecycleOwner, Observer { analyst ->
+            if (!analyst.isNullOrEmpty()){
+                progressBarChatUser.visibility=View.GONE
+
+            }
+            else{
+                progressBarChatUser.visibility=View.GONE
+
+            }
+
+
             recyclerviewChatUserList.also {
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
                 it.adapter = AdapterChatUserList(analyst,this)
             }
         })
-        progressBarChatUser.visibility=View.GONE
     }
 
     override fun onRecyclerViewItemClick(view: View, users: Users) {

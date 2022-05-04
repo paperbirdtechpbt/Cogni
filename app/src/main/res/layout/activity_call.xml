@@ -39,7 +39,6 @@
 <!--            />-->
         <TextView
 
-            app:layout_constraintTop_toBottomOf="@id/txtUsernameVoiceCall"
             android:id="@+id/txtTimerVoiceCall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +49,8 @@
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            tools:layout_editor_absoluteY="16dp" />
+            tools:layout_editor_absoluteY="16dp"
+            tools:ignore="MissingConstraints" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <org.webrtc.SurfaceViewRenderer

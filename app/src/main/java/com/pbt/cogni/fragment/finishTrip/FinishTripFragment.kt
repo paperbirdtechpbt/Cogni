@@ -62,6 +62,13 @@ viewmodel!!.notDataLayout=noDataLayout
 
 
         viewmodel?.routesList?.observe(viewLifecycleOwner, Observer { routes ->
+            if (!routes.isNullOrEmpty()){
+                progresbar_finish.visibility=View.GONE
+            }
+            else{
+                progresbar_finish.visibility=View.GONE
+
+            }
             recyclerViewFinishTrip?.layoutManager = LinearLayoutManager(requireContext())
             listAdapter = AdapterViewRouteList(routes, this)
             recyclerViewFinishTrip?.adapter = listAdapter

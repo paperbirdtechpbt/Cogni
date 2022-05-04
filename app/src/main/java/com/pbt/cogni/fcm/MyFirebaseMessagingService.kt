@@ -65,6 +65,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 //
             try {
 
+
+
 //                this.runOnUiThread(Runnable // start actions in UI thread
 //                {
 //                    displayData() // this action have to be in UI thread
@@ -78,6 +80,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
                 if (obj.getJSONObject(CONST_DATA).has(CONST_PAYLOAD)) {
                     val payload: JSONObject = obj.getJSONObject(CONST_DATA).getJSONObject(CONST_PAYLOAD)
+                    roomId=payload.getString("roomId")
+                    isVideoCall=payload.getString("call").toBoolean()
+                    payLOAD= payload
+
 
                     mobilenumber = payload.optString(CONST_MESSAGE)
                     Log.d("##Mynumber", mobilenumber.toString())
@@ -99,8 +105,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                             sendMessageToServer(payload)
 
                         if (!ChatActivity.isChatVisible)
-                            {
-                                AppUtils.logDebug(TAG,"in chatvisible  ")
+                        {
+                            AppUtils.logDebug(TAG,"in chatvisible  ")
                             sendNotification(
                                 MyPreferencesHelper.getUser(this)!!.FirstName,
                                 payload.getString(CONST_MESSAGE)
@@ -119,10 +125,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                             remoteMessage
                         )
                     }
-                       else if(payload.has(CONST_TITLE)&& payload.getString(CONST_TITLE).equals(CONST_ALERT))
+                    else if(payload.has(CONST_TITLE)&& payload.getString(CONST_TITLE).equals(CONST_ALERT))
                     {
-AppUtils.logDebug(TAG,"in Alert Notification")
-                            popUpMessage()
+                        AppUtils.logDebug(TAG,"in Alert Notification")
+                        popUpMessage()
 
 
 
@@ -185,7 +191,6 @@ AppUtils.logDebug(TAG,"in Alert Notification")
             .setCustomContentView(notificationLayout)
             .setFullScreenIntent(pendingIntent,false)
             .setVibrate(longArrayOf(300, 500, 1500,1600,1700))
-            .setAutoCancel(true)
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -307,12 +312,13 @@ AppUtils.logDebug(TAG,"in Alert Notification")
             notificationManager.createNotificationChannel(channel)
         }
 
+
         val buildNotification = notificationBuilder.build()
         val mNotifyMgr = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        mNotifyMgr.notify(3,  buildNotification)
+        mNotifyMgr.notify(1,  buildNotification)
 
 
-            }
+    }
 
 
 
@@ -338,7 +344,7 @@ AppUtils.logDebug(TAG,"in Alert Notification")
 
 
 
-     fun playsound() {
+    fun playsound() {
         val soundUri =
             Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + applicationContext.packageName + "/" + R.raw.callringotn)
 
@@ -351,23 +357,16 @@ AppUtils.logDebug(TAG,"in Alert Notification")
         ringtone?.stop()
     }
 
+    private fun openIntent(number: String, roomId: String, call: Boolean, remoteMessage: RemoteMessage) {
 
-
-    private fun openIntent(
-        number: String,
-        roomId: String,
-        call: Boolean,
-        remoteMessage: RemoteMessage
-    ) {
         AppUtils.logDebug(TAG, "====>> " + Gson().toJson(remoteMessage.data))
 
         val intent = Intent(this, CallActivity::class.java)
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
-        passdata(intent, number, roomId, call, remoteMessage,"notificaiton",0)
+            passdata(intent, number, roomId, call, remoteMessage,"notificaiton",0)
         startActivity(intent)
 
-        Log.d("Tutorialspoint.com", "Your application is in ForeGround state")
     }
 
 
@@ -467,13 +466,18 @@ AppUtils.logDebug(TAG,"in Alert Notification")
     }
 
     companion object {
+
+
         private const val TAG = "MyFirebaseMsgService"
-         var ringtone: Ringtone? = null
+        var ringtone: Ringtone? = null
         var mobilenumber: String? = null
         var sendernamee=""
         var payloadMessage=""
+        var roomId=""
         var payloadAlertMessage=""
         var notificationCurrentmili:Long=0
+        var isVideoCall=false
+        var payLOAD:JSONObject?=null
 
     }
 

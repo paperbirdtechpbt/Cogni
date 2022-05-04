@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -14,8 +15,8 @@ import com.pbt.cogni.model.HttpResponse
 import com.pbt.cogni.util.MyPreferencesHelper
 
 class AudioVideCallAdapter(
-    var context: Context?,
 
+    var context: Context?,
     var callbacks: (Int, View,Resultt,String) -> Unit
 
 ) :
@@ -54,6 +55,10 @@ class AudioVideCallAdapter(
         holder.rlVoiceCall.setOnClickListener {
                 callbacks.invoke(holder.adapterPosition,it, myResult?.mydata?.get(position)!!,sendername)
         }
+//        holder.jitsiCall.setOnClickListener{
+//            callbacks.invoke(holder.adapterPosition,it, myResult?.mydata?.get(position)!!,sendername)
+//
+//        }
 
     }
 
@@ -71,6 +76,7 @@ class AudioVideCallAdapter(
         val rlVideoCall = binding.findViewById<RelativeLayout>(R.id.rlVideoCall)
         val rlVoiceCall = binding.findViewById<RelativeLayout>(R.id.rlVoiceCall)
         val layout=binding.findViewById<RelativeLayout>(R.id.relativelayout)
+//        val jitsiCall=binding.findViewById<ImageView>(R.id.test_jitsi_videCall)
     }
 
 }

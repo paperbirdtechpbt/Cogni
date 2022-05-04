@@ -4,12 +4,10 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -17,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pbt.cogni.R
 import com.pbt.cogni.activity.MapsActivity
-import com.pbt.cogni.fragment.Current.CurrentTripViewModel.Companion.handler
 import com.pbt.cogni.fragment.ViewRoute.AdapterViewRouteList
 import com.pbt.cogni.model.Routes
 import com.pbt.cogni.util.AppConstant
@@ -52,10 +49,9 @@ class CurrentFragment : Fragment(), RoutesViewRecyclerViewItemClick{
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_current, container, false)
-notData=view.findViewById(R.id.rlCurrentNoData)
-            initViewModel()
+          notData=view.findViewById(R.id.rlCurrentNoData)
+          initViewModel()
           startService()
-
 
         return view
     }
@@ -73,10 +69,7 @@ notData=view.findViewById(R.id.rlCurrentNoData)
     private  fun initViewModel() {
 
          viewmodel = ViewModelProvider(this).get(CurrentTripViewModel::class.java)
-
-
-      viewmodel?.onRouteListRequest(requireContext())
-
+        viewmodel?.onRouteListRequest(requireContext())
         viewmodel!!.relativelayout=notData
 
 
@@ -87,31 +80,33 @@ notData=view.findViewById(R.id.rlCurrentNoData)
             recyclerViewCurrentTrip?.adapter = listAdapter
             route=routes
 //
-//            Handler().postDelayed({
-//                if(!routes.isNullOrEmpty()) {
-//                    val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
-//                    if (!checkService){
-//                        GPSTracker.startService(requireContext(), "Foreground Service is running...")
-//                    }
-//
-//                    viewmodel!!.fetchlocation(requireContext())
-//
-//
-//                }
-//                else{
-//                    val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
-//                    AppUtils.logError(TAG,"----------$checkService")
-//                    if (checkService){
-//                        GPSTracker.stopService(requireContext())
-//                    }
-//                }
-//            },3500)
+
+                if(!routes.isNullOrEmpty()) {
+                    progresbar_current.visibility=View.GONE
+                    val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
+                    if (!checkService){
+                        GPSTracker.startService(requireContext(), "Foreground Service is running...")
+                    }
+
+                    viewmodel!!.fetchlocation(requireContext())
+
+
+                }
+                else{
+                    progresbar_current.visibility=View.GONE
+
+                    val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
+                    AppUtils.logError(TAG,"----------$checkService")
+                    if (checkService){
+                        GPSTracker.stopService(requireContext())
+                    }
+                }
+
 
 
         })
     }
-    private fun startService() {
-        Handler().postDelayed({
+        private fun startService() {
             if(!route.isNullOrEmpty()) {
                 val checkService=  isMyServiceRunning(requireContext(), GPSTracker::class.java)
                 if (!checkService){
@@ -129,7 +124,7 @@ notData=view.findViewById(R.id.rlCurrentNoData)
                     GPSTracker.stopService(requireContext())
                 }
             }
-        },3500)
+
     }
 
 

@@ -80,8 +80,11 @@ class UpcomingFragment : Fragment(), RoutesViewRecyclerViewItemClick {
             AppUtils.logDebug(TAG,"Data REsponse : ")
 
             if(routes.isNullOrEmpty()) {
+                progresbar_upcoming.visibility=View.GONE
                 rlNoData.visibility =  View.VISIBLE
             }else{
+                progresbar_upcoming.visibility=View.GONE
+
                 rlNoData.visibility =  View.GONE
             }
         })

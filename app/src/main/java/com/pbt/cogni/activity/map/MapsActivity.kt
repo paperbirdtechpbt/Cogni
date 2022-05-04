@@ -179,9 +179,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnConnectionFailed
         startLong = intent.getDoubleExtra(CONST_TO_ORIGIN_LONG, 00.00)
         endLat = intent.getDoubleExtra(CONST_TO_DESTINATION_LAT, 00.00)
         endLong = intent.getDoubleExtra(CONST_TO_DESTINATION_LONG, 00.00)
-        routeId = intent.getStringExtra(CONST_ROUTE_ID)
-        status = intent.getStringExtra(CONST_STATUS)
-        assignId = intent.getStringExtra(CONST_ASSIGN_ID)
+        routeId = intent.getStringExtra(CONST_ROUTE_ID)!!
+        status = intent.getStringExtra(CONST_STATUS)!!
+        assignId = intent.getStringExtra(CONST_ASSIGN_ID)!!
         if (status=="1"){
             from(bottomSheet).apply {
                 peekHeight = 0
